@@ -86,3 +86,5 @@ Regulary (this is just a suggested workflow based on our meeting, no pull reques
 
 4. Push to repo
     > `git push origin main`
+
+..small change to check contribution settings
