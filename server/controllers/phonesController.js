@@ -7,6 +7,7 @@ exports.sold_out_soon = (req, res, next) => {
     Phone.find({stock: {$gte: 1}, disabled: {$exists: false}})
         .sort({stock: 1})
         .limit(5)
+        .populate('seller') // get seller information via reference
         .exec()
         .then((result) => {
             res.status(200).json(result);
