@@ -9,6 +9,7 @@ const mongoDBUri =
     "mongodb+srv://matt:testadmin@phonezone.ixyyf.mongodb.net/phonezone?retryWrites=true&w=majority";
 mongoose
     .connect(mongoDBUri, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then()
     .catch((err) => {
         console.log("Error connecting to database");
         console.log(err.message);
@@ -17,6 +18,7 @@ mongoose
 var indexRouter = require("./routes/index");
 var usersRoutes = require("./routes/users");
 var phoneRoutes = require("./routes/phones");
+let orderRoutes = require("./routes/orders");
 
 // APP SETUP
 var app = express();
@@ -31,6 +33,7 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 app.use("/", indexRouter);
 app.use("/users", usersRoutes);
 app.use("/phones", phoneRoutes);
+app.use("/orders", orderRoutes);
 
 // CORS
 app.use((req, res, next) => {
@@ -63,6 +66,10 @@ app.use((error, req, res, next) => {
             message: error.message,
         },
     });
+});
+
+app.listen(app.get("port"), () => {
+    console.log(`Server listening at port: ${app.get("port")}`);
 });
 
 module.exports = app;
