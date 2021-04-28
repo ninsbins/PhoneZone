@@ -15,109 +15,124 @@ const User = require("../models/user");
 //     ]
 // }
 
-exports.create_new_order = (req, res, next) => {
+exports.create_new_order = async (req, res, next) => {
     // functionality for creating a new user.
     let items = req.body.items;
     let userId = req.body.orderedBy;
 
-    let validOrder = checkOrderValidity(userId, items);
-
-    console.log(`order valid? ${validOrder}`);
-
-    if (validOrder) {
-        // create new order
-        const order = new Order({
-            _id: new mongoose.Types.ObjectId(),
-            orderedBy: userId,
-            items: items,
-        });
-
-        order
-            .save()
-            .then((result) => {
-                res.status(201).json({
-                    message: "order created successfully",
-                });
-            })
-            .catch((err) => {
-                console.log(err);
-                if (!res.headerSent) {
-                    res.status(500).json({
-                        message: "unable to create new order",
-                        error: err,
-                    });
-                }
+    isOrderValid(userId, items)
+        .then((result) => {
+            // create new order
+            const order = new Order({
+                _id: new mongoose.Types.ObjectId(),
+                orderedBy: userId,
+                items: items,
             });
 
-        // deduct quantities
-
-        // search all phones for matching ids, if matching deduct the quantities
-        items.forEach((item) => {
-            // find phone, deduct quantity
-            let num = -item.quantity;
-            Phone.findByIdAndUpdate(item.phoneListing, {
-                $inc: { stock: num },
-            })
+            order
+                .save()
                 .then((result) => {
-                    console.log(
-                        `updated stock of ${result._id}\ntitle: ${result.title}\nbrand: ${result.brand}`
-                    );
+                    res.status(201).json({
+                        message: "order created successfully",
+                    });
+
+                    // deduct quantities
+                    // search all phones for matching ids, if matching deduct the quantities
+                    items.forEach((item) => {
+                        // find phone, deduct quantity
+                        let num = -item.quantity;
+                        Phone.findByIdAndUpdate(item.phoneListing, {
+                            $inc: { stock: num },
+                        })
+                            .then((result) => {
+                                console.log(
+                                    `updated stock of ${result._id}\ntitle: ${result.title}\nbrand: ${result.brand}`
+                                );
+                            })
+                            .catch((err) => {
+                                console.log(
+                                    "unable to update quantity of phone"
+                                );
+                            });
+                    });
                 })
                 .catch((err) => {
-                    console.log("unable to update quantity of phone");
+                    // console.log(err);
+                    if (!res.headerSent) {
+                        res.status(500).json({
+                            message: "unable to create new order",
+                            error: err,
+                        });
+                    }
                 });
+        })
+        .catch((error) => {
+            console.log("validation error");
+            console.log(error);
+            res.status(500).json({
+                message: "invalid order details",
+            });
         });
-    } else {
-        res.status(500).json({
-            message: "invalid order details",
-        });
-    }
 };
 
 // HELPER FUNCTIONS
-const isValidPhoneListing = (id) => {
-    Phone.exists({ _id: id }, (err, result) => {
+const isValidPhoneListing = async (id) => {
+    let valid;
+
+    await Phone.exists({ _id: id }, (err, result) => {
         if (err) {
-            return false;
+            console.log("error validing phone id");
+            valid = false;
+        } else {
+            valid = true;
         }
     });
-    return true;
+    return valid;
 };
 
 const isValidQuantity = (num) => {
     if (!(num > 0)) {
+        console.log("error on validating order quantity");
         return false;
     }
     return true;
 };
 
-const checkOrderValidity = (userId, items) => {
-    // Check that user exists
-    let validUser = User.exists({ _id: userId }, (err, result) => {
-        if (err) {
-            return false;
-        }
-        return true;
+const isValidUser = async (id) => {
+    return new Promise(async (resolve, reject) => {
+        await User.exists({ _id: id }, (err, result) => {
+            if (!err) {
+                resolve("user exists");
+            } else {
+                reject("no matching user");
+            }
+        });
     });
+};
 
-    // Check that phones exist and quantity is valid
-    let validItems = items.forEach((item) => {
-        // phone
-        if (!isValidPhoneListing(item.phoneListing)) {
-            return false;
-        }
+const isOrderValid = (userId, items) => {
+    return new Promise(async (resolve, reject) => {
+        isValidUser(userId)
+            .then((result) => {
+                let validItems;
+                items.forEach((item) => {
+                    // phone
+                    validItems = isValidPhoneListing(item.phoneListing)
+                        ? true
+                        : false;
+                    // quantity
+                    validItems = isValidQuantity(item.quantity) ? true : false;
+                });
 
-        // quantity
-        if (!isValidQuantity(item.quantity)) {
-            return false;
-        }
-
-        return true;
+                if (validItems) {
+                    resolve("valid order");
+                } else {
+                    reject("not valid order");
+                }
+            })
+            .catch((err) => {
+                //
+                reject("not a valid order");
+            });
     });
-
-    if (validItems && validUser) {
-        return true;
-    } else {
-        return false;
-    }
 };
