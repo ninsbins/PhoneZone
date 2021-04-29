@@ -1,9 +1,125 @@
 const mongoose = require("mongoose");
 const User = require("../models/user");
+const crypto = require("crypto");
 
+const encryptPassword = (string) => {
+    return crypto.createHash("md5").update(string).digest("hex");
+};
+
+const isValidEmail = (string) => {
+    const regex = new RegExp(
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+    return regex.test(string);
+};
+
+const isValidPassword = (string) => {
+    // equal to or longer than 4 characters?
+    return string.length >= 4;
+    // add additional password requirements here.
+};
+
+// const validatePassword = (plaintext, hashedPassword) => {
+//     let plainToHash = crypt.createHash('md5').update(plaintext).digest('hex');
+//     return plainToHash == hashedPassword
+// }
+
+/**
+ * /users/signup:
+ * post:
+ *      description: use to sign up a new user
+ *      parameters:
+ *          - name: firstName
+ *            description: first name for the user
+ *            required: true
+ *            type: string
+ *          - name: lastName
+ *            description: last name for the user
+ *            required: true
+ *            type: string
+ *          - name: email
+ *            description: email for the user
+ *            required: true
+ *            type: string
+ *          - name: password
+ *            description: password for the user
+ *            required: true
+ *            type: string
+ *      responses:
+ *          '201':
+ *              description: User successfully created
+ *          '409':
+ *              description: User unable to be created
+ *          '500':
+ *              description: Server error
+ *
+ */
 exports.create_new_user = (req, res, next) => {
     // functionality for creating a new user.
-    // create and return successful response or send an error
+    let firstName = req.body.firstName;
+    let lastName = req.body.lastName;
+    let email = req.body.email;
+    let password = req.body.password;
+
+    if (!isValidEmail(email)) {
+        return res.status(409).json({
+            message: "invalid email",
+        });
+    }
+
+    if (!isValidPassword(password)) {
+        return res.status(409).json({
+            message: "invalid password",
+        });
+    }
+
+    // encrypt password and
+    User.find({ email: email })
+        .exec()
+        .then((result) => {
+            if (result.length >= 1) {
+                return res.status(409).json({
+                    message: "username exists",
+                });
+            } else {
+                let hashedPassword = encryptPassword(password);
+                const newUser = new User({
+                    _id: new mongoose.Types.ObjectId(),
+                    firstname: firstName,
+                    lastname: lastName,
+                    email: email,
+                    password: hashedPassword,
+                });
+
+                newUser
+                    .save()
+                    .then((result) => {
+                        console.log(result);
+                        res.status(201).json({
+                            message: "user created",
+                        });
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        res.status(409).json({
+                            message: "user unable to be created",
+                        });
+                    });
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({
+                message: "server error",
+            });
+        });
+
+    // First name
+    // Last Name
+    // Email
+    // Password
+
+    // note: email is username.
 };
 
 exports.get_one_user = (req, res, next) => {
