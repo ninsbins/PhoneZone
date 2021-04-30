@@ -10,6 +10,8 @@ router.get("/", function (req, res, next) {
 
 router.get("/soldoutsoon", PhonesController.sold_out_soon);
 
+router.get("/search/", PhonesController.search);
+
 /**
  * GET top rated phones (top 5)
  */

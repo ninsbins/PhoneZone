@@ -18,6 +18,23 @@ exports.sold_out_soon = (req, res, next) => {
         });
 };
 
+exports.search = (req, res, next) => {
+    let search_term = req.query.search_term;
+    console.log(search_term);
+
+    Phone.find({title : {$regex : search_term, $options: 'i'}})
+        .limit(20)
+        .exec()
+        .then((result) => {
+            console.log(result);
+            res.status(200).json(result);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json({ error: err });
+        });
+}
+
 exports.best_sellers = (req, res, next) => {
     // get 5 phones with highest average rating
     // reviews.count >= 2
