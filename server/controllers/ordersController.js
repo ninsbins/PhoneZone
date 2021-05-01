@@ -85,6 +85,8 @@ const isValidQuantity = (num) => {
     }
     return true;
 };
+******************************/
+
 const isValidUser = async (id) => {
     return new Promise(async (resolve, reject) => {
         await User.exists({ _id: id }, (err, result) => {
@@ -96,7 +98,6 @@ const isValidUser = async (id) => {
         });
     });
 };
-******************************/
 
 const isOrderValid = (userId, items) => {
     return new Promise(async (resolve, reject) => {
