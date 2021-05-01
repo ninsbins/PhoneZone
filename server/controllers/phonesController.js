@@ -19,6 +19,8 @@ exports.sold_out_soon = (req, res, next) => {
 };
 
 exports.search = (req, res, next) => {
+    // Get 20 phones that match search term
+
     let search_term = req.query.search_term;
     console.log(search_term);
 
@@ -96,4 +98,33 @@ exports.disable_listing = (req, res, next) => {
                 message: "unable to disable phone listing",
             });
         });
+};
+
+exports.is_valid_order = async (phoneId, quantity) => {
+
+    let valid_id = true;
+    let valid_quantity = (quantity > 0);
+    
+    // get stock of phone, and check that it's enough
+    await Phone.findById(phoneId).then((result) => {
+        valid_quantity = valid_quantity && (result.stock >= quantity);
+    }).catch((err) => {
+        console.log("Error getting quantity");
+        valid_id = false;
+    });
+    return valid_id && valid_quantity;
+};
+
+exports.update_quantity = (phoneId, quantity) => {
+    // reduce stock of phone by quantity
+
+    Phone.findByIdAndUpdate(phoneId, {
+        $inc: { stock : -quantity },
+    })
+    .then((result) => {
+        console.log("updated stock of ${phoneId}");
+    })
+    .catch((err) => {
+        throw "unable to update quantity of phone";
+    });
 };
