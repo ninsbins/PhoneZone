@@ -29,6 +29,11 @@ exports.get_one_user = (req, res, next) => {
         });
 };
 
+exports.update_user = (req, res, next) => {
+    //update an existing user entry
+    
+}
+
 exports.login_user = (req, res, next) => {
     // functionality for checking login details and signing in user.
     // authentication and auth middleware, then

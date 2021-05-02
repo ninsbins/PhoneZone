@@ -25,6 +25,7 @@ const phoneSchema = new mongoose.Schema({
     brand: {
         type: String,
         required: true,
+        enum: ['Samsung', 'Apple', 'HTC', 'Huawei', 'Nokia', 'LG', 'Motorola', 'Sony', 'BlackBerry'],
     },
     image: {
         type: String,
