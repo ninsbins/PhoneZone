@@ -40,7 +40,7 @@ exports.create_new_listing = async (req, res, next) => {
 };
 
 exports.get = (req, res, next) => {
-    id = req.body.id;
+    const id = req.body.id;
 
     Phone.findById(id).then((result) => {
         console.log(result);

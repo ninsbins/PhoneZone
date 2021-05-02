@@ -9,7 +9,9 @@ router.get("/", function (req, res, next) {
     // get all users (not that we'd want to do that...)
 });
 
+router.get("/get", UsersController.get);
 router.get("/:userId", UsersController.get_one_user);
+router.post("update", UsersController.update_user);
 
 /**
  * /users/signup:

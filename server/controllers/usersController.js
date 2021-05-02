@@ -122,6 +122,23 @@ exports.create_new_user = (req, res, next) => {
     // note: email is username.
 };
 
+exports.get = (req, res, next) => {
+    const id = req.body.id;
+
+    User.findById(id).then().then((result) => {
+        console.log(result);
+        return res.status(200).json({
+            message: "user returned",
+            user: result
+        })
+    }).catch((err) => {
+        return res.status(400).json({
+            message: "unable to get user with this id",
+            error: err.message
+        });
+    })
+};
+
 exports.get_one_user = (req, res, next) => {
     // functionality for getting the details of one user.
     // let userId = req.params.userId;
@@ -147,7 +164,28 @@ exports.get_one_user = (req, res, next) => {
 
 exports.update_user = (req, res, next) => {
     //update an existing user entry
-    
+
+    const id = req.body.id;
+
+    User.updateOne({ _id: id }, {
+        firstname: {$set: req.body.firstname},
+        lastname: {$set: req.body.lastname},
+        email: {$set: req.body.email},
+        //update password?
+    }).then((result) => {
+        console.log(result);
+        res.status(200).json({
+            message: "user was updated",
+            user: result
+        });
+    }).catch((err) => {
+        console.log(err);
+        res.status(500).json({
+            message: "user could not be updated",
+            error: err.message
+        });
+    });
+
 }
 
 exports.login_user = (req, res, next) => {
