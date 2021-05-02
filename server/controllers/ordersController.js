@@ -3,6 +3,7 @@ const phoneController = require("./phonesController");
 const Order = require("../models/order");
 const { translateAliases } = require("../models/user");
 const User = require("../models/user");
+const { removeListener } = require("../app");
 
 // example json body
 // {
@@ -40,7 +41,10 @@ exports.create_new_order = async (req, res, next) => {
                     // search all phones for matching ids, if matching deduct the quantities
                     items.forEach((item) => {
                         // find phone, deduct quantity
-                        phoneController.update_quantity(item.phoneListing, item.quantity)
+                        phoneController.update_quantity(
+                            item.phoneListing,
+                            item.quantity
+                        );
                     });
                 })
                 .catch((err) => {
@@ -103,17 +107,15 @@ const isOrderValid = (userId, items) => {
     return new Promise(async (resolve, reject) => {
         isValidUser(userId)
             .then((result) => {
-                let validItems = true;
-                items.forEach((item) => {
-                    validItems = validItems && 
-                        phoneController.is_valid_order(item.phoneListing, item.quantity);
-                });
-
-                if (validItems) {
-                    resolve("valid order");
-                } else {
-                    reject("not valid order");
-                }
+                phoneController
+                    .has_valid_items(items)
+                    .then((result) => {
+                        resolve("valid order");
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        reject("not a valid order");
+                    });
             })
             .catch((err) => {
                 //
