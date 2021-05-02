@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+const phoneController = require("./phonesController");
 const Order = require("../models/order");
-const Phone = require("../models/phone");
 const { translateAliases } = require("../models/user");
 const User = require("../models/user");
+const { removeListener } = require("../app");
 
 // example json body
 // {
@@ -40,20 +41,10 @@ exports.create_new_order = async (req, res, next) => {
                     // search all phones for matching ids, if matching deduct the quantities
                     items.forEach((item) => {
                         // find phone, deduct quantity
-                        let num = -item.quantity;
-                        Phone.findByIdAndUpdate(item.phoneListing, {
-                            $inc: { stock: num },
-                        })
-                            .then((result) => {
-                                console.log(
-                                    `updated stock of ${result._id}\ntitle: ${result.title}\nbrand: ${result.brand}`
-                                );
-                            })
-                            .catch((err) => {
-                                console.log(
-                                    "unable to update quantity of phone"
-                                );
-                            });
+                        phoneController.update_quantity(
+                            item.phoneListing,
+                            item.quantity
+                        );
                     });
                 })
                 .catch((err) => {
@@ -76,6 +67,7 @@ exports.create_new_order = async (req, res, next) => {
 };
 
 // HELPER FUNCTIONS
+/***********************************
 const isValidPhoneListing = async (id) => {
     let valid;
 
@@ -97,6 +89,7 @@ const isValidQuantity = (num) => {
     }
     return true;
 };
+******************************/
 
 const isValidUser = async (id) => {
     return new Promise(async (resolve, reject) => {
@@ -114,21 +107,15 @@ const isOrderValid = (userId, items) => {
     return new Promise(async (resolve, reject) => {
         isValidUser(userId)
             .then((result) => {
-                let validItems;
-                items.forEach((item) => {
-                    // phone
-                    validItems = isValidPhoneListing(item.phoneListing)
-                        ? true
-                        : false;
-                    // quantity
-                    validItems = isValidQuantity(item.quantity) ? true : false;
-                });
-
-                if (validItems) {
-                    resolve("valid order");
-                } else {
-                    reject("not valid order");
-                }
+                phoneController
+                    .has_valid_items(items)
+                    .then((result) => {
+                        resolve("valid order");
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        reject("not a valid order");
+                    });
             })
             .catch((err) => {
                 //
