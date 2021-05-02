@@ -9,76 +9,52 @@ exports.create_new_listing = async (req, res, next) => {
 
     //need to check if seller is valid?
 
-    try {
-        const phone = new Phone(req.body);
-            // {       
-            // _id = new mongoose.Types.ObjectId(),
-            // title: req.body.title,
-            // brand: req.body.brand,
-            // image: req.body.image,
-            // stock: req.body.stock,
-            // seller: req.body.seller,
-            // price: req.body.price,
-            // reviews: req.body.reviews,
-            // disabled: req.body.disabled,
-        // });
+    const phone = new Phone({
+        title: req.body.title,
+        brand: req.body.brand,
+        image: req.body.image,
+        stock: req.body.stock,
+        seller: req.body.seller,
+        price: req.body.price,
+        reviews: req.body.reviews,
+        disabled: req.body.disabled,
+    });
 
-        console.log(phone._id);
+    console.log(phone._id);
 
-        phone.save().then((result) => {
-            res.status(201).json({
-                message: "phone listing created",
-            })
-        }).catch((err) => {
-            if (!res.headerSent) {
-                res.status(500).json({
-                    message: "unable to create phone listing",
-                    error: err.message,
-                });
-            }
-        });
+    phone.save().then((result) => {
+        console.log(result);
 
-    } catch (err) {
-        res.status(500).json({
-            message: "unable to create phone listing",
-            error: err.message,
-        });
-    }
-
-    // // isListingValid().then((result) => {
-    // const phone = new Phone({
-
-    // });
-
-
-
-    //     }).catch((err) => {
-    //             if (!res.headerSent) {
-
-    //             }
-    //         });
-    // })
-    // .catch((error) => {
-    //     console.log("validation error");
-    //     console.log(error);
-    //     res.status(500).json({
-    //         message: "invalid phone listing",
-    //     });
-    // });
+        res.status(201).json({
+            message: "phone listing created",
+        })
+    }).catch((err) => {
+        if (!res.headerSent) {
+            res.status(500).json({
+                message: "unable to create phone listing",
+                error: err.message,
+            });
+        }
+    });
 
 };
 
 exports.get = (req, res, next) => {
-    try {
-        Phone.findOne(req.body);
+    id = req.body.id;
+
+    Phone.findById(id).then((result) => {
         console.log(result);
-    } catch (err) {
+        res.status(200).json({
+            message: "phone listing returned",
+            phone: result,
+        });
+    }).catch((err) => {
         res.status(500).json({
             message: "unable to get phone listing",
             error: err.message,
         });
-    }
-    
+    });
+
 };
 
 exports.sold_out_soon = (req, res, next) => {
