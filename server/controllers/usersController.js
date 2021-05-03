@@ -145,12 +145,7 @@ exports.update_user = (req, res, next) => {
     const id = req.params.userId;
 
     var user = {
-        $set: {
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            email: req.body.email,
-            // password?
-        }
+        $set: req.body
     };
 
     User.updateOne({ _id: id }, user).then((result) => {
