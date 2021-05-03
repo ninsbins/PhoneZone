@@ -3,13 +3,12 @@ var router = express.Router();
 const mongoose = require("mongoose");
 const PhonesController = require("../controllers/phonesController");
 
-/* GET phone listing. */
-router.get("/", function (req, res, next) {
-    res.send("respond with a resource");
-});
+/* GET phone listing from id */
+router.get("/:id", PhonesController.get_phone_from_id);
 
+/* POST new phone listing */
 router.post("/createlisting", PhonesController.create_new_listing);
-router.get("/get", PhonesController.get);
+
 router.get("/soldoutsoon", PhonesController.sold_out_soon);
 
 router.get("/search/", PhonesController.search);

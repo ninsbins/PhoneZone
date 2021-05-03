@@ -122,8 +122,8 @@ exports.create_new_user = (req, res, next) => {
     // note: email is username.
 };
 
-exports.get = (req, res, next) => {
-    const id = req.body.id;
+exports.get_user_from_id = (req, res, next) => {
+    const id = req.params.userId;
 
     User.findById(id).then().then((result) => {
         console.log(result);
@@ -139,40 +139,21 @@ exports.get = (req, res, next) => {
     })
 };
 
-exports.get_one_user = (req, res, next) => {
-    // functionality for getting the details of one user.
-    // let userId = req.params.userId;
-
-    User.findOne({ firstname: "Anita", lastname: "Simpson" })
-        .exec()
-        .then((result) => {
-            console.log(result);
-            res.status(200).json({
-                message: "user returned",
-                user: {
-                    firstname: result.firstname,
-                    lastname: result.lastname,
-                    email: result.email,
-                },
-            });
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json({ error: err });
-        });
-};
-
 exports.update_user = (req, res, next) => {
     //update an existing user entry
 
-    const id = req.body.id;
+    const id = req.params.userId;
 
-    User.updateOne({ _id: id }, {
-        firstname: {$set: req.body.firstname},
-        lastname: {$set: req.body.lastname},
-        email: {$set: req.body.email},
-        //update password?
-    }).then((result) => {
+    var user = {
+        $set: {
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            email: req.body.email,
+            // password?
+        }
+    };
+
+    User.updateOne({ _id: id }, user).then((result) => {
         console.log(result);
         res.status(200).json({
             message: "user was updated",

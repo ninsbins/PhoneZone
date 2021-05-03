@@ -39,8 +39,10 @@ exports.create_new_listing = async (req, res, next) => {
 
 };
 
-exports.get = (req, res, next) => {
-    const id = req.body.id;
+exports.get_phone_from_id = (req, res, next) => {
+    const id = req.params.id;
+
+    console.log(id);
 
     Phone.findById(id).then((result) => {
         console.log(result);
