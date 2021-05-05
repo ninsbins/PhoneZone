@@ -2,10 +2,11 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const Phone = require("../models/phone");
 const crypto = require("crypto");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 // Secret token
-const accessTokenSecret = "9283jf9oewjfjsdiufhew293fwjehelpimtrappedinasecretfactoryaoweijfwuhew";
+const accessTokenSecret =
+    "9283jf9oewjfjsdiufhew293fwjehelpimtrappedinasecretfactoryaoweijfwuhew";
 
 const encryptPassword = (string) => {
     return crypto.createHash("md5").update(string).digest("hex");
@@ -99,9 +100,23 @@ exports.create_new_user = (req, res, next) => {
                 newUser
                     .save()
                     .then((result) => {
+                        let payload = {
+                            userId: newUser._id,
+                            username: newUser.email,
+                        };
+                        const accessToken = jwt.sign(
+                            payload,
+                            accessTokenSecret,
+                            {
+                                expiresIn: "30m",
+                            }
+                        );
+
                         console.log(result);
                         res.status(201).json({
                             message: "user created",
+                            token: accessToken,
+                            userId: newUser._id,
                         });
                     })
                     .catch((err) => {
@@ -130,18 +145,21 @@ exports.create_new_user = (req, res, next) => {
 exports.get_user_from_id = (req, res, next) => {
     const id = req.params.userId;
 
-    User.findById(id).then().then((result) => {
-        console.log(result);
-        return res.status(200).json({
-            message: "user returned",
-            user: result
+    User.findById(id)
+        .then()
+        .then((result) => {
+            console.log(result);
+            return res.status(200).json({
+                message: "user returned",
+                user: result,
+            });
         })
-    }).catch((err) => {
-        return res.status(400).json({
-            message: "unable to get user with this id",
-            error: err.message
+        .catch((err) => {
+            return res.status(400).json({
+                message: "unable to get user with this id",
+                error: err.message,
+            });
         });
-    })
 };
 
 exports.update_user = (req, res, next) => {
@@ -151,25 +169,26 @@ exports.update_user = (req, res, next) => {
     const id = req.user.userId;
 
     var user = {
-        $set: req.body
+        $set: req.body,
     };
 
-    User.updateOne({ _id: id }, user).then((result) => {
-        console.log(result);
-        res.status(200).json({
-            message: "user was updated",
-            operation: user,
-            // result: result,
+    User.updateOne({ _id: id }, user)
+        .then((result) => {
+            console.log(result);
+            res.status(200).json({
+                message: "user was updated",
+                operation: user,
+                // result: result,
+            });
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+                message: "user could not be updated",
+                error: err.message,
+            });
         });
-    }).catch((err) => {
-        console.log(err);
-        res.status(500).json({
-            message: "user could not be updated",
-            error: err.message
-        });
-    });
-
-}
+};
 
 /**
  * /users/login:
@@ -202,32 +221,35 @@ exports.login_user = (req, res, next) => {
     let username = req.body.username;
     let password = req.body.password;
 
-    User.find({ email: username }).exec()
+    User.find({ email: username })
+        .exec()
         .then((result) => {
             // get password hash, and compare
-            if(result.length == 0){
+            if (result.length == 0) {
                 res.status(401).json({
                     error: "Invalid username",
                 });
-            } else if(result[0].password == encryptPassword(password)){
+            } else if (result[0].password == encryptPassword(password)) {
                 // if same, return jwt
-                let payload = { userId: result[0]._id, username: username }
-                const accessToken = jwt.sign(payload, accessTokenSecret, {expiresIn: '30m'});
+                let payload = { userId: result[0]._id, username: username };
+                const accessToken = jwt.sign(payload, accessTokenSecret, {
+                    expiresIn: "30m",
+                });
                 res.status(200).json({
                     token: accessToken,
-                    userId: result[0]._id
+                    userId: result[0]._id,
                 });
             } else {
                 res.status(401).json({
-                    error: "Invalid password"
+                    error: "Invalid password",
                 });
             }
-        }).catch((err) => {
+        })
+        .catch((err) => {
             console.log(err);
             res.status(500).json({ error: err });
         });
 };
-
 
 /**
  * /users/change_password:
@@ -256,38 +278,45 @@ exports.change_password = (req, res, next) => {
     let id = req.user.userId;
     console.log("changing password of: ", id);
 
-    User.findById(id).exec().then((result) => {
-        console.log(result);
-        if(result.password == encryptPassword(oldpassword)){
-            let change = {$set: {password : encryptPassword(newpassword)}}
-            //update password
-            User.updateOne({ _id: id }, change).then((result) => {
-                console.log(result);
-                res.status(200).json({
-                    message: "password was updated",
-                    operation: change,
+    User.findById(id)
+        .exec()
+        .then((result) => {
+            console.log(result);
+            if (result.password == encryptPassword(oldpassword)) {
+                let change = {
+                    $set: { password: encryptPassword(newpassword) },
+                };
+                //update password
+                User.updateOne({ _id: id }, change)
+                    .then((result) => {
+                        console.log(result);
+                        res.status(200).json({
+                            message: "password was updated",
+                            operation: change,
+                        });
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        res.status(500).json({
+                            message:
+                                "server error: password may or may not have updated",
+                            error: err.message,
+                        });
+                    });
+            } else {
+                res.status(401).json({
+                    error: "Invalid password",
                 });
-            }).catch((err) => {
-                console.log(err);
-                res.status(500).json({
-                    message: "server error: password may or may not have updated",
-                    error: err.message
-                });
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+                message: "server error",
+                error: err.message,
             });
-        } else {
-            res.status(401).json({
-                error: "Invalid password"
-            });
-        }
-    }).catch((err) => {
-        console.log(err);
-        res.status(500).json({
-            message: "server error",
-            error: err.message
         });
-    });
 };
-        
 
 /**
  * /users/get_phones_sold_by/<uid>
@@ -297,36 +326,35 @@ exports.change_password = (req, res, next) => {
 exports.get_phones_sold_by = (req, res, next) => {
     // list all phones sold by this user
     const id = req.params.userId;
-    Phone.find({seller: id})
+    Phone.find({ seller: id })
         .exec()
-    .then((result) => {
-        res.status(200).json(result);
-    })
-    .catch((err) => {
-        console.log(err);
-        res.status(500).json({ error: err });
-    });
+        .then((result) => {
+            res.status(200).json(result);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json({ error: err });
+        });
 };
-
 
 /*********************
  * Middleware to be used on routes that should only be accessed by logged in user
  * e.g.
  * router.get("/asdf", UsersController.authenticate, <someController>.<actualfunction);
  *
- * This function adds a value called user to the request. 
- * After authentication, in the controller function, the userId and username can 
+ * This function adds a value called user to the request.
+ * After authentication, in the controller function, the userId and username can
  * be accessed using req.user.userId and req.user.username.
  */
 exports.authenticate = (req, res, next) => {
     // Authorization header must be: Bearer [JWT_TOKEN]
-    
-    if(req.headers.authorization){
-        // Get 2nd section of authorization header, containing token
-        let token = req.headers.authorization.split(' ')[1];
 
-        jwt.verify(token, accessTokenSecret, (err,user) => {
-            if(err) {
+    if (req.headers.authorization) {
+        // Get 2nd section of authorization header, containing token
+        let token = req.headers.authorization.split(" ")[1];
+
+        jwt.verify(token, accessTokenSecret, (err, user) => {
+            if (err) {
                 return res.status(401).send("Error verifying token");
             }
 
@@ -339,4 +367,3 @@ exports.authenticate = (req, res, next) => {
         return res.status(401).send("No authorization header");
     }
 };
-
