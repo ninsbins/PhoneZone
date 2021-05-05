@@ -171,6 +171,31 @@ exports.update_user = (req, res, next) => {
 
 }
 
+/**
+ * /users/login:
+ * post:
+ *      description: use to login
+ *      parameters:
+ *          - name: username
+ *            description: username/email for the user
+ *            required: true
+ *            type: string
+ *          - name: password
+ *            description: password for the user
+ *            required: true
+ *            type: string
+ *      responses:
+ *          '200':
+ *              description: User successfully logged in
+ *              json returned:
+ *                  token: <jwt_authentication_token>,
+ *                  userId: <userId>
+ *          '401':
+ *              description: User unable to be logged in
+ *          '500':
+ *              description: Server error
+ *
+ */
 exports.login_user = (req, res, next) => {
     // functionality for checking login details and signing in user.
     // authentication and auth middleware, then
@@ -203,6 +228,72 @@ exports.login_user = (req, res, next) => {
         });
 };
 
+
+/**
+ * /users/change_password:
+ * post:
+ *      description: use to change password
+ *      parameters:
+ *          - name: oldpassword
+ *            required: true
+ *            type: string
+ *          - name: newpassword
+ *            required: true
+ *            type: string
+ *      responses:
+ *          '200':
+ *              description: User successfully changed password
+ *          '401':
+ *              description: Invalid password
+ *          '500':
+ *              description: Server error
+ *
+ */
+exports.change_password = (req, res, next) => {
+    let oldpassword = req.body.oldpassword;
+    let newpassword = req.body.newpassword;
+
+    let id = req.user.userId;
+    console.log("changing password of: ", id);
+
+    User.findById(id).exec().then((result) => {
+        console.log(result);
+        if(result.password == encryptPassword(oldpassword)){
+            let change = {$set: {password : encryptPassword(newpassword)}}
+            //update password
+            User.updateOne({ _id: id }, change).then((result) => {
+                console.log(result);
+                res.status(200).json({
+                    message: "password was updated",
+                    operation: change,
+                });
+            }).catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                    message: "server error: password may or may not have updated",
+                    error: err.message
+                });
+            });
+        } else {
+            res.status(401).json({
+                error: "Invalid password"
+            });
+        }
+    }).catch((err) => {
+        console.log(err);
+        res.status(500).json({
+            message: "server error",
+            error: err.message
+        });
+    });
+};
+        
+
+/**
+ * /users/get_phones_sold_by/<uid>
+ * GET
+ *      description: returns a json list of all phones sold by user
+ */
 exports.get_phones_sold_by = (req, res, next) => {
     // list all phones sold by this user
     const id = req.params.userId;
@@ -217,6 +308,16 @@ exports.get_phones_sold_by = (req, res, next) => {
     });
 };
 
+
+/*********************
+ * Middleware to be used on routes that should only be accessed by logged in user
+ * e.g.
+ * router.get("/asdf", UsersController.authenticate, <someController>.<actualfunction);
+ *
+ * This function adds a value called user to the request. 
+ * After authentication, in the controller function, the userId and username can 
+ * be accessed using req.user.userId and req.user.username.
+ */
 exports.authenticate = (req, res, next) => {
     // Authorization header must be: Bearer [JWT_TOKEN]
     
@@ -230,6 +331,7 @@ exports.authenticate = (req, res, next) => {
             }
 
             req.user = user; // contains userId and username
+            console.log(req.user);
             console.log("verified authorization of", user);
             next();
         });
