@@ -4,56 +4,76 @@ import { useHistory, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { useAuth } from "../services/useAuth";
 import AuthButton from "../components/AuthButton";
-import "../styles/Login.scss";
+import "../styles/Signup.scss";
 import { Row, Container, Button, Col, Form } from "react-bootstrap";
 
-const LoginPage = () => {
+const SignUpPage = () => {
     let history = useHistory();
     let location = useLocation();
     let auth = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
 
     let { from } = location.state || { from: { pathname: "/" } };
 
-    let login = () => {
+    let signup = () => {
         console.log(`email: ${email} password: ${password}`);
-        // auth.signin((email, password) => {
-        //     history.replace(from);
-        // });
-        // auth.signin((email, password) => {
-        //     history.replace(from);
-        // }).then(() => {
-        //     history.replace(from);
-        // });
 
-        auth.signin(email, password, () => {
+        auth.signup(firstName, lastName, email, password, () => {
             history.replace(from);
         });
     };
 
     return (
-        <Container fluid className="Login">
+        <Container fluid className="signup">
             <Row>
-                <Col lg={4} className="Login banner">
+                <Col lg={4} className="signup banner">
                     <h2>
-                        <Link to="/" className="Login banner__title">
+                        <Link to="/" className="signup banner__title">
                             PhoneZone
                         </Link>
                     </h2>
                 </Col>
 
-                <Col className="Login form">
-                    <h2>Sign in to PhoneZone</h2>
+                <Col className="signup form">
+                    <h2>Sign up to PhoneZone</h2>
                     <p>
-                        Not a member? <Link to="/signup">Sign up now</Link>
+                        Already a member? <Link to="/login">Sign in now</Link>
                     </p>
                     <Form>
                         <Form.Group as={Row}>
-                            <Col sm={{ span: 5 }}>
-                                <Form.Label className="Login form__label">
-                                    Username
+                            <Col sm={{ span: 3 }}>
+                                <Form.Label className="signup form__label">
+                                    First Name
+                                </Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="First name"
+                                    onChange={(e) =>
+                                        setFirstName(e.target.value)
+                                    }
+                                />
+                            </Col>
+                            <Col sm={{ span: 3 }}>
+                                <Form.Label className="signup form__label">
+                                    Last Name
+                                </Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Last name"
+                                    onChange={(e) =>
+                                        setLastName(e.target.value)
+                                    }
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row}>
+                            <Col sm={{ span: 6 }}>
+                                <Form.Label className="signup form__label">
+                                    Email
                                 </Form.Label>
                                 <Form.Control
                                     type="email"
@@ -61,14 +81,13 @@ const LoginPage = () => {
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                                 <Form.Text className="text-muted">
-                                    Your username is your email address that you
-                                    signed up with.
+                                    Your username will be this email address.
                                 </Form.Text>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
-                            <Col sm={{ span: 5 }}>
-                                <Form.Label className="Login form__label">
+                            <Col sm={{ span: 6 }}>
+                                <Form.Label className="signup form__label">
                                     Password
                                 </Form.Label>
                                 <Form.Control
@@ -81,7 +100,7 @@ const LoginPage = () => {
                             </Col>
                         </Form.Group>
 
-                        <Button onClick={login}>Submit</Button>
+                        <Button onClick={signup}>Submit</Button>
                     </Form>
                 </Col>
             </Row>
@@ -99,4 +118,4 @@ const LoginPage = () => {
     );
 };
 
-export default LoginPage;
+export default SignUpPage;

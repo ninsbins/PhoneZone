@@ -4,8 +4,10 @@ import UserProfilePage from "./pages/UserProfilePage";
 import MainPage from "./pages/MainPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import LoginPage from "./pages/LoginPage";
+import SignUpPage from "./pages/SignUpPage";
 import PrivateRoute from "./components/PrivateRoute";
-import ProvideAuth from "./services/ProvideAuth";
+import { ProvideAuth } from "./services/useAuth";
+import "bootstrap/dist/css/bootstrap.css";
 
 function App() {
     return (
@@ -23,6 +25,9 @@ function App() {
                     {/* Public */}
                     <Route path="/login">
                         <LoginPage />
+                    </Route>
+                    <Route path="/signup">
+                        <SignUpPage />
                     </Route>
                     <Route path="/">
                         <MainPage />

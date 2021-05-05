@@ -1,0 +1,25 @@
+.Login {
+    &.banner {
+        background-color: black;
+        height: 100vh;
+
+        padding-top: 3em;
+
+        &__title {
+            color: white;
+        }
+    }
+
+    &.form {
+        padding-top: 30vh;
+        padding-left: 10em;
+
+        h2 {
+            font-weight: bold;
+        }
+
+        &__label {
+            font-weight: bold;
+        }
+    }
+}
