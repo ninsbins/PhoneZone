@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { useAuth } from "../services/useAuth";
-import AuthButton from "../components/AuthButton";
+// import AuthButton from "../components/AuthButton";
 import "../styles/Login.scss";
 import { Row, Container, Button, Col, Form } from "react-bootstrap";
 
@@ -19,14 +19,6 @@ const LoginPage = () => {
 
     let login = () => {
         console.log(`email: ${email} password: ${password}`);
-        // auth.signin((email, password) => {
-        //     history.replace(from);
-        // });
-        // auth.signin((email, password) => {
-        //     history.replace(from);
-        // }).then(() => {
-        //     history.replace(from);
-        // });
 
         auth.signin(email, password, () => {
             history.replace(from);

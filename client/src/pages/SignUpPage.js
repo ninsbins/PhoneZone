@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { useAuth } from "../services/useAuth";
-import AuthButton from "../components/AuthButton";
+// import AuthButton from "../components/AuthButton";
 import "../styles/Signup.scss";
 import { Row, Container, Button, Col, Form } from "react-bootstrap";
 

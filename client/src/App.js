@@ -1,10 +1,12 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import UserProfilePage from "./pages/UserProfilePage";
-import MainPage from "./pages/MainPage";
-import CheckoutPage from "./pages/CheckoutPage";
-import LoginPage from "./pages/LoginPage";
-import SignUpPage from "./pages/SignUpPage";
+import {
+    UserProfilePage,
+    MainPage,
+    CheckoutPage,
+    LoginPage,
+    SignUpPage,
+} from "./pages/index";
 import PrivateRoute from "./components/PrivateRoute";
 import { ProvideAuth } from "./services/useAuth";
 import "bootstrap/dist/css/bootstrap.css";
