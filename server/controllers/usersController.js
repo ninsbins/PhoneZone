@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 const User = require("../models/user");
+const Phone = require("../models/phone");
 const crypto = require("crypto");
+const jwt = require('jsonwebtoken');
+
+// Secret token
+const accessTokenSecret = "9283jf9oewjfjsdiufhew293fwjehelpimtrappedinasecretfactoryaoweijfwuhew";
 
 const encryptPassword = (string) => {
     return crypto.createHash("md5").update(string).digest("hex");
@@ -142,7 +147,8 @@ exports.get_user_from_id = (req, res, next) => {
 exports.update_user = (req, res, next) => {
     //update an existing user entry
 
-    const id = req.params.userId;
+    // Get authenticated userId, passed through from authenticate middleware
+    const id = req.user.userId;
 
     var user = {
         $set: req.body
@@ -152,7 +158,8 @@ exports.update_user = (req, res, next) => {
         console.log(result);
         res.status(200).json({
             message: "user was updated",
-            user: result
+            operation: user,
+            // result: result,
         });
     }).catch((err) => {
         console.log(err);
@@ -167,5 +174,67 @@ exports.update_user = (req, res, next) => {
 exports.login_user = (req, res, next) => {
     // functionality for checking login details and signing in user.
     // authentication and auth middleware, then
-    //
+    let username = req.body.username;
+    let password = req.body.password;
+
+    User.find({ email: username }).exec()
+        .then((result) => {
+            // get password hash, and compare
+            if(result.length == 0){
+                res.status(401).json({
+                    error: "Invalid username",
+                });
+            } else if(result[0].password == encryptPassword(password)){
+                // if same, return jwt
+                let payload = { userId: result[0]._id, username: username }
+                const accessToken = jwt.sign(payload, accessTokenSecret, {expiresIn: '30m'});
+                res.status(200).json({
+                    token: accessToken,
+                    userId: result[0]._id
+                });
+            } else {
+                res.status(401).json({
+                    error: "Invalid password"
+                });
+            }
+        }).catch((err) => {
+            console.log(err);
+            res.status(500).json({ error: err });
+        });
 };
+
+exports.get_phones_sold_by = (req, res, next) => {
+    // list all phones sold by this user
+    const id = req.params.userId;
+    Phone.find({seller: id})
+        .exec()
+    .then((result) => {
+        res.status(200).json(result);
+    })
+    .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: err });
+    });
+};
+
+exports.authenticate = (req, res, next) => {
+    // Authorization header must be: Bearer [JWT_TOKEN]
+    
+    if(req.headers.authorization){
+        // Get 2nd section of authorization header, containing token
+        let token = req.headers.authorization.split(' ')[1];
+
+        jwt.verify(token, accessTokenSecret, (err,user) => {
+            if(err) {
+                return res.status(401).send("Error verifying token");
+            }
+
+            req.user = user; // contains userId and username
+            console.log("verified authorization of", user);
+            next();
+        });
+    } else {
+        return res.status(401).send("No authorization header");
+    }
+};
+

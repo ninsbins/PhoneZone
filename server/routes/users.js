@@ -10,7 +10,9 @@ router.get("/", function (req, res, next) {
 });
 
 router.get("/:userId", UsersController.get_user_from_id);
-router.put("/:userId", UsersController.update_user);
+router.put("/update", UsersController.authenticate, UsersController.update_user);
+
+router.get("/get_phones_sold_by/:userId", UsersController.get_phones_sold_by);
 
 /**
  * /users/signup:
