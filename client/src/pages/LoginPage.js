@@ -78,16 +78,6 @@ const LoginPage = () => {
                 </Col>
             </Row>
         </Container>
-
-        // <div>
-        //     <p>Welcome to the Log in page</p>
-        //     <p>
-        //         You need to log in first to view the page at {from.pathname} or
-        //         do whatever you were trying to do.
-        //     </p>
-        //     <button onClick={login}> Log in</button>
-        //     <AuthButton />
-        // </div>
     );
 };
 

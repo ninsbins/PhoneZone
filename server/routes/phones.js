@@ -3,9 +3,6 @@ var router = express.Router();
 const mongoose = require("mongoose");
 const PhonesController = require("../controllers/phonesController");
 
-/* GET phone listing from id */
-router.get("/:id", PhonesController.get_phone_from_id);
-
 /* POST new phone listing */
 router.post("/createlisting", PhonesController.create_new_listing);
 
@@ -49,5 +46,8 @@ router.put("/disable", PhonesController.disable_listing);
  *
  */
 router.put("/enable", PhonesController.enable_listing);
+
+/* GET phone listing from id */
+router.get("/:id", PhonesController.get_phone_from_id);
 
 module.exports = router;
