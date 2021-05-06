@@ -9,6 +9,7 @@ const MainPageSection = (props) => {
     let soldOutSoon = props.soldOutSoon || [];
     let bestSellers = props.bestSellers || [];
     const [selectedPhone, setSelectedPhone] = useState(null);
+    let searchResults = props.searchResults || [];
 
     const selectPhone = (phone) => {
         props.setPageState(MainPageStatus.ITEM);
@@ -64,9 +65,15 @@ const MainPageSection = (props) => {
         return (
             <Container fluid>
                 <h2>Search Result </h2>
-                <button onClick={() => props.setPageState(MainPageStatus.ITEM)}>
-                    Item view
-                </button>
+                {searchResults != null
+                    ? searchResults.map((phone) => {
+                          return (
+                              <div onClick={() => selectPhone(phone)}>
+                                  <PhoneCard phone={phone} />
+                              </div>
+                          );
+                      })
+                    : null}
             </Container>
         );
     }

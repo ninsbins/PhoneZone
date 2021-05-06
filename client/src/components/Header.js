@@ -11,10 +11,17 @@ const Header = (props) => {
     let [searchTerm, setSearchTerm] = useState("");
     let inSearchState = props.searchState || false;
 
+    // just a helper whilst working in dev, get rid of this later
+    function refreshPage() {
+        window.location.reload(false);
+    }
+
     return (
         <Container fluid className="header">
             <Row>
-                <Col sm={2}>PhoneZone</Col>
+                <Col sm={2} onClick={refreshPage}>
+                    PhoneZone
+                </Col>
                 <Col sm={6}>
                     <input
                         type="text"

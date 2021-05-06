@@ -10,14 +10,27 @@ const MainPage = () => {
     const [soldOutSoon, setSoldOutSoon] = useState(null);
     const [bestSellers, setBestSellers] = useState(null);
     const [pageState, setPageState] = useState(MainPageStatus.LOADING);
+    const [searchResults, setSearchResults] = useState(null);
 
     // This search function is passed to the header, it will use this function.
-    const search = (term) => {
+    const search = async (term) => {
         // do search
         console.log(`searching for ${term}`);
         // send search term to backend and get results
-        setPageState(MainPageStatus.SEARCH);
-        setSearchState(true);
+
+        setPageState(MainPageStatus.LOADING);
+        await axios
+            .get(`http://localhost:9000/phones/search?search_term=${term}`)
+            .then((result) => {
+                console.log(result);
+                setSearchResults(result.data);
+                setPageState(MainPageStatus.SEARCH);
+                setSearchState(true);
+            })
+            .catch((err) => {
+                console.log(err);
+                setPageState(MainPageStatus.ERROR);
+            });
     };
 
     useEffect(() => {
@@ -59,6 +72,7 @@ const MainPage = () => {
                 setPageState={setPageState}
                 bestSellers={bestSellers}
                 soldOutSoon={soldOutSoon}
+                searchResults={searchResults}
             />
         </div>
     );
