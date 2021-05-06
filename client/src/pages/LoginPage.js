@@ -14,15 +14,38 @@ const LoginPage = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errors, setErrors] = useState({});
+    const [fail, setFail] = useState(false);
 
     let { from } = location.state || { from: { pathname: "/" } };
 
+    const findErrors = () => {
+        const errors = {};
+        if (email == "") errors.email = "Username cannot be blank";
+        else if (email.length < 3) errors.email = "Enter a valid username";
+        if (password == "") errors.password = "Password cannot be blank";
+
+        return errors;
+    };
+
     let login = () => {
         console.log(`email: ${email} password: ${password}`);
+        // validate here
+        const newErrors = findErrors();
+        if (Object.keys(newErrors).length > 0) {
+            // we have errors
+            setErrors(newErrors);
+        } else {
+            auth.signin(email, password, success, failure);
+        }
+    };
 
-        auth.signin(email, password, () => {
-            history.replace(from);
-        });
+    const success = () => {
+        history.replace(from);
+    };
+
+    const failure = () => {
+        setFail(true);
     };
 
     return (
@@ -51,7 +74,11 @@ const LoginPage = () => {
                                     type="email"
                                     placeholder="Enter email"
                                     onChange={(e) => setEmail(e.target.value)}
+                                    isInvalid={!!errors.email}
                                 />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.email}
+                                </Form.Control.Feedback>
                                 <Form.Text className="text-muted">
                                     Your username is your email address that you
                                     signed up with.
@@ -69,12 +96,19 @@ const LoginPage = () => {
                                     onChange={(e) =>
                                         setPassword(e.target.value)
                                     }
+                                    isInvalid={!!errors.password}
                                 />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.password}
+                                </Form.Control.Feedback>
                             </Col>
                         </Form.Group>
 
                         <Button onClick={login}>Submit</Button>
                     </Form>
+                    {fail ? (
+                        <div style={{ color: "red" }}>Failed to log in</div>
+                    ) : null}
                 </Col>
             </Row>
         </Container>

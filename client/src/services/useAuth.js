@@ -16,7 +16,7 @@ function useProvideAuth() {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
 
-    const signin = (email, password, cb) => {
+    const signin = (email, password, success, failure) => {
         // do sign in functionality and return user
         axios
             .post("http://localhost:9000/users/login", {
@@ -27,11 +27,12 @@ function useProvideAuth() {
                 console.log(result);
                 setUser(result.data.userId);
                 setToken(result.data.token);
-                cb();
+                success();
             })
             .catch((err) => {
                 console.log(err);
                 setUser(null);
+                failure();
             });
 
         // return user;
