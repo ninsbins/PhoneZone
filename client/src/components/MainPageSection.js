@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { Container } from "react-bootstrap";
 import MainPageStatus from "../services/constants";
+import PhoneCard from "./PhoneCard";
+import SinglePhone from "./SinglePhone";
 
 const MainPageSection = (props) => {
     let pageState = props.pageState || MainPageStatus.LOADING;
     let soldOutSoon = props.soldOutSoon || [];
     let bestSellers = props.bestSellers || [];
+    const [selectedPhone, setSelectedPhone] = useState(null);
+
+    const selectPhone = (phone) => {
+        props.setPageState(MainPageStatus.ITEM);
+        setSelectedPhone(phone);
+    };
 
     if (pageState == MainPageStatus.ERROR) {
         return (
@@ -42,12 +50,8 @@ const MainPageSection = (props) => {
                 {bestSellers != null
                     ? bestSellers.map((phone) => {
                           return (
-                              <div
-                                  onClick={() =>
-                                      props.setPageState(MainPageStatus.ITEM)
-                                  }
-                              >
-                                  {phone.title}
+                              <div onClick={() => selectPhone(phone)}>
+                                  <PhoneCard phone={phone} />
                               </div>
                           );
                       })
@@ -68,7 +72,7 @@ const MainPageSection = (props) => {
     }
 
     if (pageState == MainPageStatus.ITEM) {
-        return <p>Item view</p>;
+        return <SinglePhone phone={selectedPhone} />;
     }
 };
 
