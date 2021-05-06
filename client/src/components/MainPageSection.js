@@ -40,8 +40,8 @@ const MainPageSection = (props) => {
                 {soldOutSoon != null
                     ? soldOutSoon.map((phone) => {
                           return (
-                              <div onClick={() => console.log(phone)}>
-                                  {phone.title}
+                              <div onClick={() => selectPhone(phone)}>
+                                  <PhoneCard phone={phone} />
                               </div>
                           );
                       })
