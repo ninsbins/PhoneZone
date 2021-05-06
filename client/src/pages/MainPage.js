@@ -5,7 +5,7 @@ import axios from "axios";
 import MainPageStatus from "../services/constants";
 import MainPageSection from "../components/MainPageSection";
 
-const Main = () => {
+const MainPage = () => {
     const [searchState, setSearchState] = useState(false);
     const [soldOutSoon, setSoldOutSoon] = useState(null);
     const [bestSellers, setBestSellers] = useState(null);
@@ -64,4 +64,4 @@ const Main = () => {
     );
 };
 
-export default Main;
+export default MainPage;
