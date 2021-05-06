@@ -28,7 +28,7 @@ const Main = () => {
         setLoading(true);
         // get sold out soon
         axios
-            .get("http://localhost:9000/phones/soldoutsoon")
+            .get("http:/localhost:9000/phones/soldoutsoon")
             .then((result) => {
                 console.log(result);
                 setSoldOutSoon(result.data);
@@ -39,7 +39,18 @@ const Main = () => {
                 setLoading(false);
             });
         // get best sellers
+        axios.get("http:/localhost:9000/phones/bestsellers").then((result) => {
+            console.log(result);
+            setBestSellers(result.data);
+            setLoading(false);
+        }).catch((err) => {
+            console.log(err);
+            setLoading(false);
+        })
     }, []);
+
+    console.log(soldOutSoon);
+    console.log(bestSellers);
 
     if (loading) {
         return (
@@ -61,7 +72,9 @@ const Main = () => {
 
     return (
         <div className="Main">
-            <Header search={search} searchState={searchState} />
+            <Header 
+                search={search} 
+                searchState={searchState} />
             {/* Item view or non Item view */}
             {searchState ? (
                 // Go map through search results and display phones
