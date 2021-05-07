@@ -6,11 +6,10 @@
 .filters {
     display: flex;
     justify-content: center;
-    flex-direction: row;
-
+    // flex-direction: row;
 }
 
 .sliderContainer {
     max-width: 300px;
-    
+    padding: 10px;
 }

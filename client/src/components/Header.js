@@ -2,19 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 // import AuthButton from "./AuthButton";
 import useAuth from "../services/useAuth";
-import { Navbar, Button, Row, Col, Container, NavbarBrand, Nav, NavDropdown } from "react-bootstrap";
+import { Navbar, Button, Row, Col, Container, NavbarBrand, Nav, NavDropdown, Dropdown } from "react-bootstrap";
 import "../styles/Header.scss";
 import InputRange from 'react-input-range';
 import "react-input-range/lib/css/index.css";
 import axios from "axios";
+import DropdownItem from "react-bootstrap/esm/DropdownItem";
 
 const Header = (props) => {
     const auth = useAuth();
     const [brands, setBrands] = useState(null);
-    const [value, setValue] = useState({min: 50, max: 500});
+    const [value, setValue] = useState({ min: 0, max: 1000 });
 
     let history = useHistory();
     let [searchTerm, setSearchTerm] = useState("");
+    let [selectedBrand, setSelectedBrand] = useState(null);
     let inSearchState = props.searchState || false;
 
     useEffect(() => {
@@ -26,11 +28,17 @@ const Header = (props) => {
                 console.log(err);
             })
     }, []);
-    
+
     // just a helper whilst working in dev, get rid of this later
     function refreshPage() {
         window.location.reload(false);
     }
+
+    let handleSelect = async (eventKey) => {
+        console.log(eventKey);
+        props.filter(brands[eventKey], value.min, value.max);
+        setSelectedBrand(brands[eventKey]);
+    };
 
     // return (
     //     <Container fluid className="header">
@@ -98,13 +106,31 @@ const Header = (props) => {
                                 maxValue={1000}
                                 minValue={0}
                                 value={value}
-                                onChange={value => setValue(value)}
-                                onChangeComplete={console.log(value)}/>
+                                onChange={value => {
+                                    setValue(value);
+                                    props.filter(selectedBrand, value.min, value.max);
+                                }} />
                         </Col>
                         <Col>
-                            <NavDropdown title="Brand">
-                                {(brands == null) ? (<NavDropdown.ItemText>No brands to show</NavDropdown.ItemText>) : (brands.map((brands) => (<NavDropdown.Item value={brands}>{brands}</NavDropdown.Item>)))}
-                            </NavDropdown>
+                            <Dropdown onSelect={handleSelect}>
+                                <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                                    {(selectedBrand == null) ? "Brands" : selectedBrand}
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    {(brands == null)
+                                        ? (<Dropdown.ItemText>No brands to show</Dropdown.ItemText>)
+                                        : (brands.map((brand, index) => (
+                                            <Dropdown.Item eventKey={index}>{brand}</Dropdown.Item>
+                                        )))}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                            {/* <Nav onClick={(key) => handleSelect(key)}>
+                                <NavDropdown title={selectedBrand} id="basic-nav-dropdown">
+                                    {(brands == null)
+                                        ? (<NavDropdown.ItemText>No brands to show</NavDropdown.ItemText>)
+                                        : (brands.map((brand, index) => (<NavDropdown.Item eventKey={index}>{brand}</NavDropdown.Item>)))}
+                                </NavDropdown>
+                            </Nav> */}
                         </Col>
                     </Row>
                 ) : null}

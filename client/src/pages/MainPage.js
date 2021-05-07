@@ -11,10 +11,14 @@ const MainPage = () => {
     const [bestSellers, setBestSellers] = useState(null);
     const [pageState, setPageState] = useState(MainPageStatus.LOADING);
     const [searchResults, setSearchResults] = useState(null);
-
+    const [filteredState, setFilteredState] = useState(false);
+    const [filteredResults, setFilteredResult] = useState(null);
+    
     // This search function is passed to the header, it will use this function.
     const search = async (term) => {
         // do search
+        setFilteredState(false);
+
         console.log(`searching for ${term}`);
         // send search term to backend and get results
 
@@ -31,6 +35,28 @@ const MainPage = () => {
                 console.log(err);
                 setPageState(MainPageStatus.ERROR);
             });
+    };
+
+    const filter = (brand, min, max) => {
+        var filteredResults = [];
+        console.log(brand, min, max);
+        // console.log(searchResults);
+        setPageState(MainPageStatus.LOADING);
+        searchResults.map(phone => {
+            if (brand != null) {
+                if (brand == phone.brand && phone.price <= max && phone.price >= min) {
+                    filteredResults.push(phone);
+                }
+            } else {
+                if (phone.price <= max && phone.price >= min) {
+                    filteredResults.push(phone);
+                }
+            }
+        });
+        setFilteredResult(filteredResults);
+        setFilteredState(true);
+        setPageState(MainPageStatus.SEARCH);
+        setSearchState(true);
     };
 
     useEffect(() => {
@@ -62,13 +88,13 @@ const MainPage = () => {
 
     return (
         <div className="Main">
-            <Header search={search} searchState={searchState} />
+            <Header search={search} filter={filter} searchState={searchState} />
             <MainPageSection
                 pageState={pageState}
                 setPageState={setPageState}
                 bestSellers={bestSellers}
                 soldOutSoon={soldOutSoon}
-                searchResults={searchResults}
+                searchResults={filteredState ? filteredResults : searchResults}
             />
         </div>
     );

@@ -10,6 +10,7 @@ router.get("/soldoutsoon", PhonesController.sold_out_soon);
 
 router.get("/search/", PhonesController.search);
 router.get("/brands", PhonesController.get_brands);
+router.get("/mostexpensive", PhonesController.get_most_expensive_phone);
 
 /**
  * GET top rated phones (top 5)
