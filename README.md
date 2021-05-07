@@ -88,3 +88,29 @@ Regulary (this is just a suggested workflow based on our meeting, no pull reques
     > `git push origin main`
 
 ..small change to check contribution settings
+
+## Mongo commands for updating phones via mongo shell.
+
+This is just one way to update the phone image fields, lots of other ways.
+
+1. Connect to the db
+2. `use phonezone`
+3. run the below commands:
+
+`db.phones.update({"brand": "Apple"}, {$set: {"image": "Apple.jpeg"}}, {"multi":true});`
+
+`db.phones.update({"brand": "BlackBerry"}, {$set: {"image": "BlackBerry.jpeg"}}, {"multi":true});`
+
+`db.phones.update({"brand": "HTC"}, {$set: {"image": "HTC.jpeg"}}, {"multi":true});`
+
+`db.phones.update({"brand": "Huawei"}, {$set: {"image": "Huawei.jpeg"}}, {"multi":true});`
+
+`db.phones.update({"brand": "LG"}, {$set: {"image": "LG.jpeg"}}, {"multi":true});`
+
+`db.phones.update({"brand": "Motorola"}, {$set: {"image": "Motorola.jpeg"}}, {"multi":true});`
+
+`db.phones.update({"brand": "Nokia"}, {$set: {"image": "Nokia.jpeg"}}, {"multi":true});`
+
+`db.phones.update({"brand": "Samsung"}, {$set: {"image": "Samsung.jpeg"}}, {"multi":true});`
+
+`db.phones.update({"brand": "Sony"}, {$set: {"image": "Sony.jpeg"}}, {"multi":true});`
