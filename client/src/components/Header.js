@@ -22,7 +22,6 @@ const Header = (props) => {
     useEffect(() => {
         axios.get("http://localhost:9000/phones/brands")
             .then((result) => {
-                console.log(result.data.brands);
                 setBrands(result.data.brands);
             }).catch((err) => {
                 console.log(err);
@@ -101,7 +100,7 @@ const Header = (props) => {
                 {/* dropdown, and slider goes here */}
                 {inSearchState ? (
                     <Row className="filters">
-                        <Col className="sliderContainer">
+                        <Col className="filterItem">
                             <InputRange
                                 maxValue={1000}
                                 minValue={0}

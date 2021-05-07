@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import { Container } from "react-bootstrap";
+import { Container, CardDeck, Card } from "react-bootstrap";
 import MainPageStatus from "../services/constants";
 import PhoneCard from "./PhoneCard";
 import SinglePhone from "./SinglePhone";
 
 const MainPageSection = (props) => {
     let pageState = props.pageState || MainPageStatus.LOADING;
-    let soldOutSoon = props.soldOutSoon || [];
-    let bestSellers = props.bestSellers || [];
+    let soldOutSoon = props.soldOutSoon || null;
+    let bestSellers = props.bestSellers || null;
     const [selectedPhone, setSelectedPhone] = useState(null);
-    let searchResults = props.searchResults || [];
+    let searchResults = props.searchResults || null;
 
     const selectPhone = (phone) => {
         props.setPageState(MainPageStatus.ITEM);
@@ -38,25 +38,25 @@ const MainPageSection = (props) => {
                 <h2>Sold out soon</h2>
                 {/* Map through soldOutSoon phones for display */}
                 {soldOutSoon != null
-                    ? soldOutSoon.map((phone) => {
-                          return (
-                              <div onClick={() => selectPhone(phone)}>
-                                  <PhoneCard phone={phone} />
-                              </div>
-                          );
-                      })
-                    : null}
+                    ? <CardDeck>{soldOutSoon.map((phone) => {
+                        return (
+                            <div onClick={() => selectPhone(phone)}>
+                                <PhoneCard phone={phone} />
+                            </div>
+                        );
+                    })}</CardDeck>
+                    : <div>No items to show</div>}
                 {/* Map through bestSeller phones for display */}
                 <h2>Best Sellers</h2>
                 {bestSellers != null
-                    ? bestSellers.map((phone) => {
-                          return (
-                              <div onClick={() => selectPhone(phone)}>
-                                  <PhoneCard phone={phone} />
-                              </div>
-                          );
-                      })
-                    : null}
+                    ? <CardDeck>{bestSellers.map((phone) => {
+                        return (
+                            <div onClick={() => selectPhone(phone)}>
+                                <PhoneCard phone={phone} />
+                            </div>
+                        );
+                    })} </CardDeck>
+                    : <div>No items to show</div>}
             </Container>
         );
     }
@@ -66,14 +66,14 @@ const MainPageSection = (props) => {
             <Container fluid>
                 <h2>Search Result </h2>
                 {searchResults != null
-                    ? searchResults.map((phone) => {
-                          return (
-                              <div onClick={() => selectPhone(phone)}>
-                                  <PhoneCard phone={phone} />
-                              </div>
-                          );
-                      })
-                    : null}
+                    ? <CardDeck>{searchResults.map((phone) => {
+                        return (
+                            <div onClick={() => selectPhone(phone)}>
+                                <PhoneCard phone={phone} />
+                            </div>
+                        );
+                    })}</CardDeck>
+                    : <div>No items match your search</div>}
             </Container>
         );
     }

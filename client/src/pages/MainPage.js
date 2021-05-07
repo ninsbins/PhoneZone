@@ -39,8 +39,7 @@ const MainPage = () => {
 
     const filter = (brand, min, max) => {
         var filteredResults = [];
-        console.log(brand, min, max);
-        // console.log(searchResults);
+
         setPageState(MainPageStatus.LOADING);
         searchResults.map(phone => {
             if (brand != null) {

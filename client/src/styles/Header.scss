@@ -5,11 +5,13 @@
 
 .filters {
     display: flex;
+    padding: 20px;
     justify-content: center;
+    // align-content: space-between;
     // flex-direction: row;
 }
 
-.sliderContainer {
+.filterItem {
     max-width: 300px;
     padding: 10px;
 }
