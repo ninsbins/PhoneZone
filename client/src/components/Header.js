@@ -26,11 +26,33 @@ const Header = (props) => {
                 console.log(err);
             })
     }, []);
+    
+    // just a helper whilst working in dev, get rid of this later
+    function refreshPage() {
+        window.location.reload(false);
+    }
+
+    // return (
+    //     <Container fluid className="header">
+    //         <Row>
+    //             <Col sm={2} onClick={refreshPage}>
+    //                 PhoneZone
+    //             </Col>
+    //             <Col sm={6}>
+    //                 <input
+    //                     type="text"
+    //                     onChange={(e) => setSearchTerm(e.target.value)}
+    //                 ></input>
+
+    //                 <button onClick={() => props.search(searchTerm)}>
+    //                     Search
+    //                 </button>
+    //             </Col>
 
     return (
         <div>
             <Navbar fluid className="header" bg="dark" variant="dark" expand="lg">
-                <NavbarBrand to="/">PhoneZone</NavbarBrand>
+                <NavbarBrand onClick={refreshPage}>PhoneZone</NavbarBrand>
                 <Nav className="ml-auto mr-5">
                     <input type="text" className="mr-sm-2" onChange={(e) => setSearchTerm(e.target.value)} ></input>
                     <Button variant="outline-light" onClick={() => props.search(searchTerm)} >Search</Button>
