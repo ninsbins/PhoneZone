@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const brands = ["Samsung", "Apple", "HTC", "Huawei", "Nokia", "LG", "Motorola", "Sony", "BlackBerry"];
+
 const reviewSchema = new mongoose.Schema({
     reviewer:{
         type: mongoose.Schema.Types.ObjectId,
@@ -25,7 +27,7 @@ const phoneSchema = new mongoose.Schema({
     brand: {
         type: String,
         required: true,
-        enum: ['Samsung', 'Apple', 'HTC', 'Huawei', 'Nokia', 'LG', 'Motorola', 'Sony', 'BlackBerry'],
+        enum: brands,
     },
     image: {
         type: String,

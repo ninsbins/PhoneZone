@@ -39,6 +39,13 @@ exports.create_new_listing = async (req, res, next) => {
 
 };
 
+exports.get_brands = (req, res, next) => {
+    res.status(200).json({
+        message: "phone brands returned",
+        brands: ["Samsung", "Apple", "HTC", "Huawei", "Nokia", "LG", "Motorola", "Sony", "BlackBerry"]
+    });
+}
+
 exports.get_phone_from_id = (req, res, next) => {
     const id = req.params.id;
 

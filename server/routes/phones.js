@@ -9,6 +9,7 @@ router.post("/createlisting", PhonesController.create_new_listing);
 router.get("/soldoutsoon", PhonesController.sold_out_soon);
 
 router.get("/search/", PhonesController.search);
+router.get("/brands", PhonesController.get_brands);
 
 /**
  * GET top rated phones (top 5)

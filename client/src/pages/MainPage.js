@@ -28,9 +28,9 @@ const Main = () => {
         setLoading(true);
         // get sold out soon
         axios
-            .get("http:/localhost:9000/phones/soldoutsoon")
+            .get("http://localhost:9000/phones/soldoutsoon")
             .then((result) => {
-                console.log(result);
+                console.log(result.data);
                 setSoldOutSoon(result.data);
                 setLoading(false);
             })
@@ -38,8 +38,8 @@ const Main = () => {
                 console.log(err);
                 setLoading(false);
             });
-        // get best sellers
-        axios.get("http:/localhost:9000/phones/bestsellers").then((result) => {
+        // get bi dest sellers
+        axios.get("http://localhost:9000/phones/soldoutsoon").then((result) => {
             console.log(result);
             setBestSellers(result.data);
             setLoading(false);
@@ -48,9 +48,6 @@ const Main = () => {
             setLoading(false);
         })
     }, []);
-
-    console.log(soldOutSoon);
-    console.log(bestSellers);
 
     if (loading) {
         return (
@@ -72,9 +69,10 @@ const Main = () => {
 
     return (
         <div className="Main">
-            <Header 
-                search={search} 
+            <Header
+                search={search}
                 searchState={searchState} />
+            {/* range={value: {min: 0, max: 500}} /> */}
             {/* Item view or non Item view */}
             {searchState ? (
                 // Go map through search results and display phones
@@ -96,6 +94,13 @@ const Main = () => {
                     })}
                     {/* Map through bestSeller phones for display */}
                     <h2>Best Sellers</h2>
+                    {/* {bestSellers.map((phone) => {
+                        return (
+                            <div onClick={() => console.log(phone)}>
+                                {phone.title}
+                            </div>
+                        );
+                    })} */}
                 </Container>
             )}
         </div>
