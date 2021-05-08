@@ -2,6 +2,11 @@ import React, { useContext, useState, useEffect } from "react";
 import { Container, Row, Col, Modal, Button } from "react-bootstrap";
 import { CartContext } from "../contexts/CartContext";
 import QuantityPopup from "./QuantityPopup";
+import useAuth from "../services/useAuth";
+import { Link } from "react-router-dom";
+import ReviewList from "./ReviewList";
+
+const IMAGEBASEURL = `http://localhost:9000/images/`;
 
 const SinglePhone = (props) => {
     let phone = props.phone || null;
@@ -14,6 +19,7 @@ const SinglePhone = (props) => {
     const [showModal, setShowModal] = useState(false);
     const handleCloseModal = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
+    const auth = useAuth();
 
     // useEffect(() => {
     //     let res = cartItems.find((ph) => ph._id === phone._id);
@@ -71,58 +77,57 @@ const SinglePhone = (props) => {
                 />
 
                 <Row>
+                    <h2>{phone.title}</h2>
+                </Row>
+                <Row>
                     <Col>
-                        <ul>
-                            <li>Title - {phone.title}</li>
-                            <li>Brand - {phone.brand}</li>
-                            <li>Image - {phone.image}</li>
-                            <li>Stock - {phone.stock}</li>
-                            <li>Price - {phone.price}</li>
-                        </ul>
+                        <image src={IMAGEBASEURL + phone.image} />
                     </Col>
                     <Col>
+                        <ul>
+                            <li>Brand - {phone.brand}</li>
+                            <li>Price - {phone.price}</li>
+                            <li>Available Stock - {phone.stock}</li>
+                            <li>Seller name: </li>
+                        </ul>
+                    </Col>
+                    <Col style={{ borderLeft: "1px solid black" }}>
+                        {" "}
                         <div>
                             <p>Num in cart: {numInCart}</p>
                             {/* <button onClick={increaseQuantity}>
                                     Add more to cart
                                 </button> */}
-                            <button onClick={handleShowModal}>
-                                Add to cart
-                            </button>
-                        </div>
-                    </Col>
-                    <Col>
-                        <div>
-                            <button onClick={() => removePhone(phone)}>
-                                Remove from cart
-                            </button>
-                            <button onClick={() => console.log(cartItems)}>
-                                Console log the cart
-                            </button>
+                            {auth.user ? (
+                                <Button onClick={handleShowModal}>
+                                    Add to cart
+                                </Button>
+                            ) : (
+                                <Button>
+                                    <Link
+                                        to="/login"
+                                        style={{
+                                            textDecoration: "none",
+                                            color: "white",
+                                        }}
+                                    >
+                                        Add to Cart
+                                    </Link>
+                                </Button>
+                            )}
                         </div>
                     </Col>
                 </Row>
-
-                <Row>
-                    <Col>
-                        {phone.reviews != null
-                            ? phone.reviews.map((review) => {
-                                  return (
-                                      <Row key={review.reviewer}>
-                                          <p>Rating: {review.rating}</p>
-                                          <p>Comment: {review.comment}</p>
-                                      </Row>
-                                  );
-                              })
-                            : null}
-                    </Col>
-                </Row>
+                <hr />
+                <Container fluid>
+                    <Row>
+                        <h3>Reviews</h3>
+                    </Row>
+                    <Row>
+                        <ReviewList reviews={phone.reviews} />
+                    </Row>
+                </Container>
             </Container>
-            // <div>
-
-            //     {props.phone.title} - {props.phone.price}
-            //     and everything else for the phone
-            // </div>
         );
     } else {
         return <div>Error....</div>;

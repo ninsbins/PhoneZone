@@ -30,6 +30,13 @@ const dummy_phone = {
             comment:
                 "Excellent!! Phone from Samsung. worth of money. As this is the latest 2016 edition which come's with almost new features.",
         },
+        {
+            reviewer: "5f5237a4c1beb1523fa3db74",
+            rating: 5,
+            comment: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ultricies ornare elit eu pharetra. Sed placerat urna eros, at eleifend lacus placerat in. Pellentesque in urna nec velit blandit fermentum non eget justo. Aliquam in nibh eget sem sagittis varius vitae eu risus. Praesent ex lorem, elementum a bibendum sit amet, rhoncus eget purus. In vitae nibh convallis, rutrum lorem eget, dictum dolor. Sed dignissim, massa nec molestie volutpat, mi urna gravida nisi, sit amet iaculis mauris tortor a eros. Donec laoreet scelerisque velit in commodo. Nullam non felis id nulla tristique tincidunt sed sit amet mauris.
+                Fusce ac lectus vel est fringilla molestie. Donec gravida mi nulla, non blandit sapien dapibus facilisis. Sed tincidunt dui dolor, feugiat semper lacus sagittis eget. Phasellus semper purus semper fringilla sodales. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur vel metus vitae est dapibus suscipit. Etiam iaculis ante vitae quam finibus convallis. Maecenas vestibulum nibh nec lacus eleifend, id cursus lorem euismod.
+                Proin imperdiet pellentesque lobortis. Pellentesque accumsan nisl dolor, molestie mattis enim interdum ut. Nullam pharetra ex eu tellus blandit luctus. In hac habitasse platea dictumst. Nunc mattis interdum quam. Nullam in nibh vel nulla suscipit dignissis`,
+        },
     ],
     RatingAverage: 5,
 };
