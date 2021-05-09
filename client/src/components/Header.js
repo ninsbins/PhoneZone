@@ -43,7 +43,7 @@ const Header = (props) => {
     // just a helper whilst working in dev, get rid of this later
     function refreshPage() {
         history.push("/");
-        window.location.reload(false);
+        // window.location.reload(false);
     }
 
     let handleSelect = async (eventKey) => {
@@ -78,7 +78,7 @@ const Header = (props) => {
                 variant="dark"
                 expand="lg"
             >
-                <NavbarBrand onClick={refreshPage}>PhoneZone</NavbarBrand>
+                <NavbarBrand>PhoneZone</NavbarBrand>
                 <Nav className="ml-auto mr-5">
                     <input
                         type="text"

@@ -61,7 +61,7 @@ const SinglePhone = (props) => {
     // }, []);
 
     useEffect(() => {
-        if (cartItems.length > 0) {
+        if (cartItems != null && cartItems.length > 0) {
             let p = cartItems.find((ph) => ph._id === phone._id);
             if (p != undefined && "quantity" in p) {
                 let q = cartItems.find((ph) => ph._id === phone._id).quantity;
@@ -163,7 +163,7 @@ const SinglePhone = (props) => {
                         <h3>Reviews</h3>
                     </Row>
                     <Row>
-                        <ReviewList reviews={phone.reviews} />
+                        <ReviewList reviews={phone.reviews || []} />
                     </Row>
                 </Container>
             </Container>

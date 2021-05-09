@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, CardDeck, Card } from "react-bootstrap";
 import MainPageStatus from "../services/constants";
 import PhoneCard from "./PhoneCard";
 import SinglePhone from "./SinglePhone";
-import { Route, Link } from "react-router-dom";
+import { Route, Link, useHistory, useLocation } from "react-router-dom";
 
 const dummy_phone = {
     _id: "60847ab6f71df6d112cc629a",
@@ -48,6 +48,10 @@ const MainPageSection = (props) => {
     let bestSellers = props.bestSellers || null;
     const [selectedPhone, setSelectedPhone] = useState(null);
     let searchResults = props.searchResults || null;
+    const [prevStatus, setPrevStatus] = useState("");
+
+    const history = useHistory();
+    const location = useLocation();
 
     const selectPhone = (phone) => {
         props.setPageState(MainPageStatus.ITEM);
@@ -55,16 +59,15 @@ const MainPageSection = (props) => {
         setSelectedPhone(phone);
     };
 
-    const goBackToMain = () => {
-        props.setPageState(MainPageStatus.SUCCESS);
-    };
-
-    if (pageState == MainPageStatus.ERROR) {
+    if (pageState === MainPageStatus.ERROR) {
         return (
             <div>
                 <p>Oops, something went wrong</p>
                 <Link
-                    to={`/phones/${dummy_phone._id}`}
+                    to={{
+                        pathname: `/phone/${dummy_phone._id}`,
+                        state: { fromError: true },
+                    }}
                     onClick={() => selectPhone(dummy_phone)}
                 >
                     <PhoneCard phone={dummy_phone}></PhoneCard>
@@ -73,7 +76,7 @@ const MainPageSection = (props) => {
         );
     }
 
-    if (pageState == MainPageStatus.LOADING) {
+    if (pageState === MainPageStatus.LOADING) {
         return (
             <div>
                 <p>Loading....</p>
@@ -81,7 +84,7 @@ const MainPageSection = (props) => {
         );
     }
 
-    if (pageState == MainPageStatus.SUCCESS) {
+    if (pageState === MainPageStatus.SUCCESS) {
         return (
             <Container fluid>
                 <h2>Sold out soon</h2>
@@ -91,7 +94,10 @@ const MainPageSection = (props) => {
                         {soldOutSoon.map((phone) => {
                             return (
                                 <Link
-                                    to={`/phones/${phone._id}`}
+                                    to={{
+                                        pathname: `/phone/${phone._id}`,
+                                        state: { fromSuccess: true },
+                                    }}
                                     onClick={() => selectPhone(phone)}
                                 >
                                     <PhoneCard phone={phone}></PhoneCard>
@@ -109,8 +115,11 @@ const MainPageSection = (props) => {
                         {bestSellers.map((phone) => {
                             return (
                                 <Link
-                                    to={`/phones/${phone._id}`}
-                                    onClick={() => selectPhone(dummy_phone)}
+                                    to={{
+                                        pathname: `/phone/${phone._id}`,
+                                        state: { fromSuccess: true },
+                                    }}
+                                    onClick={() => selectPhone(phone)}
                                 >
                                     <PhoneCard phone={phone}></PhoneCard>
                                 </Link>
@@ -124,7 +133,7 @@ const MainPageSection = (props) => {
         );
     }
 
-    if (pageState == MainPageStatus.SEARCH) {
+    if (pageState === MainPageStatus.SEARCH) {
         return (
             <Container fluid>
                 <h2>Search Result </h2>
@@ -133,7 +142,10 @@ const MainPageSection = (props) => {
                         {searchResults.map((phone) => {
                             return (
                                 <Link
-                                    to={`/phones/${phone._id}`}
+                                    to={{
+                                        pathname: `/phone/${phone._id}`,
+                                        state: { fromSearch: true },
+                                    }}
                                     onClick={() => selectPhone(phone)}
                                 >
                                     <PhoneCard phone={phone}></PhoneCard>
@@ -148,23 +160,29 @@ const MainPageSection = (props) => {
         );
     }
 
-    if (pageState == MainPageStatus.ITEM) {
+    const handleGoBack = (loc) => {
+        const s = loc.state;
+        if (s.hasOwnProperty("fromError")) {
+            history.push("/");
+            props.setPageState(MainPageStatus.ERROR);
+        } else if (s.hasOwnProperty("fromSuccess")) {
+            history.push("/");
+            props.setPageState(MainPageStatus.SUCCESS);
+        } else if (s.hasOwnProperty("fromSearch")) {
+            history.push("/");
+            props.setPageState(MainPageStatus.SEARCH);
+        }
+    };
+
+    if (pageState === MainPageStatus.ITEM) {
         return (
             <div>
-                {/* <button onClick={goBackToMain}>
-                    Go back to main (whilst retaining state)
-                </button> */}
-                <Route path="/phones/:id">
+                <button onClick={() => handleGoBack(location)}>Go back</button>
+                <Route path="/phone/:id">
                     <SinglePhone phone={selectedPhone} />
                 </Route>
-                {/* // {selectedPhone != null ? (
-                //     <SinglePhone phone={selectedPhone} />
-                // ) : (
-                //     <div>unable to get phone</div>
-                // )} */}
             </div>
         );
-        // return <SinglePhone phone={selectedPhone} />;
     }
 };
 

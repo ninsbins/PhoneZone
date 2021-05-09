@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import axios from "axios";
 import MainPageStatus from "../services/constants";
 import MainPageSection from "../components/MainPageSection";
+import { useHistory, useLocation } from "react-router-dom";
 
 const MainPage = () => {
     const [searchState, setSearchState] = useState(false);
@@ -13,7 +14,7 @@ const MainPage = () => {
     const [searchResults, setSearchResults] = useState(null);
     const [filteredState, setFilteredState] = useState(false);
     const [filteredResults, setFilteredResult] = useState(null);
-    
+
     // This search function is passed to the header, it will use this function.
     const search = async (term) => {
         // do search
@@ -41,9 +42,13 @@ const MainPage = () => {
         var filteredResults = [];
 
         setPageState(MainPageStatus.LOADING);
-        searchResults.map(phone => {
+        searchResults.map((phone) => {
             if (brand != null) {
-                if (brand == phone.brand && phone.price <= max && phone.price >= min) {
+                if (
+                    brand == phone.brand &&
+                    phone.price <= max &&
+                    phone.price >= min
+                ) {
                     filteredResults.push(phone);
                 }
             } else {
