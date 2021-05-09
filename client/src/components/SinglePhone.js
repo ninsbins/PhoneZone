@@ -1,25 +1,55 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Container, Row, Col, Modal, Button } from "react-bootstrap";
+import { Container, Row, Col, Modal, Button, Image } from "react-bootstrap";
 import { CartContext } from "../contexts/CartContext";
 import QuantityPopup from "./QuantityPopup";
 import useAuth from "../services/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ReviewList from "./ReviewList";
+import axios from "axios";
 
 const IMAGEBASEURL = `http://localhost:9000/images/`;
 
+const pageStatus = {
+    LOADING: "loading",
+    ERROR: "error",
+    SUCCESS: "success",
+};
+
 const SinglePhone = (props) => {
-    let phone = props.phone || null;
+    // let phone = props.phone || null;
 
     const { addPhone, increase, cartItems, removePhone } = useContext(
         CartContext
     );
+    const [phone, setPhone] = useState(null);
+    const [status, setStatus] = useState(pageStatus.LOADING);
     const [isInCart, setIsInCart] = useState(false);
     const [numInCart, setNumInCart] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const handleCloseModal = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
     const auth = useAuth();
+    const { id } = useParams();
+
+    useEffect(() => {
+        console.log(id);
+
+        axios
+            .get(`http://localhost:9000/phones/${id}`)
+            .then((result) => {
+                console.log(result);
+                console.log(result.data);
+                console.log(result.data.phone);
+
+                setPhone(result.data.phone);
+
+                setStatus(pageStatus.SUCCESS);
+            })
+            .catch((err) => {
+                console.log(err);
+                setStatus(pageStatus.ERROR);
+            });
+    }, []);
 
     // useEffect(() => {
     //     let res = cartItems.find((ph) => ph._id === phone._id);
@@ -65,7 +95,16 @@ const SinglePhone = (props) => {
         // increase(phone)
     };
 
-    if (phone != null) {
+    if (status === pageStatus.LOADING) {
+        return <div>Loading...</div>;
+    }
+
+    if (status === pageStatus.ERROR) {
+        return <div>Error loading phone...</div>;
+    }
+
+    if (status === pageStatus.SUCCESS) {
+        console.log(phone);
         return (
             <Container fluid>
                 <QuantityPopup
@@ -81,7 +120,7 @@ const SinglePhone = (props) => {
                 </Row>
                 <Row>
                     <Col>
-                        <image src={IMAGEBASEURL + phone.image} />
+                        <Image src={IMAGEBASEURL + phone.image} fluid />
                     </Col>
                     <Col>
                         <ul>
@@ -96,8 +135,8 @@ const SinglePhone = (props) => {
                         <div>
                             <p>Num in cart: {numInCart}</p>
                             {/* <button onClick={increaseQuantity}>
-                                    Add more to cart
-                                </button> */}
+                                            Add more to cart
+                                        </button> */}
                             {auth.user ? (
                                 <Button onClick={handleShowModal}>
                                     Add to cart
@@ -129,8 +168,6 @@ const SinglePhone = (props) => {
                 </Container>
             </Container>
         );
-    } else {
-        return <div>Error....</div>;
     }
 };
 

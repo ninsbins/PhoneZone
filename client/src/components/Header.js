@@ -2,9 +2,19 @@ import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 // import AuthButton from "./AuthButton";
 import useAuth from "../services/useAuth";
-import { Navbar, Button, Row, Col, Container, NavbarBrand, Nav, NavDropdown, Dropdown } from "react-bootstrap";
+import {
+    Navbar,
+    Button,
+    Row,
+    Col,
+    Container,
+    NavbarBrand,
+    Nav,
+    NavDropdown,
+    Dropdown,
+} from "react-bootstrap";
 import "../styles/Header.scss";
-import InputRange from 'react-input-range';
+import InputRange from "react-input-range";
 import "react-input-range/lib/css/index.css";
 import axios from "axios";
 import DropdownItem from "react-bootstrap/esm/DropdownItem";
@@ -20,16 +30,19 @@ const Header = (props) => {
     let inSearchState = props.searchState || false;
 
     useEffect(() => {
-        axios.get("http://localhost:9000/phones/brands")
+        axios
+            .get("http://localhost:9000/phones/brands")
             .then((result) => {
                 setBrands(result.data.brands);
-            }).catch((err) => {
-                console.log(err);
             })
+            .catch((err) => {
+                console.log(err);
+            });
     }, []);
 
     // just a helper whilst working in dev, get rid of this later
     function refreshPage() {
+        history.push("/");
         window.location.reload(false);
     }
 
@@ -58,11 +71,26 @@ const Header = (props) => {
 
     return (
         <div>
-            <Navbar fluid className="header" bg="dark" variant="dark" expand="lg">
+            <Navbar
+                fluid
+                className="header"
+                bg="dark"
+                variant="dark"
+                expand="lg"
+            >
                 <NavbarBrand onClick={refreshPage}>PhoneZone</NavbarBrand>
                 <Nav className="ml-auto mr-5">
-                    <input type="text" className="mr-sm-2" onChange={(e) => setSearchTerm(e.target.value)} ></input>
-                    <Button variant="outline-light" onClick={() => props.search(searchTerm)} >Search</Button>
+                    <input
+                        type="text"
+                        className="mr-sm-2"
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    ></input>
+                    <Button
+                        variant="outline-light"
+                        onClick={() => props.search(searchTerm)}
+                    >
+                        Search
+                    </Button>
                 </Nav>
                 <Nav>
                     {auth.user ? (
@@ -81,7 +109,7 @@ const Header = (props) => {
                                     }}
                                 >
                                     sign-out
-                            </button>
+                                </button>
                             </Col>
                         </>
                     ) : (
@@ -105,22 +133,38 @@ const Header = (props) => {
                                 maxValue={1000}
                                 minValue={0}
                                 value={value}
-                                onChange={value => {
+                                onChange={(value) => {
                                     setValue(value);
-                                    props.filter(selectedBrand, value.min, value.max);
-                                }} />
+                                    props.filter(
+                                        selectedBrand,
+                                        value.min,
+                                        value.max
+                                    );
+                                }}
+                            />
                         </Col>
                         <Col>
                             <Dropdown onSelect={handleSelect}>
-                                <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-                                    {(selectedBrand == null) ? "Brands" : selectedBrand}
+                                <Dropdown.Toggle
+                                    variant="secondary"
+                                    id="dropdown-basic"
+                                >
+                                    {selectedBrand == null
+                                        ? "Brands"
+                                        : selectedBrand}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                    {(brands == null)
-                                        ? (<Dropdown.ItemText>No brands to show</Dropdown.ItemText>)
-                                        : (brands.map((brand, index) => (
-                                            <Dropdown.Item eventKey={index}>{brand}</Dropdown.Item>
-                                        )))}
+                                    {brands == null ? (
+                                        <Dropdown.ItemText>
+                                            No brands to show
+                                        </Dropdown.ItemText>
+                                    ) : (
+                                        brands.map((brand, index) => (
+                                            <Dropdown.Item eventKey={index}>
+                                                {brand}
+                                            </Dropdown.Item>
+                                        ))
+                                    )}
                                 </Dropdown.Menu>
                             </Dropdown>
                             {/* <Nav onClick={(key) => handleSelect(key)}>

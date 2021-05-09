@@ -3,6 +3,7 @@ import { Container, CardDeck, Card } from "react-bootstrap";
 import MainPageStatus from "../services/constants";
 import PhoneCard from "./PhoneCard";
 import SinglePhone from "./SinglePhone";
+import { Route, Link } from "react-router-dom";
 
 const dummy_phone = {
     _id: "60847ab6f71df6d112cc629a",
@@ -50,6 +51,7 @@ const MainPageSection = (props) => {
 
     const selectPhone = (phone) => {
         props.setPageState(MainPageStatus.ITEM);
+
         setSelectedPhone(phone);
     };
 
@@ -61,10 +63,12 @@ const MainPageSection = (props) => {
         return (
             <div>
                 <p>Oops, something went wrong</p>
-
-                <div onClick={() => selectPhone(dummy_phone)}>
+                <Link
+                    to={`/phones/${dummy_phone._id}`}
+                    onClick={() => selectPhone(dummy_phone)}
+                >
                     <PhoneCard phone={dummy_phone}></PhoneCard>
-                </div>
+                </Link>
             </div>
         );
     }
@@ -86,9 +90,12 @@ const MainPageSection = (props) => {
                     <CardDeck>
                         {soldOutSoon.map((phone) => {
                             return (
-                                <div onClick={() => selectPhone(phone)}>
-                                    <PhoneCard phone={phone} />
-                                </div>
+                                <Link
+                                    to={`/phones/${phone._id}`}
+                                    onClick={() => selectPhone(phone)}
+                                >
+                                    <PhoneCard phone={phone}></PhoneCard>
+                                </Link>
                             );
                         })}
                     </CardDeck>
@@ -101,9 +108,12 @@ const MainPageSection = (props) => {
                     <CardDeck>
                         {bestSellers.map((phone) => {
                             return (
-                                <div onClick={() => selectPhone(phone)}>
-                                    <PhoneCard phone={phone} />
-                                </div>
+                                <Link
+                                    to={`/phones/${phone._id}`}
+                                    onClick={() => selectPhone(dummy_phone)}
+                                >
+                                    <PhoneCard phone={phone}></PhoneCard>
+                                </Link>
                             );
                         })}{" "}
                     </CardDeck>
@@ -122,9 +132,12 @@ const MainPageSection = (props) => {
                     <CardDeck>
                         {searchResults.map((phone) => {
                             return (
-                                <div onClick={() => selectPhone(phone)}>
-                                    <PhoneCard phone={phone} />
-                                </div>
+                                <Link
+                                    to={`/phones/${phone._id}`}
+                                    onClick={() => selectPhone(phone)}
+                                >
+                                    <PhoneCard phone={phone}></PhoneCard>
+                                </Link>
                             );
                         })}
                     </CardDeck>
@@ -138,14 +151,17 @@ const MainPageSection = (props) => {
     if (pageState == MainPageStatus.ITEM) {
         return (
             <div>
-                <button onClick={goBackToMain}>
+                {/* <button onClick={goBackToMain}>
                     Go back to main (whilst retaining state)
-                </button>
-                {selectedPhone != null ? (
+                </button> */}
+                <Route path="/phones/:id">
                     <SinglePhone phone={selectedPhone} />
-                ) : (
-                    <div>unable to get phone</div>
-                )}
+                </Route>
+                {/* // {selectedPhone != null ? (
+                //     <SinglePhone phone={selectedPhone} />
+                // ) : (
+                //     <div>unable to get phone</div>
+                // )} */}
             </div>
         );
         // return <SinglePhone phone={selectedPhone} />;
