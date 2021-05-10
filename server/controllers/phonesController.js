@@ -14,7 +14,7 @@ exports.create_new_listing = async (req, res, next) => {
         stock: req.body.stock,
         seller: req.user.userId,
         price: req.body.price,
-        reviews: req.body.reviews,
+        reviews: [],            // We can't let the user add reviews themselves
         disabled: req.body.disabled,
     });
 
