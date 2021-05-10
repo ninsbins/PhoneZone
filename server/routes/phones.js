@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const mongoose = require("mongoose");
 const PhonesController = require("../controllers/phonesController");
+const UsersController = require("../controllers/usersController");
 
 /* POST new phone listing */
 router.post("/createlisting", PhonesController.create_new_listing);
@@ -31,7 +32,7 @@ router.get("/bestsellers", PhonesController.best_sellers);
  *              description: unsuccessful
  *
  */
-router.put("/disable", PhonesController.disable_listing);
+router.put("/disable", UsersController.authenticate, PhonesController.disable_listing);
 
 /**
  * /phones/enable:
@@ -47,7 +48,7 @@ router.put("/disable", PhonesController.disable_listing);
  *              description: unsuccessful
  *
  */
-router.put("/enable", PhonesController.enable_listing);
+router.put("/enable", UsersController.authenticate, PhonesController.enable_listing);
 
 /* GET phone listing from id */
 router.get("/:id", PhonesController.get_phone_from_id);

@@ -145,38 +145,54 @@ exports.enable_listing = (req, res, next) => {
     // take away disable from phone
     let phoneId = req.body.phoneId;
 
-    Phone.findByIdAndUpdate(phoneId, {
-        $unset: { disabled: 1 },
-    })
-        .then((result) => {
-            return res.status(200).json({
-                message: "successfully enabled listing",
-            });
-        })
-        .catch((err) => {
-            return res.status(400).json({
-                message: "unable to enable phone listing",
-            });
-        });
+    // check that this phone is sold by this user
+    let userId = req.user.userId;
+    Phone.findById(phoneId).then((result)=> {
+        if(userId == result.seller){
+            Phone.findByIdAndUpdate(phoneId, {
+                $unset: { disabled: 1 },
+            })
+                .then((result) => {
+                    return res.status(200).json({
+                        message: "successfully enabled listing",
+                    });
+                })
+                .catch((err) => {
+                    return res.status(400).json({
+                        message: "unable to enable phone listing",
+                    });
+                });
+        } else {
+            return res.status(401).send("Authentication Error");
+        }
+    });
 };
 
 exports.disable_listing = (req, res, next) => {
     // add disabled field to phone
     let phoneId = req.body.phoneId;
 
-    Phone.findByIdAndUpdate(phoneId, {
-        disabled: "",
-    })
-        .then((result) => {
-            return res.status(201).json({
-                message: "successfully disabled",
-            });
-        })
-        .catch((err) => {
-            return res.status(400).json({
-                message: "unable to disable phone listing",
-            });
-        });
+    // check that this phone is sold by this user
+    let userId = req.user.userId;
+    Phone.findById(phoneId).then((result)=> {
+        if(userId == result.seller){
+            Phone.findByIdAndUpdate(phoneId, {
+                disabled: "",
+            })
+                .then((result) => {
+                    return res.status(201).json({
+                        message: "successfully disabled",
+                    });
+                })
+                .catch((err) => {
+                    return res.status(400).json({
+                        message: "unable to disable phone listing",
+                    });
+                });
+        } else {
+            return res.status(401).send("Authentication Error");
+        }
+    });
 };
 
 exports.is_valid_order = async (phoneId, quantity) => {
@@ -187,8 +203,7 @@ exports.is_valid_order = async (phoneId, quantity) => {
     await Phone.findById(phoneId)
         .then((result) => {
             console.log(result);
-            valid_quantity = valid_quantity =
-                valid_quantity && result.stock >= quantity;
+            valid_quantity = valid_quantity && result.stock >= quantity;
         })
         .catch((err) => {
             console.log("Error getting quantity");
