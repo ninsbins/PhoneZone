@@ -19,7 +19,7 @@ const { removeListener } = require("../app");
 exports.create_new_order = async (req, res, next) => {
     // functionality for creating a new user.
     let items = req.body.items;
-    let userId = req.body.orderedBy;
+    let userId = req.user.userId;
 
     isOrderValid(userId, items)
         .then((result) => {
