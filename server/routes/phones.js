@@ -5,7 +5,7 @@ const PhonesController = require("../controllers/phonesController");
 const UsersController = require("../controllers/usersController");
 
 /* POST new phone listing */
-router.post("/createlisting", PhonesController.create_new_listing);
+router.post("/createlisting", UsersController.authenticate, PhonesController.create_new_listing);
 
 router.get("/soldoutsoon", PhonesController.sold_out_soon);
 

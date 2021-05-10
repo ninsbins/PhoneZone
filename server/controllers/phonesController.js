@@ -7,14 +7,12 @@ exports.create_new_listing = async (req, res, next) => {
     console.log("creating phone listing");
     console.log(req.body);
 
-    //need to check if seller is valid?
-
     const phone = new Phone({
         title: req.body.title,
         brand: req.body.brand,
         image: req.body.image,
         stock: req.body.stock,
-        seller: req.body.seller,
+        seller: req.user.userId,
         price: req.body.price,
         reviews: req.body.reviews,
         disabled: req.body.disabled,
