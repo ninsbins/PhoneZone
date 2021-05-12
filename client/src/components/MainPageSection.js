@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, CardDeck, Card } from "react-bootstrap";
 import MainPageStatus from "../services/constants";
 import PhoneCard from "./PhoneCard";
 import SinglePhone from "./SinglePhone";
+import { Route, Link, useHistory, useLocation } from "react-router-dom";
 
 const dummy_phone = {
     _id: "60847ab6f71df6d112cc629a",
@@ -30,6 +31,13 @@ const dummy_phone = {
             comment:
                 "Excellent!! Phone from Samsung. worth of money. As this is the latest 2016 edition which come's with almost new features.",
         },
+        {
+            reviewer: "5f5237a4c1beb1523fa3db74",
+            rating: 5,
+            comment: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ultricies ornare elit eu pharetra. Sed placerat urna eros, at eleifend lacus placerat in. Pellentesque in urna nec velit blandit fermentum non eget justo. Aliquam in nibh eget sem sagittis varius vitae eu risus. Praesent ex lorem, elementum a bibendum sit amet, rhoncus eget purus. In vitae nibh convallis, rutrum lorem eget, dictum dolor. Sed dignissim, massa nec molestie volutpat, mi urna gravida nisi, sit amet iaculis mauris tortor a eros. Donec laoreet scelerisque velit in commodo. Nullam non felis id nulla tristique tincidunt sed sit amet mauris.
+                Fusce ac lectus vel est fringilla molestie. Donec gravida mi nulla, non blandit sapien dapibus facilisis. Sed tincidunt dui dolor, feugiat semper lacus sagittis eget. Phasellus semper purus semper fringilla sodales. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur vel metus vitae est dapibus suscipit. Etiam iaculis ante vitae quam finibus convallis. Maecenas vestibulum nibh nec lacus eleifend, id cursus lorem euismod.
+                Proin imperdiet pellentesque lobortis. Pellentesque accumsan nisl dolor, molestie mattis enim interdum ut. Nullam pharetra ex eu tellus blandit luctus. In hac habitasse platea dictumst. Nunc mattis interdum quam. Nullam in nibh vel nulla suscipit dignissis`,
+        },
     ],
     RatingAverage: 5,
 };
@@ -40,29 +48,35 @@ const MainPageSection = (props) => {
     let bestSellers = props.bestSellers || null;
     const [selectedPhone, setSelectedPhone] = useState(null);
     let searchResults = props.searchResults || null;
+    const [prevStatus, setPrevStatus] = useState("");
+
+    const history = useHistory();
+    const location = useLocation();
 
     const selectPhone = (phone) => {
         props.setPageState(MainPageStatus.ITEM);
+
         setSelectedPhone(phone);
     };
 
-    const goBackToMain = () => {
-        props.setPageState(MainPageStatus.SUCCESS);
-    };
-
-    if (pageState == MainPageStatus.ERROR) {
+    if (pageState === MainPageStatus.ERROR) {
         return (
             <div>
                 <p>Oops, something went wrong</p>
-
-                <div onClick={() => selectPhone(dummy_phone)}>
+                <Link
+                    to={{
+                        pathname: `/phone/${dummy_phone._id}`,
+                        state: { fromError: true },
+                    }}
+                    onClick={() => selectPhone(dummy_phone)}
+                >
                     <PhoneCard phone={dummy_phone}></PhoneCard>
-                </div>
+                </Link>
             </div>
         );
     }
 
-    if (pageState == MainPageStatus.LOADING) {
+    if (pageState === MainPageStatus.LOADING) {
         return (
             <div>
                 <p>Loading....</p>
@@ -70,7 +84,7 @@ const MainPageSection = (props) => {
         );
     }
 
-    if (pageState == MainPageStatus.SUCCESS) {
+    if (pageState === MainPageStatus.SUCCESS) {
         return (
             <Container fluid>
                 <h2>Sold out soon</h2>
@@ -79,9 +93,15 @@ const MainPageSection = (props) => {
                     <CardDeck>
                         {soldOutSoon.map((phone) => {
                             return (
-                                <div onClick={() => selectPhone(phone)}>
-                                    <PhoneCard phone={phone} />
-                                </div>
+                                <Link
+                                    to={{
+                                        pathname: `/phone/${phone._id}`,
+                                        state: { fromSuccess: true },
+                                    }}
+                                    onClick={() => selectPhone(phone)}
+                                >
+                                    <PhoneCard phone={phone}></PhoneCard>
+                                </Link>
                             );
                         })}
                     </CardDeck>
@@ -94,9 +114,15 @@ const MainPageSection = (props) => {
                     <CardDeck>
                         {bestSellers.map((phone) => {
                             return (
-                                <div onClick={() => selectPhone(phone)}>
-                                    <PhoneCard phone={phone} />
-                                </div>
+                                <Link
+                                    to={{
+                                        pathname: `/phone/${phone._id}`,
+                                        state: { fromSuccess: true },
+                                    }}
+                                    onClick={() => selectPhone(phone)}
+                                >
+                                    <PhoneCard phone={phone}></PhoneCard>
+                                </Link>
                             );
                         })}{" "}
                     </CardDeck>
@@ -107,7 +133,7 @@ const MainPageSection = (props) => {
         );
     }
 
-    if (pageState == MainPageStatus.SEARCH) {
+    if (pageState === MainPageStatus.SEARCH) {
         return (
             <Container fluid>
                 <h2>Search Result </h2>
@@ -115,9 +141,15 @@ const MainPageSection = (props) => {
                     <CardDeck>
                         {searchResults.map((phone) => {
                             return (
-                                <div onClick={() => selectPhone(phone)}>
-                                    <PhoneCard phone={phone} />
-                                </div>
+                                <Link
+                                    to={{
+                                        pathname: `/phone/${phone._id}`,
+                                        state: { fromSearch: true },
+                                    }}
+                                    onClick={() => selectPhone(phone)}
+                                >
+                                    <PhoneCard phone={phone}></PhoneCard>
+                                </Link>
                             );
                         })}
                     </CardDeck>
@@ -128,20 +160,29 @@ const MainPageSection = (props) => {
         );
     }
 
-    if (pageState == MainPageStatus.ITEM) {
+    const handleGoBack = (loc) => {
+        const s = loc.state;
+        if (s.hasOwnProperty("fromError")) {
+            history.push("/");
+            props.setPageState(MainPageStatus.ERROR);
+        } else if (s.hasOwnProperty("fromSuccess")) {
+            history.push("/");
+            props.setPageState(MainPageStatus.SUCCESS);
+        } else if (s.hasOwnProperty("fromSearch")) {
+            history.push("/");
+            props.setPageState(MainPageStatus.SEARCH);
+        }
+    };
+
+    if (pageState === MainPageStatus.ITEM) {
         return (
             <div>
-                <button onClick={goBackToMain}>
-                    Go back to main (whilst retaining state)
-                </button>
-                {selectedPhone != null ? (
+                <button onClick={() => handleGoBack(location)}>Go back</button>
+                <Route path="/phone/:id">
                     <SinglePhone phone={selectedPhone} />
-                ) : (
-                    <div>unable to get phone</div>
-                )}
+                </Route>
             </div>
         );
-        // return <SinglePhone phone={selectedPhone} />;
     }
 };
 

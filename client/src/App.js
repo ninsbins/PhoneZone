@@ -37,6 +37,8 @@ function App() {
                         <Route path="/">
                             <MainPage />
                         </Route>
+
+                        {/* <Route path="/phones/:id" /> */}
                     </Switch>
                 </CartContextProvider>
             </Router>

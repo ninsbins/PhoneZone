@@ -5,20 +5,59 @@ import QuantityPopup from "./QuantityPopup";
 import "../styles/SinglePhone.scss";
 import Reviews from "../components/Reviews";
 import axios from "axios";
+import { Container, Row, Col, Modal, Button, Image } from "react-bootstrap";
+import { CartContext } from "../contexts/CartContext";
+import QuantityPopup from "./QuantityPopup";
+import useAuth from "../services/useAuth";
+import { Link, useParams } from "react-router-dom";
+import ReviewList from "./ReviewList";
+import axios from "axios";
+
+const IMAGEBASEURL = `http://localhost:9000/images/`;
+
+const pageStatus = {
+    LOADING: "loading",
+    ERROR: "error",
+    SUCCESS: "success",
+};
 
 const SinglePhone = (props) => {
-    let phone = props.phone || null;
+    // let phone = props.phone || null;
 
     const [reviewerInfo, setReviewerInfo] = useState(null);
 
     const { addPhone, increase, cartItems, removePhone } = useContext(
         CartContext
     );
+    const [phone, setPhone] = useState(null);
+    const [status, setStatus] = useState(pageStatus.LOADING);
     const [isInCart, setIsInCart] = useState(false);
     const [numInCart, setNumInCart] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const handleCloseModal = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
+    const auth = useAuth();
+    const { id } = useParams();
+
+    useEffect(() => {
+        console.log(id);
+
+        axios
+            .get(`http://localhost:9000/phones/${id}`)
+            .then((result) => {
+                console.log(result);
+                console.log(result.data);
+                console.log(result.data.phone);
+
+                setPhone(result.data.phone);
+
+                setStatus(pageStatus.SUCCESS);
+            })
+            .catch((err) => {
+                console.log(err);
+                setStatus(pageStatus.ERROR);
+            });
+    }, []);
 
     // useEffect(() => {
     //     let res = cartItems.find((ph) => ph._id === phone._id);
@@ -36,7 +75,7 @@ const SinglePhone = (props) => {
                 console.log(review);
                 let id = review.reviewer;
                 axios
-                .get(`http://localhost:9000/users/${id}`)
+                    .get(`http://localhost:9000/users/${id}`)
                     .then((result) => {
                         console.log(result.user.data);
                         userInfo.push(result.data.user);
@@ -53,16 +92,18 @@ const SinglePhone = (props) => {
 
     useEffect(() => {
         if (cartItems.length > 0) {
-            let p = cartItems.find((ph) => ph._id === phone._id);
-            if (p != undefined && "quantity" in p) {
-                let q = cartItems.find((ph) => ph._id === phone._id).quantity;
-                setNumInCart(q);
-                if (q > 0) {
-                    setIsInCart(true);
+            if (cartItems != null && cartItems.length > 0) {
+                let p = cartItems.find((ph) => ph._id === phone._id);
+                if (p != undefined && "quantity" in p) {
+                    let q = cartItems.find((ph) => ph._id === phone._id).quantity;
+                    setNumInCart(q);
+                    if (q > 0) {
+                        setIsInCart(true);
+                    }
                 }
+            } else {
+                setNumInCart(0);
             }
-        } else {
-            setNumInCart(0);
         }
     }, [cartItems]);
 
@@ -86,7 +127,16 @@ const SinglePhone = (props) => {
         // increase(phone)
     };
 
-    if (phone != null) {
+    if (status === pageStatus.LOADING) {
+        return <div>Loading...</div>;
+    }
+
+    if (status === pageStatus.ERROR) {
+        return <div>Error loading phone...</div>;
+    }
+
+    if (status === pageStatus.SUCCESS) {
+        console.log(phone);
         return (
             <Container fluid>
                 <QuantityPopup
@@ -98,6 +148,12 @@ const SinglePhone = (props) => {
                 />
 
                 <Row>
+                    <h2>{phone.title}</h2>
+                </Row>
+                <Row>
+                    <Col>
+                        <Image src={IMAGEBASEURL + phone.image} fluid />
+                    </Col>
                     <Col>
                         <Figure>
                             <Figure.Image
@@ -106,7 +162,8 @@ const SinglePhone = (props) => {
 
                         </Figure>
                     </Col>
-                    <Col>
+                    <Col style={{ borderLeft: "1px solid black" }}>
+                        {" "}
                         <div>
                             <h1>{phone.title}</h1>
                             <h2>{phone.brand}</h2>
@@ -148,15 +205,28 @@ const SinglePhone = (props) => {
                         />
                     </Col>
                 </Row>
+                <Row>{
+                    auth.user ? (
+                        <Button onClick={handleShowModal}>
+                            Add to cart
+                        </Button>
+                    ) : (
+                        <Button>
+                            <Link
+                                to="/login"
+                                style={{
+                                    textDecoration: "none",
+                                    color: "white",
+                                }}
+                            >
+                                Add to Cart
+                                    </Link>
+                        </Button>
+                    )
+                }</Row>
             </Container>
-            // <div>
 
-            //     {props.phone.title} - {props.phone.price}
-            //     and everything else for the phone
-            // </div>
         );
-    } else {
-        return <div>Error....</div>;
     }
 };
 
