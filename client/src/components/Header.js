@@ -39,23 +39,6 @@ const Header = (props) => {
         setSelectedBrand(brands[eventKey]);
     };
 
-    // return (
-    //     <Container fluid className="header">
-    //         <Row>
-    //             <Col sm={2} onClick={refreshPage}>
-    //                 PhoneZone
-    //             </Col>
-    //             <Col sm={6}>
-    //                 <input
-    //                     type="text"
-    //                     onChange={(e) => setSearchTerm(e.target.value)}
-    //                 ></input>
-
-    //                 <button onClick={() => props.search(searchTerm)}>
-    //                     Search
-    //                 </button>
-    //             </Col>
-
     return (
         <div>
             <Navbar fluid className="header" bg="dark" variant="dark" expand="lg">
@@ -123,13 +106,6 @@ const Header = (props) => {
                                         )))}
                                 </Dropdown.Menu>
                             </Dropdown>
-                            {/* <Nav onClick={(key) => handleSelect(key)}>
-                                <NavDropdown title={selectedBrand} id="basic-nav-dropdown">
-                                    {(brands == null)
-                                        ? (<NavDropdown.ItemText>No brands to show</NavDropdown.ItemText>)
-                                        : (brands.map((brand, index) => (<NavDropdown.Item eventKey={index}>{brand}</NavDropdown.Item>)))}
-                                </NavDropdown>
-                            </Nav> */}
                         </Col>
                     </Row>
                 ) : null}
