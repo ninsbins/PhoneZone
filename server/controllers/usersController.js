@@ -145,7 +145,7 @@ exports.create_new_user = (req, res, next) => {
 exports.get_user_from_id = (req, res, next) => {
     const id = req.params.userId;
 
-    User.findById(id)
+    User.findById(id,'-password')
         .then()
         .then((result) => {
             console.log(result);
@@ -168,9 +168,17 @@ exports.update_user = (req, res, next) => {
     // Get authenticated userId, passed through from authenticate middleware
     const id = req.user.userId;
 
-    var user = {
-        $set: req.body,
-    };
+    var user = {};
+    // $set: req.body,
+    if(req.body.firstname){
+        user.firstname = req.body.firstname;
+    }
+    if(req.body.lastname){
+        user.lastname = req.body.lastname;
+    }
+    if(req.body.email){
+        user.email = req.body.email;
+    }
 
     User.updateOne({ _id: id }, user)
         .then((result) => {
