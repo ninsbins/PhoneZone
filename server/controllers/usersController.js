@@ -168,7 +168,6 @@ exports.update_user = (req, res, next) => {
     const id = req.user.userId;
 
     var user = {};
-    // $set: req.body,
     if(req.body.firstname){
         user.firstname = req.body.firstname;
     }

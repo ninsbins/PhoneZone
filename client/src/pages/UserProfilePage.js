@@ -69,18 +69,72 @@ const UserProfile = () => {
 };
 
 function Profile({userdetails}) {
-    // TODO Add form and add modal to confirm password before submitting changes
+    // TODO add modal to confirm password before submitting changes
     // May need to add to backend api thing to confirm password
-    // Should remove password hash being sent to user
+    
+    let auth = useAuth();
+
+    const [firstname, setFirstname] = useState("");
+    const [lastname, setLastname] = useState("");
+    const [email, setEmail] = useState("");
+
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(false);
+
+    const handleSubmit = (event) => {
+        axios.post("/users/update", {
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+        }, {headers: {"Authorization": "Bearer " + auth.token}})
+        .then((result)=> {
+            setSuccess(true);
+            event.target.reset() // clear form
+            setTimeout(() => {
+                setSuccess(false);
+            }, 3000);
+        }).catch((err) => {
+            console.log(err);
+            console.log("Invalid inputs");
+            setError(true);
+            setTimeout(() => {
+                setError(false);
+            }, 3000);
+        });
+        event.preventDefault();
+    }
     return (
-        <div>
-            <ul>
-                <li>firstname: {userdetails.firstname}</li>
-                <li>lastname: {userdetails.lastname}</li>
-                <li>email: {userdetails.email}</li>
-                <li><pre>{JSON.stringify(userdetails,null,2)}</pre></li>
-            </ul>
-        </div>
+        <Form onSubmit={handleSubmit}> 
+            <Form.Group>
+                <Form.Label>First Name</Form.Label>
+                <Form.Control 
+                    type="text" 
+                    defaultValue={userdetails.firstname} 
+                    onChange={(e) => setFirstname(e.target.value)}
+                />
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Last Name</Form.Label>
+                <Form.Control 
+                    type="text" 
+                    defaultValue={userdetails.lastname}
+                    onChange={(e) => setLastname(e.target.value)}
+                />
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Email</Form.Label>
+                <Form.Control 
+                    type="text" 
+                    defaultValue={userdetails.email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+            </Form.Group>
+            <Form.Group>
+                <Button variant="primary" type="submit">Update your profile</Button>
+            </Form.Group>
+            {error ? (<div style={{ color: "red" }}>Error: Couldn&#39;t update info</div>) : null}
+            {success ? (<div style={{ color: "green" }}>Updated profile</div>) : null}
+        </Form>
     );
 }
 function ChangePassword({userdetails}) {
