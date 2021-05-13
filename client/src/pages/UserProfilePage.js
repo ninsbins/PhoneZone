@@ -14,7 +14,7 @@ const UserProfile = () => {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:9000/users/${auth.user}`)
+            .get(`/users/${auth.user}`)
             .then((result) => {
                 console.log(result);
                     setUserDetails(result.data.user);
@@ -84,11 +84,64 @@ function Profile({userdetails}) {
     );
 }
 function ChangePassword({userdetails}) {
-    // TODO connect form to password change
+    let auth = useAuth();
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword1, setNewPassword1] = useState("");
+    const [newPassword2, setNewPassword2] = useState("");
+
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(false);
+    const [nonMatching, setNonMatching] = useState(false);
+
+    const handleSubmit = (event) => {
+        if(newPassword1 === newPassword2){
+            axios.post("/users/change_password", {
+                oldpassword: oldPassword,
+                newpassword: newPassword2,
+            }, {headers: {"Authorization": "Bearer " + auth.token}})
+            .then((result)=> {
+                setSuccess(true);
+                event.target.reset() // clear form
+                setTimeout(() => {
+                    setSuccess(false);
+                }, 3000);
+            }).catch((err) => {
+                console.log(err);
+                console.log("Invalid inputs");
+                setError(true);
+                setTimeout(() => {
+                    setError(false);
+                }, 3000);
+            });
+        } else {
+            setNonMatching(true);
+            setTimeout(() => {
+                setNonMatching(false);
+            }, 3000);
+        }
+        event.preventDefault();
+    }
     return (
-        <div>
-        Put a form here
-        </div>
+        <Form onSubmit={handleSubmit}> 
+            <Form.Group>
+                <Form.Label>Old Password</Form.Label>
+                <Form.Control type="password" onChange={(e) => setOldPassword(e.target.value)}/>
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>New Password</Form.Label>
+                <Form.Control type="password" onChange={(e) => setNewPassword1(e.target.value)}/>
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Repeat New Password</Form.Label>
+                <Form.Control type="password" onChange={(e) => setNewPassword2(e.target.value)}/>
+            </Form.Group>
+            <Form.Group>
+                <Button variant="primary" type="submit">Change Password</Button>
+            </Form.Group>
+            {error ? (<div style={{ color: "red" }}>Error: Couldn&#39;t change password</div>) : null}
+            {nonMatching ? (<div style={{ color: "red" }}>Passwords don&#39;t match</div>) : null}
+            {success ? (<div style={{ color: "green" }}>Changed Password</div>) : null}
+        </Form>
     );
 }
 
@@ -101,7 +154,7 @@ function ManageListings({userdetails}) {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:9000/users/get_phones_sold_by/${auth.user}`)
+            .get(`/users/get_phones_sold_by/${auth.user}`)
             .then((result) => {
                 console.log(result);
                 setListings(result.data);
@@ -229,7 +282,7 @@ function AddListingForm({newListingAdded, setNewListingAdded}){
 
     useEffect(() => {
         axios
-            .get("http://localhost:9000/phones/brands")
+            .get("/phones/brands")
             .then((result) => {
                 setBrandList(result.data.brands);
                 setBrand(result.data.brands[0]);
@@ -243,7 +296,7 @@ function AddListingForm({newListingAdded, setNewListingAdded}){
 
     const handleSubmit = (event) => {
         console.log(title, brand, stock, price);
-        axios.post("http://localhost:9000/phones/createlisting", {
+        axios.post("/phones/createlisting", {
             title: title,
             brand: brand,
             image: brand+".jpg",
