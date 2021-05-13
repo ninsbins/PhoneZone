@@ -14,7 +14,7 @@ const UserProfile = () => {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:9000/users/${auth.user}`)
+            .get(`/users/${auth.user}`)
             .then((result) => {
                 console.log(result);
                     setUserDetails(result.data.user);
@@ -84,16 +84,69 @@ function Profile({userdetails}) {
     );
 }
 function ChangePassword({userdetails}) {
-    // TODO connect form to password change
+    let auth = useAuth();
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword1, setNewPassword1] = useState("");
+    const [newPassword2, setNewPassword2] = useState("");
+
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(false);
+    const [nonMatching, setNonMatching] = useState(false);
+
+    const handleSubmit = (event) => {
+        if(newPassword1 === newPassword2){
+            axios.post("/users/change_password", {
+                oldpassword: oldPassword,
+                newpassword: newPassword2,
+            }, {headers: {"Authorization": "Bearer " + auth.token}})
+            .then((result)=> {
+                setSuccess(true);
+                event.target.reset() // clear form
+                setTimeout(() => {
+                    setSuccess(false);
+                }, 3000);
+            }).catch((err) => {
+                console.log(err);
+                console.log("Invalid inputs");
+                setError(true);
+                setTimeout(() => {
+                    setError(false);
+                }, 3000);
+            });
+        } else {
+            setNonMatching(true);
+            setTimeout(() => {
+                setNonMatching(false);
+            }, 3000);
+        }
+        event.preventDefault();
+    }
     return (
-        <div>
-        Put a form here
-        </div>
+        <Form onSubmit={handleSubmit}> 
+            <Form.Group>
+                <Form.Label>Old Password</Form.Label>
+                <Form.Control type="password" onChange={(e) => setOldPassword(e.target.value)}/>
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>New Password</Form.Label>
+                <Form.Control type="password" onChange={(e) => setNewPassword1(e.target.value)}/>
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Repeat New Password</Form.Label>
+                <Form.Control type="password" onChange={(e) => setNewPassword2(e.target.value)}/>
+            </Form.Group>
+            <Form.Group>
+                <Button variant="primary" type="submit">Change Password</Button>
+            </Form.Group>
+            {error ? (<div style={{ color: "red" }}>Error: Couldn&#39;t change password</div>) : null}
+            {nonMatching ? (<div style={{ color: "red" }}>Passwords don&#39;t match</div>) : null}
+            {success ? (<div style={{ color: "green" }}>Changed Password</div>) : null}
+        </Form>
     );
 }
+
 function ManageListings({userdetails}) {
     let auth = useAuth();
-    // TODO connect up to backend to submit disabled and enabled and delete operations
     const [loading, setLoading] = useState(true);
     let [listings, setListings] = useState(null);
     const [error, setError] = useState(false);
@@ -101,7 +154,7 @@ function ManageListings({userdetails}) {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:9000/users/get_phones_sold_by/${auth.user}`)
+            .get(`/users/get_phones_sold_by/${auth.user}`)
             .then((result) => {
                 console.log(result);
                 setListings(result.data);
@@ -125,7 +178,7 @@ function ManageListings({userdetails}) {
     }
 
     let phones = listings.map(phone_data => 
-        <Phone data={phone_data} />
+        <Phone data={phone_data} setListingsChanged={setNewListingAdded}/>
     );
 
     return (
@@ -141,7 +194,51 @@ function ManageListings({userdetails}) {
     );
 }
 
-function Phone({data}){
+function Phone({data, setListingsChanged}){
+    let auth = useAuth();
+
+    let onDelete = () => {
+        console.log("clicked onDelete");
+        // send request
+        axios.put(`/phones/delete`, 
+            {phoneId: data._id}, 
+            {headers: {"Authorization": "Bearer " + auth.token}})
+        .then((result) => {
+            console.log(result);
+            setListingsChanged(true);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }
+
+    let onDisable = (event) => {
+        console.log(`sending request to toggle disable to ${event.target.checked}`);
+        if(event.target.checked){
+            axios.put(`/phones/disable`, 
+                {phoneId: data._id}, 
+                {headers: {"Authorization": "Bearer " + auth.token}})
+            .then((result) => {
+                console.log(result);
+                setListingsChanged(true);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        } else {
+            axios.put(`/phones/enable`, 
+                {phoneId: data._id}, 
+                {headers: {"Authorization": "Bearer " + auth.token}})
+            .then((result) => {
+                console.log(result);
+                setListingsChanged(true);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        }
+    }
+
     return (
         <Row>
             <Col>
@@ -157,10 +254,15 @@ function Phone({data}){
                 {data.price}
             </Col>
             <Col>
-                <Form.Check type="checkbox" label="disabled"/>
+                <Form.Check 
+                    type="checkbox" 
+                    label="disabled" 
+                    defaultChecked={'disabled' in data} 
+                    onClick={onDisable}
+                />
             </Col>
             <Col>
-                Delete
+                <Link onClick={onDelete} >Delete</Link>
             </Col>
         </Row>
     );
@@ -180,7 +282,7 @@ function AddListingForm({newListingAdded, setNewListingAdded}){
 
     useEffect(() => {
         axios
-            .get("http://localhost:9000/phones/brands")
+            .get("/phones/brands")
             .then((result) => {
                 setBrandList(result.data.brands);
                 setBrand(result.data.brands[0]);
@@ -194,11 +296,11 @@ function AddListingForm({newListingAdded, setNewListingAdded}){
 
     const handleSubmit = (event) => {
         console.log(title, brand, stock, price);
-        axios.post("http://localhost:9000/phones/createlisting", {
+        axios.post("/phones/createlisting", {
             title: title,
             brand: brand,
             image: brand+".jpg",
-            stock: stock,
+            stock: Math.floor(stock),
             price: price,
             disabled: disabled,
         }, {headers: {"Authorization": "Bearer " + auth.token}})

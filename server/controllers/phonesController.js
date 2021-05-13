@@ -186,13 +186,39 @@ exports.disable_listing = (req, res, next) => {
                 disabled: "",
             })
                 .then((result) => {
-                    return res.status(201).json({
+                    return res.status(200).json({
                         message: "successfully disabled",
                     });
                 })
                 .catch((err) => {
                     return res.status(400).json({
                         message: "unable to disable phone listing",
+                    });
+                });
+        } else {
+            return res.status(401).send("Authentication Error");
+        }
+    });
+};
+
+exports.delete_listing = (req, res, next) => {
+    // add disabled field to phone
+    let phoneId = req.body.phoneId;
+
+    // check that this phone is sold by this user
+    let userId = req.user.userId;
+    Phone.findById(phoneId).then((result)=> {
+        if(userId == result.seller){
+            Phone.findOneAndDelete({_id:phoneId})
+                .then((result) => {
+                    console.log(result);
+                    return res.status(200).json({
+                        message: "successfully deleted",
+                    });
+                })
+                .catch((err) => {
+                    return res.status(400).json({
+                        message: "unable to delete phone listing",
                     });
                 });
         } else {

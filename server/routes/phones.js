@@ -50,6 +50,9 @@ router.put("/disable", UsersController.authenticate, PhonesController.disable_li
  */
 router.put("/enable", UsersController.authenticate, PhonesController.enable_listing);
 
+router.put("/delete", UsersController.authenticate, PhonesController.delete_listing);
+
+
 /* GET phone listing from id */
 router.get("/:id", PhonesController.get_phone_from_id);
 
