@@ -7,16 +7,18 @@ exports.create_new_listing = async (req, res, next) => {
     console.log("creating phone listing");
     console.log(req.body);
 
-    const phone = new Phone({
+    let phone = new Phone({
         title: req.body.title,
         brand: req.body.brand,
-        image: req.body.image,
+        image: req.body.brand+".jpg",
         stock: req.body.stock,
         seller: req.user.userId,
         price: req.body.price,
         reviews: [],            // We can't let the user add reviews themselves
-        disabled: req.body.disabled,
     });
+    if(req.body.disabled){
+        phone.disabled = "";
+    }
 
     console.log(phone._id);
 
