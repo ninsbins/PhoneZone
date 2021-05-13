@@ -145,8 +145,8 @@ exports.create_new_user = (req, res, next) => {
 exports.get_user_from_id = (req, res, next) => {
     const id = req.params.userId;
 
-    User.findById(id)
-        .then()
+    User.findById(id, "-password")
+        // .then()
         .then((result) => {
             console.log(result);
             return res.status(200).json({

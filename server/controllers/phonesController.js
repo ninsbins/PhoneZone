@@ -64,11 +64,11 @@ exports.get_phone_from_id = (req, res, next) => {
     console.log(id);
 
     Phone.findById(id)
-        .populate("seller") // get seller information via reference
+        .populate({path: "seller", select: "-password"}) 
         .populate({
-            path: 'reviews',
-            populate: { path: 'reviewer' }
-        }) // get seller information via reference
+            path: 'reviews.reviewer',
+            select: "-password"
+        }) 
         .then((result) => {
         console.log(result);
         res.status(200).json({
