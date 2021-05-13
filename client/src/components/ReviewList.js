@@ -5,8 +5,9 @@ const ReviewList = (props) => {
     let reviews = props.reviews || [];
 
     if (reviews.length > 0) {
-        return reviews.map((review) => {
-            return <Review review={review} />;
+        return reviews.map((review, index) => {
+            return <Review 
+                review={review} />;
         });
     } else {
         return <div>No reviews yet...</div>;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Row, Container } from "react-bootstrap";
+import { Row, Container, Card } from "react-bootstrap";
 
 const Review = (props) => {
     const [fullView, setFullView] = useState(false);
@@ -16,21 +16,32 @@ const Review = (props) => {
 
     return (
         <Container fluid>
-            <Row>
-                <p>Rating: {props.review.rating}</p>
-            </Row>
-            <Row>
-                {fullView ? (
-                    <p>Comment: {props.review.comment}</p>
-                ) : (
-                    <div>
-                        {limitComment(props.review.comment)} ...
-                        <button onClick={() => setFullView(true)}>
-                            View more
+            <Card>
+                <Card.Body>
+                    <Row>
+                        {/* add in user first and last name */}
+                        <p>Rating: {props.review.rating}</p>
+                    </Row>
+                    <Row>
+                        <Row>
+                            {fullView ? (
+                                <p>Comment: {props.review.comment}</p>
+                            ) : (
+                                <div>
+                                    {limitComment(props.review.comment)} ...
+                                    <button onClick={() => setFullView(true)}>
+                                        View more
                         </button>
-                    </div>
-                )}
+                                </div>
+                            )}
+                        </Row>
+                    </Row>
+                </Card.Body>
+            </Card>
+            <Row>
+                
             </Row>
+            
         </Container>
     );
 };

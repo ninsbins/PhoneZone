@@ -1,17 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Container, Row, Col, Card, Modal, Button, Figure } from "react-bootstrap";
+import { Container, Row, Col, Card, Modal, Button, Figure, Image } from "react-bootstrap";
 import CartContextProvider, { CartContext } from "../contexts/CartContext";
 import QuantityPopup from "./QuantityPopup";
 import "../styles/SinglePhone.scss";
-import Reviews from "../components/Reviews";
+import ReviewList from "../components/ReviewList";
 import axios from "axios";
-import { Container, Row, Col, Modal, Button, Image } from "react-bootstrap";
-import { CartContext } from "../contexts/CartContext";
-import QuantityPopup from "./QuantityPopup";
 import useAuth from "../services/useAuth";
 import { Link, useParams } from "react-router-dom";
-import ReviewList from "./ReviewList";
-import axios from "axios";
 
 const IMAGEBASEURL = `http://localhost:9000/images/`;
 
@@ -23,8 +18,6 @@ const pageStatus = {
 
 const SinglePhone = (props) => {
     // let phone = props.phone || null;
-
-    const [reviewerInfo, setReviewerInfo] = useState(null);
 
     const { addPhone, increase, cartItems, removePhone } = useContext(
         CartContext
@@ -40,7 +33,7 @@ const SinglePhone = (props) => {
     const { id } = useParams();
 
     useEffect(() => {
-        console.log(id);
+        setStatus(pageStatus.LOADING);
 
         axios
             .get(`http://localhost:9000/phones/${id}`)
@@ -67,28 +60,6 @@ const SinglePhone = (props) => {
     //     // console.log(cartItems);
     //     // console.log(res);
     // }, []);
-
-    useEffect(() => {
-        if (phone.reviews != null) {
-            let userInfo = [];
-            phone.reviews.map((review) => {
-                console.log(review);
-                let id = review.reviewer;
-                axios
-                    .get(`http://localhost:9000/users/${id}`)
-                    .then((result) => {
-                        console.log(result.user.data);
-                        userInfo.push(result.data.user);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    })
-            });
-            if (userInfo.length > 0) {
-                setReviewerInfo(userInfo);
-            }
-        }
-    }, []);
 
     useEffect(() => {
         if (cartItems.length > 0) {
@@ -199,10 +170,8 @@ const SinglePhone = (props) => {
                 <br></br>
                 <Row>
                     <Col>
-                        <Reviews
-                            reviews={phone.reviews}
-                            reviewerInfo={reviewerInfo}
-                        />
+                        <ReviewList
+                            reviews={phone.reviews} />
                     </Col>
                 </Row>
                 <Row>{
