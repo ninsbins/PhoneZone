@@ -91,9 +91,9 @@ function ChangePassword({userdetails}) {
         </div>
     );
 }
+
 function ManageListings({userdetails}) {
     let auth = useAuth();
-    // TODO connect up to backend to submit disabled and enabled and delete operations
     const [loading, setLoading] = useState(true);
     let [listings, setListings] = useState(null);
     const [error, setError] = useState(false);
@@ -125,7 +125,7 @@ function ManageListings({userdetails}) {
     }
 
     let phones = listings.map(phone_data => 
-        <Phone data={phone_data} />
+        <Phone data={phone_data} setListingsChanged={setNewListingAdded}/>
     );
 
     return (
@@ -141,7 +141,51 @@ function ManageListings({userdetails}) {
     );
 }
 
-function Phone({data}){
+function Phone({data, setListingsChanged}){
+    let auth = useAuth();
+
+    let onDelete = () => {
+        console.log("clicked onDelete");
+        // send request
+        axios.put(`/phones/delete`, 
+            {phoneId: data._id}, 
+            {headers: {"Authorization": "Bearer " + auth.token}})
+        .then((result) => {
+            console.log(result);
+            setListingsChanged(true);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }
+
+    let onDisable = (event) => {
+        console.log(`sending request to toggle disable to ${event.target.checked}`);
+        if(event.target.checked){
+            axios.put(`/phones/disable`, 
+                {phoneId: data._id}, 
+                {headers: {"Authorization": "Bearer " + auth.token}})
+            .then((result) => {
+                console.log(result);
+                setListingsChanged(true);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        } else {
+            axios.put(`/phones/enable`, 
+                {phoneId: data._id}, 
+                {headers: {"Authorization": "Bearer " + auth.token}})
+            .then((result) => {
+                console.log(result);
+                setListingsChanged(true);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        }
+    }
+
     return (
         <Row>
             <Col>
@@ -157,10 +201,15 @@ function Phone({data}){
                 {data.price}
             </Col>
             <Col>
-                <Form.Check type="checkbox" label="disabled"/>
+                <Form.Check 
+                    type="checkbox" 
+                    label="disabled" 
+                    defaultChecked={'disabled' in data} 
+                    onClick={onDisable}
+                />
             </Col>
             <Col>
-                Delete
+                <Link onClick={onDelete} >Delete</Link>
             </Col>
         </Row>
     );
@@ -198,7 +247,7 @@ function AddListingForm({newListingAdded, setNewListingAdded}){
             title: title,
             brand: brand,
             image: brand+".jpg",
-            stock: stock,
+            stock: Math.floor(stock),
             price: price,
             disabled: disabled,
         }, {headers: {"Authorization": "Bearer " + auth.token}})
