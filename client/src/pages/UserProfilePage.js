@@ -68,7 +68,7 @@ const UserProfile = () => {
     );
 };
 
-function Profile({userdetails,}) {
+function Profile({userdetails}) {
     // TODO Add form and add modal to confirm password before submitting changes
     // May need to add to backend api thing to confirm password
     // Should remove password hash being sent to user
@@ -83,7 +83,7 @@ function Profile({userdetails,}) {
         </div>
     );
 }
-function ChangePassword({userdetails,}) {
+function ChangePassword({userdetails}) {
     // TODO connect form to password change
     return (
         <div>
@@ -91,12 +91,13 @@ function ChangePassword({userdetails,}) {
         </div>
     );
 }
-function ManageListings({userdetails,}) {
-    // TODO connect up to backend to submit disabled and enabled and delete operations
+function ManageListings({userdetails}) {
     let auth = useAuth();
+    // TODO connect up to backend to submit disabled and enabled and delete operations
     const [loading, setLoading] = useState(true);
     let [listings, setListings] = useState(null);
     const [error, setError] = useState(false);
+    const [newListingAdded, setNewListingAdded] = useState(false);
 
     useEffect(() => {
         axios
@@ -112,7 +113,8 @@ function ManageListings({userdetails,}) {
                 setLoading(false);
                 setError(true);
             });
-    },[]);
+        setNewListingAdded(false);
+    },[newListingAdded]);
 
     if (loading) {
         return <div>Loading....</div>;
@@ -128,7 +130,10 @@ function ManageListings({userdetails,}) {
 
     return (
         <div>
-            <AddListingForm />
+            <AddListingForm 
+                newListingAdded={newListingAdded} 
+                setNewListingAdded={setNewListingAdded} 
+            />
             <Container>
             {phones}
             </Container>
@@ -161,41 +166,75 @@ function Phone({data}){
     );
 }
 
-function AddListingForm(){
-    //TODO connect up to backend
-    const [brands, setBrands] = useState([]);
+function AddListingForm({newListingAdded, setNewListingAdded}){
+    let auth = useAuth();
+
+    const [brandList, setBrandList] = useState([]);
+    const [title, setTitle] = useState("");
+    const [brand, setBrand] = useState("");
+    const [stock, setStock] = useState("");
+    const [price, setPrice] = useState("");
+    const [disabled, setDisabled] = useState(false);
+    const [invalidInput, setInvalidInput] = useState(false);
+    const [success, setSuccess] = useState(false);
+
     useEffect(() => {
         axios
             .get("http://localhost:9000/phones/brands")
             .then((result) => {
-                setBrands(result.data.brands);
+                setBrandList(result.data.brands);
+                setBrand(result.data.brands[0]);
             })
             .catch((err) => {
                 console.log(err);
             });
     }, []);
 
-    let brandOptions = brands.map(text=> <option>{text}</option>);
+    let brandOptions = brandList.map(text=> <option>{text}</option>);
 
     const handleSubmit = (event) => {
-        //TODO
+        console.log(title, brand, stock, price);
+        axios.post("http://localhost:9000/phones/createlisting", {
+            title: title,
+            brand: brand,
+            image: brand+".jpg",
+            stock: stock,
+            price: price,
+            disabled: disabled,
+        }, {headers: {"Authorization": "Bearer " + auth.token}})
+        .then((result)=> {
+            setNewListingAdded(true);
+            setSuccess(true);
+            event.target.reset() // clear form
+            setTimeout(() => {
+                setSuccess(false);
+            }, 3000);
+        }).catch((err) => {
+            console.log(err);
+            console.log("Invalid inputs");
+            setInvalidInput(true);
+            setTimeout(() => {
+                setInvalidInput(false);
+            }, 3000);
+        });
+        event.preventDefault();
     }
 
     return (
         <Form onSubmit={handleSubmit}> 
             <Form.Group>
                 <Form.Label>Title</Form.Label>
-                <Form.Control type="text" />
+                <Form.Control type="text" onChange={(e) => setTitle(e.target.value)}/>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Brand</Form.Label>
-                <Form.Control as="select">
+                <Form.Control as="select" onChange={(e) => setBrand(e.target.value)}>
                     {brandOptions}
                 </Form.Control>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Stock</Form.Label>
-                <Form.Control type="integer" />
+                <Form.Control type="integer"  onChange={(e) => setStock(e.target.value)}/>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Price</Form.Label>
@@ -203,12 +242,17 @@ function AddListingForm(){
                     <InputGroup.Prepend>
                         <InputGroup.Text>$</InputGroup.Text>
                     </InputGroup.Prepend>
-                    <Form.Control />
+                    <Form.Control  onChange={(e) => setPrice(e.target.value)}/>
                 </InputGroup>
+            </Form.Group>
+            <Form.Group>
+                <Form.Check label="disabled" onChange={(e) => setDisabled(e.target.value)}/>
             </Form.Group>
             <Form.Group>
                 <Button variant="primary" type="submit">Add Listing</Button>
             </Form.Group>
+            {invalidInput ? (<div style={{ color: "red" }}>Invalid Listing Input</div>) : null}
+            {success ? (<div style={{ color: "green" }}>New Listing Added!</div>) : null}
         </Form>
     )
 }
