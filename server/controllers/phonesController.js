@@ -63,7 +63,13 @@ exports.get_phone_from_id = (req, res, next) => {
 
     console.log(id);
 
-    Phone.findById(id).then((result) => {
+    Phone.findById(id)
+        .populate("seller") // get seller information via reference
+        .populate({
+            path: 'reviews',
+            populate: { path: 'reviewer' }
+        }) // get seller information via reference
+        .then((result) => {
         console.log(result);
         res.status(200).json({
             message: "phone listing returned",
