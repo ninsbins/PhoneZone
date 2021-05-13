@@ -6,6 +6,7 @@ import axios from "axios";
 import { BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
 
 const UserProfile = () => {
+    // TODO add header
     let auth = useAuth();
     const [loading, setLoading] = useState(true);
     let [userDetails, setUserDetails] = useState(null);
@@ -162,8 +163,26 @@ function Phone({data}){
 
 function AddListingForm(){
     //TODO connect up to backend
+    const [brands, setBrands] = useState([]);
+    useEffect(() => {
+        axios
+            .get("http://localhost:9000/phones/brands")
+            .then((result) => {
+                setBrands(result.data.brands);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
+    let brandOptions = brands.map(text=> <option>{text}</option>);
+
+    const handleSubmit = (event) => {
+        //TODO
+    }
+
     return (
-        <Form> 
+        <Form onSubmit={handleSubmit}> 
             <Form.Group>
                 <Form.Label>Title</Form.Label>
                 <Form.Control type="text" />
@@ -171,7 +190,7 @@ function AddListingForm(){
             <Form.Group>
                 <Form.Label>Brand</Form.Label>
                 <Form.Control as="select">
-                    <option>Brand1</option>
+                    {brandOptions}
                 </Form.Control>
             </Form.Group>
             <Form.Group>
