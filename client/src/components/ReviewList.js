@@ -4,6 +4,7 @@ import Review from "./Review";
 const ReviewList = (props) => {
     let reviews = props.reviews || [];
 
+    // todo show first 3 comments only
     if (reviews.length > 0) {
         return reviews.map((review, index) => {
             return <Review 
