@@ -36,9 +36,9 @@ const phoneSchema = new mongoose.Schema({
     stock: {
         type: Number,
         required: true,
+        min: 0,
     },
     seller: {
-        // type: mongoose.Schema.Types.ObjectId,
         type: String,
         ref: "User",
         required: true,
@@ -46,6 +46,7 @@ const phoneSchema = new mongoose.Schema({
     price: {
         type: Number,
         required: true,
+        min: 0,
     },
     reviews: {
         type: [reviewSchema],

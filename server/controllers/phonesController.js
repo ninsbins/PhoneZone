@@ -7,16 +7,18 @@ exports.create_new_listing = async (req, res, next) => {
     console.log("creating phone listing");
     console.log(req.body);
 
-    const phone = new Phone({
+    let phone = new Phone({
         title: req.body.title,
         brand: req.body.brand,
-        image: req.body.image,
+        image: req.body.brand+".jpg",
         stock: req.body.stock,
         seller: req.user.userId,
         price: req.body.price,
         reviews: [],            // We can't let the user add reviews themselves
-        disabled: req.body.disabled,
     });
+    if(req.body.disabled){
+        phone.disabled = "";
+    }
 
     console.log(phone._id);
 
@@ -64,11 +66,11 @@ exports.get_phone_from_id = (req, res, next) => {
     console.log(id);
 
     Phone.findById(id)
-        .populate("seller") // get seller information via reference
+        .populate({path: "seller", select: "-password"}) 
         .populate({
-            path: 'reviews',
-            populate: { path: 'reviewer' }
-        }) // get seller information via reference
+            path: 'reviews.reviewer',
+            select: "-password"
+        }) 
         .then((result) => {
         console.log(result);
         res.status(200).json({
@@ -184,13 +186,39 @@ exports.disable_listing = (req, res, next) => {
                 disabled: "",
             })
                 .then((result) => {
-                    return res.status(201).json({
+                    return res.status(200).json({
                         message: "successfully disabled",
                     });
                 })
                 .catch((err) => {
                     return res.status(400).json({
                         message: "unable to disable phone listing",
+                    });
+                });
+        } else {
+            return res.status(401).send("Authentication Error");
+        }
+    });
+};
+
+exports.delete_listing = (req, res, next) => {
+    // add disabled field to phone
+    let phoneId = req.body.phoneId;
+
+    // check that this phone is sold by this user
+    let userId = req.user.userId;
+    Phone.findById(phoneId).then((result)=> {
+        if(userId == result.seller){
+            Phone.findOneAndDelete({_id:phoneId})
+                .then((result) => {
+                    console.log(result);
+                    return res.status(200).json({
+                        message: "successfully deleted",
+                    });
+                })
+                .catch((err) => {
+                    return res.status(400).json({
+                        message: "unable to delete phone listing",
                     });
                 });
         } else {
