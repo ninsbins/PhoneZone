@@ -28,6 +28,7 @@ const SinglePhone = (props) => {
     const [numInCart, setNumInCart] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const [showAllReviews, setShowAllReviews] = useState(false);
+
     const handleCloseModal = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
     const auth = useAuth();
@@ -95,13 +96,7 @@ const SinglePhone = (props) => {
     };
 
     function showMoreReviews() {
-        //if more than 3 reviewsm, show the show more button
-        if (phone.reviews.length > 3) {
-            //if all shown, show collapse button
-            return <Button variant="primary" onClick={setShowAllReviews(!showAllReviews)}>
-                {showAllReviews ? "Show less" : "Show more"}
-            </Button>
-        }
+        setShowAllReviews(!showAllReviews);
     }
 
     if (status === pageStatus.LOADING) {
@@ -192,10 +187,18 @@ const SinglePhone = (props) => {
                 <br></br>
                 <Row>
                     <Col>
+                        <h3>Reviews</h3>
                         <ReviewList
                             reviews={phone.reviews}
                             showAll={showAllReviews} />
-                        {showMoreReviews}
+                        <div className="center">
+                            {(phone.reviews.length > 3) ?
+                            //if all shown, show collapse button
+                            (<Button variant="primary" onClick={showMoreReviews}>
+                                {showAllReviews ? "Show less" : "Show more"}
+                            </Button>) : null
+                        }
+                        </div>
                     </Col>
                 </Row>
             </Container>
