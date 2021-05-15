@@ -6,7 +6,8 @@ import axios from "axios";
 import { BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
 
 const UserProfile = () => {
-    // TODO add header
+    // TODO add header?
+    
     let auth = useAuth();
     const [loading, setLoading] = useState(true);
     let [userDetails, setUserDetails] = useState(null);
@@ -77,64 +78,115 @@ function Profile({userdetails}) {
     const [firstname, setFirstname] = useState("");
     const [lastname, setLastname] = useState("");
     const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(false);
 
+    const [showModal, setShowModal] = useState(false);
+    const [passwordError, setPasswordError] = useState(false);
+    const handleClose = () => setShowModal(false);
+    const handleShow = () => setShowModal(true);
+
+
     const handleSubmit = (event) => {
+        handleShow();
+        event.preventDefault();
+    }
+
+    const handleModalSubmit = (event) => {
         axios.post("/users/update", {
             firstname: firstname,
             lastname: lastname,
             email: email,
+            password: password,
         }, {headers: {"Authorization": "Bearer " + auth.token}})
         .then((result)=> {
             setSuccess(true);
-            event.target.reset() // clear form
             setTimeout(() => {
                 setSuccess(false);
             }, 3000);
+            setShowModal(false);
+        }, (error) => {
+            if(error.response.data.message === "invalid password"){
+                setPasswordError(true);
+                setTimeout(() => {
+                    setPasswordError(false);
+                }, 3000);
+            } else {
+                setShowModal(false);
+                setError(true);
+                setTimeout(() => {
+                    setError(false);
+                }, 3000);
+            }
         }).catch((err) => {
-            console.log(err);
             console.log("Invalid inputs");
             setError(true);
             setTimeout(() => {
                 setError(false);
             }, 3000);
+            setShowModal(false);
         });
         event.preventDefault();
     }
+
     return (
-        <Form onSubmit={handleSubmit}> 
-            <Form.Group>
-                <Form.Label>First Name</Form.Label>
-                <Form.Control 
-                    type="text" 
-                    defaultValue={userdetails.firstname} 
-                    onChange={(e) => setFirstname(e.target.value)}
-                />
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Last Name</Form.Label>
-                <Form.Control 
-                    type="text" 
-                    defaultValue={userdetails.lastname}
-                    onChange={(e) => setLastname(e.target.value)}
-                />
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Email</Form.Label>
-                <Form.Control 
-                    type="text" 
-                    defaultValue={userdetails.email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-            </Form.Group>
-            <Form.Group>
-                <Button variant="primary" type="submit">Update your profile</Button>
-            </Form.Group>
-            {error ? (<div style={{ color: "red" }}>Error: Couldn&#39;t update info</div>) : null}
-            {success ? (<div style={{ color: "green" }}>Updated profile</div>) : null}
-        </Form>
+        <>
+            <Form onSubmit={handleSubmit}> 
+                <Form.Group>
+                    <Form.Label>First Name</Form.Label>
+                    <Form.Control 
+                        type="text" 
+                        defaultValue={userdetails.firstname} 
+                        onChange={(e) => setFirstname(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Last Name</Form.Label>
+                    <Form.Control 
+                        type="text" 
+                        defaultValue={userdetails.lastname}
+                        onChange={(e) => setLastname(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control 
+                        type="text" 
+                        defaultValue={userdetails.email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group>
+                    <Button variant="primary" type="submit">Update your profile</Button>
+                </Form.Group>
+                {error ? (<span style={{ color: "red" }}>Error: Couldn&#39;t update info</span>) : null}
+                {success ? (<span style={{ color: "green" }}>Updated profile</span>) : null}
+            </Form>
+            <Modal show={showModal} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm password</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form onSubmit={handleModalSubmit}> 
+                        <Form.Group>
+                            <Form.Label>Confirm Password</Form.Label>
+                            <Form.Control 
+                                type="password" 
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </Form.Group>
+                    </Form>
+                {passwordError ? (<div style={{ color: "red" }}>Invalid Password</div>) : null}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleModalSubmit}>
+                        Update Profile
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </>
     );
 }
 function ChangePassword({userdetails}) {
@@ -412,7 +464,5 @@ function AddListingForm({newListingAdded, setNewListingAdded}){
         </Form>
     )
 }
-
-
 
 export default UserProfile;
