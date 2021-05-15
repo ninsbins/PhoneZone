@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Container, CardDeck, Card, Button } from "react-bootstrap";
+import React, { useState } from "react";
+import { Container, CardDeck, Button } from "react-bootstrap";
 import MainPageStatus from "../services/constants";
 import PhoneCard from "./PhoneCard";
 import SinglePhone from "./SinglePhone";
 import { Route, Link, useHistory, useLocation } from "react-router-dom";
+import "../styles/Main.scss";
 
 const dummy_phone = {
     _id: "60847ab6f71df6d112cc629a",
@@ -87,7 +88,9 @@ const MainPageSection = (props) => {
     if (pageState === MainPageStatus.SUCCESS) {
         return (
             <Container fluid>
-                <h2>Sold out soon</h2>
+                <br></br>
+                <h2 className="sectionTitle">Sold out soon</h2>
+                <p className="sectionSubtitle">Get in quick before they're gone!</p>
                 {/* Map through soldOutSoon phones for display */}
                 {soldOutSoon != null ? (
                     <CardDeck>
@@ -108,8 +111,10 @@ const MainPageSection = (props) => {
                 ) : (
                     <div>No items to show</div>
                 )}
+                <br></br>
                 {/* Map through bestSeller phones for display */}
-                <h2>Best Sellers</h2>
+                <h2 className="sectionTitle">Best Sellers</h2>
+                <p className="sectionSubtitle">Check out our best sellers!</p>
                 {bestSellers != null ? (
                     <CardDeck>
                         {bestSellers.map((phone) => {

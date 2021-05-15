@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Container, Row, Col, Card, Modal, Button, Figure, Image } from "react-bootstrap";
-import CartContextProvider, { CartContext } from "../contexts/CartContext";
+import { Container, Row, Col, Button, Image } from "react-bootstrap";
+import { CartContext } from "../contexts/CartContext";
 import QuantityPopup from "./QuantityPopup";
 import "../styles/SinglePhone.scss";
 import ReviewList from "../components/ReviewList";
@@ -27,6 +27,7 @@ const SinglePhone = (props) => {
     const [isInCart, setIsInCart] = useState(false);
     const [numInCart, setNumInCart] = useState(0);
     const [showModal, setShowModal] = useState(false);
+    const [showAllReviews, setShowAllReviews] = useState(false);
     const handleCloseModal = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
     const auth = useAuth();
@@ -38,12 +39,7 @@ const SinglePhone = (props) => {
         axios
             .get(`http://localhost:9000/phones/${id}`)
             .then((result) => {
-                console.log(result);
-                console.log(result.data);
-                console.log(result.data.phone);
-
                 setPhone(result.data.phone);
-
                 setStatus(pageStatus.SUCCESS);
             })
             .catch((err) => {
@@ -98,6 +94,16 @@ const SinglePhone = (props) => {
         // increase(phone)
     };
 
+    function showMoreReviews() {
+        //if more than 3 reviewsm, show the show more button
+        if (phone.reviews.length > 3) {
+            //if all shown, show collapse button
+            return <Button variant="primary" onClick={setShowAllReviews(!showAllReviews)}>
+                {showAllReviews ? "Show less" : "Show more"}
+            </Button>
+        }
+    }
+
     if (status === pageStatus.LOADING) {
         return <div>Loading...</div>;
     }
@@ -118,25 +124,29 @@ const SinglePhone = (props) => {
                     handleSaveModal={handleSaveModal}
                 />
                 <Row>
-                    <Col>
+                    <Col xs={3}>
                         <Image src={IMAGEBASEURL + phone.image} fluid />
                     </Col>
-                    <Col>
-                        <Figure>
-                            <Figure.Image
-                                src={phone.image}
-                            />
-
-                        </Figure>
-                    </Col>
-                    <Col style={{ borderLeft: "1px solid black" }}>
+                    <Col style={{ borderLeft: "1px solid grey" }}>
                         {" "}
                         <div>
-                            <h1>{phone.title}</h1>
-                            <h2>{phone.brand}</h2>
-                            <h2>${phone.price.toFixed(2)}</h2>
-                            <p>In stock: {phone.stock}</p>
-                            <p>Seller: {phone.seller.firstname} {phone.seller.lastname}</p>
+                            <h2>{phone.title}</h2>
+                            <h3>{phone.brand}</h3>
+                            <h3>${phone.price.toFixed(2)}</h3>
+                            <Button
+                                className="tags"
+                                variant="outline-secondary"
+                                disabled="true"
+                            >
+                                In stock: {props.phone.stock}
+                            </Button>
+                            <Button
+                                className="tags"
+                                variant="outline-secondary"
+                                disabled="true"
+                            >
+                                Seller: {phone.seller.firstname} {phone.seller.lastname}
+                            </Button>
 
                             <p>Quantity in cart: {numInCart}</p>
                         </div>
@@ -183,7 +193,9 @@ const SinglePhone = (props) => {
                 <Row>
                     <Col>
                         <ReviewList
-                            reviews={phone.reviews} />
+                            reviews={phone.reviews}
+                            showAll={showAllReviews} />
+                        {showMoreReviews}
                     </Col>
                 </Row>
             </Container>

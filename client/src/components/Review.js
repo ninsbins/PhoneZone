@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Row, Container, Card, Col } from "react-bootstrap";
+import "../styles/Review.scss";
+
 
 const Review = (props) => {
     const [fullView, setFullView] = useState(false);
@@ -29,11 +31,11 @@ const Review = (props) => {
     }
 
     return (
-        <Container fluid>
+        <Container fluid className={props.class}>
             <Card>
                 <Card.Body>
                     <Row>
-                        <Col xs={2}>
+                        <Col xs={1}>
                             <Container>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
                                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />

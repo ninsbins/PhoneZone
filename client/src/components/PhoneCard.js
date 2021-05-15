@@ -36,7 +36,6 @@ const PhoneCard = (props) => {
                     </Button>
                 )}
                 <Button
-                    className="tags"
                     variant="outline-secondary"
                     disabled="true"
                 >
