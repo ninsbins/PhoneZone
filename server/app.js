@@ -19,6 +19,7 @@ var indexRouter = require("./routes/index");
 var usersRoutes = require("./routes/users");
 var phoneRoutes = require("./routes/phones");
 let orderRoutes = require("./routes/orders");
+let cartRoutes = require("./routes/cart");
 
 // APP SETUP
 var app = express();
@@ -35,6 +36,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRoutes);
 app.use("/phones", phoneRoutes);
 app.use("/orders", orderRoutes);
+app.use("/cart", cartRoutes);
 
 // CORS
 app.use((req, res, next) => {
