@@ -178,22 +178,30 @@ exports.update_user = (req, res, next) => {
         user.email = req.body.email;
     }
 
-    User.updateOne({ _id: id }, user)
-        .then((result) => {
-            console.log(result);
-            res.status(200).json({
-                message: "user was updated",
-                operation: user,
-                // result: result,
+    User.findById(id).then((result)=>{
+        if(result.password === encryptPassword(req.body.password)){
+            User.updateOne({ _id: id }, user)
+                .then((result) => {
+                    console.log(result);
+                    res.status(200).json({
+                        message: "user was updated",
+                        operation: user,
+                        // result: result,
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    res.status(500).json({
+                        message: "user could not be updated",
+                        error: err.message,
+                    });
+                });
+        } else {
+            res.status(401).json({
+                message: "invalid password",
             });
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-                message: "user could not be updated",
-                error: err.message,
-            });
-        });
+        }
+    });
 };
 
 /**
