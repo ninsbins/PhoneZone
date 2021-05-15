@@ -1,11 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Container, Row, Col, Modal, Button, Image } from "react-bootstrap";
+import { Container, Row, Col, Button, Image } from "react-bootstrap";
 import { CartContext } from "../contexts/CartContext";
 import QuantityPopup from "./QuantityPopup";
+import "../styles/SinglePhone.scss";
+import ReviewList from "../components/ReviewList";
+import axios from "axios";
 import useAuth from "../services/useAuth";
 import { Link, useParams } from "react-router-dom";
-import ReviewList from "./ReviewList";
-import axios from "axios";
 
 const IMAGEBASEURL = `http://localhost:9000/images/`;
 
@@ -26,23 +27,20 @@ const SinglePhone = (props) => {
     const [isInCart, setIsInCart] = useState(false);
     const [numInCart, setNumInCart] = useState(0);
     const [showModal, setShowModal] = useState(false);
+    const [showAllReviews, setShowAllReviews] = useState(false);
+
     const handleCloseModal = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
     const auth = useAuth();
     const { id } = useParams();
 
     useEffect(() => {
-        console.log(id);
+        setStatus(pageStatus.LOADING);
 
         axios
             .get(`http://localhost:9000/phones/${id}`)
             .then((result) => {
-                console.log(result);
-                console.log(result.data);
-                console.log(result.data.phone);
-
                 setPhone(result.data.phone);
-
                 setStatus(pageStatus.SUCCESS);
             })
             .catch((err) => {
@@ -61,17 +59,19 @@ const SinglePhone = (props) => {
     // }, []);
 
     useEffect(() => {
-        if (cartItems != null && cartItems.length > 0) {
-            let p = cartItems.find((ph) => ph._id === phone._id);
-            if (p != undefined && "quantity" in p) {
-                let q = cartItems.find((ph) => ph._id === phone._id).quantity;
-                setNumInCart(q);
-                if (q > 0) {
-                    setIsInCart(true);
+        if (cartItems.length > 0) {
+            if (cartItems != null && cartItems.length > 0) {
+                let p = cartItems.find((ph) => ph._id === phone._id);
+                if (p != undefined && "quantity" in p) {
+                    let q = cartItems.find((ph) => ph._id === phone._id).quantity;
+                    setNumInCart(q);
+                    if (q > 0) {
+                        setIsInCart(true);
+                    }
                 }
+            } else {
+                setNumInCart(0);
             }
-        } else {
-            setNumInCart(0);
         }
     }, [cartItems]);
 
@@ -95,6 +95,10 @@ const SinglePhone = (props) => {
         // increase(phone)
     };
 
+    function showMoreReviews() {
+        setShowAllReviews(!showAllReviews);
+    }
+
     if (status === pageStatus.LOADING) {
         return <div>Loading...</div>;
     }
@@ -114,59 +118,91 @@ const SinglePhone = (props) => {
                     phoneTitle={phone.title}
                     handleSaveModal={handleSaveModal}
                 />
-
                 <Row>
-                    <h2>{phone.title}</h2>
-                </Row>
-                <Row>
-                    <Col>
+                    <Col xs={3}>
                         <Image src={IMAGEBASEURL + phone.image} fluid />
                     </Col>
-                    <Col>
-                        <ul>
-                            <li>Brand - {phone.brand}</li>
-                            <li>Price - {phone.price}</li>
-                            <li>Available Stock - {phone.stock}</li>
-                            <li>Seller name: </li>
-                        </ul>
-                    </Col>
-                    <Col style={{ borderLeft: "1px solid black" }}>
+                    <Col style={{ borderLeft: "1px solid grey" }}>
                         {" "}
                         <div>
-                            <p>Num in cart: {numInCart}</p>
+                            <h2>{phone.title}</h2>
+                            <h3>{phone.brand}</h3>
+                            <h3>${phone.price.toFixed(2)}</h3>
+                            <Button
+                                className="tags"
+                                variant="outline-secondary"
+                                disabled="true"
+                            >
+                                In stock: {props.phone.stock}
+                            </Button>
+                            <Button
+                                className="tags"
+                                variant="outline-secondary"
+                                disabled="true"
+                            >
+                                Seller: {phone.seller.firstname} {phone.seller.lastname}
+                            </Button>
+
+                            <p>Quantity in cart: {numInCart}</p>
+                        </div>
+                        <div>
+                            {/* this bit feels a bit messy */}
                             {/* <button onClick={increaseQuantity}>
-                                            Add more to cart
-                                        </button> */}
-                            {auth.user ? (
-                                <Button onClick={handleShowModal}>
-                                    Add to cart
-                                </Button>
-                            ) : (
-                                <Button>
-                                    <Link
-                                        to="/login"
-                                        style={{
-                                            textDecoration: "none",
-                                            color: "white",
-                                        }}
-                                    >
-                                        Add to Cart
+                                    Add more to cart
+                                </button> */}
+                            {
+                                auth.user ? (
+                                    <Button variant="primary" onClick={handleShowModal}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16">
+                                            <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z" />
+                                            <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                                        </svg> Add to cart
+                                    </Button>
+
+                                ) : (
+
+                                    <Link to="/login">
+                                        <Button variant="primary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16">
+                                                <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z" />
+                                                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                                            </svg> Add to cart
+                                        </Button>
                                     </Link>
-                                </Button>
-                            )}
+                                )
+                            }
+
+                            <div>
+                                <Button variant="danger" onClick={() => removePhone(phone)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-x" viewBox="0 0 16 16">
+                                        <path d="M7.354 5.646a.5.5 0 1 0-.708.708L7.793 7.5 6.646 8.646a.5.5 0 1 0 .708.708L8.5 8.207l1.146 1.147a.5.5 0 0 0 .708-.708L9.207 7.5l1.147-1.146a.5.5 0 0 0-.708-.708L8.5 6.793 7.354 5.646z" />
+                                        <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                                    </svg> Remove from cart </Button>
+                                <Button onClick={() => console.log(cartItems)}>
+                                    Console log the cart </Button>
+                            </div>
                         </div>
                     </Col>
                 </Row>
-                <hr />
-                <Container fluid>
-                    <Row>
+                <br></br>
+                <Row>
+                    <Col>
                         <h3>Reviews</h3>
-                    </Row>
-                    <Row>
-                        <ReviewList reviews={phone.reviews || []} />
-                    </Row>
-                </Container>
+                        <ReviewList
+                            reviews={phone.reviews}
+                            showAll={showAllReviews} />
+                        <div className="center">
+                            {(phone.reviews.length > 3) ?
+                            //if all shown, show collapse button
+                            (<Button variant="primary" onClick={showMoreReviews}>
+                                {showAllReviews ? "Show less" : "Show more"}
+                            </Button>) : null
+                        }
+                        </div>
+                    </Col>
+                </Row>
             </Container>
+
         );
     }
 };

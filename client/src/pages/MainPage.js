@@ -4,7 +4,6 @@ import Header from "../components/Header";
 import axios from "axios";
 import MainPageStatus from "../services/constants";
 import MainPageSection from "../components/MainPageSection";
-import { useHistory, useLocation } from "react-router-dom";
 
 const MainPage = () => {
     const [searchState, setSearchState] = useState(false);
@@ -27,7 +26,6 @@ const MainPage = () => {
         await axios
             .get(`http://localhost:9000/phones/search?search_term=${term}`)
             .then((result) => {
-                console.log(result);
                 setSearchResults(result.data);
                 setPageState(MainPageStatus.SEARCH);
                 setSearchState(true);
@@ -69,7 +67,6 @@ const MainPage = () => {
         axios
             .get("http://localhost:9000/phones/soldoutsoon")
             .then((result) => {
-                console.log(result.data);
                 setSoldOutSoon(result.data);
                 setPageState(MainPageStatus.SUCCESS);
             })

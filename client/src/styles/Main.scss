@@ -4,3 +4,36 @@
         color: green;
     }
 }
+
+Button {
+    margin: 5px;
+}
+
+.sectionTitle {
+    margin: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.sectionSubtitle {
+    margin: 15px 0px 15px 0px;
+    text-align: center;
+}
+
+.link {
+    margin: 0;
+    padding: 0;
+    color: darkslategrey;
+    text-decoration: none;
+}
+
+.link:hover {
+    margin: 0;
+    padding: 0;
+    color: darkslategrey;
+    text-decoration: underline;
+}
+
+h3 {
+    margin: 10px;
+}

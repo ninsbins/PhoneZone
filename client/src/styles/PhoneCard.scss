@@ -1,9 +1,10 @@
 .phonecard {
     cursor: pointer;
     width: 18rem;
+    color: darkslategrey;
 }
 
-.tags {
-    padding: 6px;
-    margin: 0 5px 0 5px;
+.phonecard:hover{
+    color: darkslategrey;
+    text-decoration: none;
 }
