@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Cart = require("./cart");
 
 const userSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
@@ -21,6 +22,18 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
     // need to attach user information like their phones etc once phone model is setup.
+    cart: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Cart",
+        required: false,
+    },
+    previousOrders: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Cart",
+            required: false,
+        },
+    ],
 });
 
 module.exports = mongoose.model("User", userSchema);
