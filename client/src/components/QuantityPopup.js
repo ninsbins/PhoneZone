@@ -3,6 +3,7 @@ import { Modal, Button, Row } from "react-bootstrap";
 
 const QuantityPopup = (props) => {
     const [quantity, setQuantity] = useState(1);
+    const maxNum = props.stock - props.quantityInCart;
 
     const handleInputChange = (e) => {
         setQuantity(e.target.value);
@@ -24,6 +25,8 @@ const QuantityPopup = (props) => {
                             type="number"
                             value={quantity}
                             onChange={handleInputChange}
+                            max={maxNum}
+                            min={1}
                         />
                     </Row>
                 </Modal.Body>

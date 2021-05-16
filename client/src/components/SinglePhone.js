@@ -104,6 +104,8 @@ const SinglePhone = (props) => {
                     handleShowModal={handleShowModal}
                     phoneTitle={phone.title}
                     handleSaveModal={handleSaveModal}
+                    stock={phone.stock}
+                    quantityInCart={numInCart}
                 />
                 <Row>
                     <Col xs={3}>
