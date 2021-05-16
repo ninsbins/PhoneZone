@@ -7,6 +7,7 @@ import ReviewList from "../components/ReviewList";
 import axios from "axios";
 import useAuth from "../services/useAuth";
 import { Link, useParams } from "react-router-dom";
+import CartIcon from "./CartIcon";
 
 const IMAGEBASEURL = `http://localhost:9000/images/`;
 
@@ -41,6 +42,7 @@ const SinglePhone = (props) => {
             .then((result) => {
                 setPhone(result.data.phone);
                 setStatus(pageStatus.SUCCESS);
+                setQuantity();
             })
             .catch((err) => {
                 console.log(err);
@@ -49,52 +51,32 @@ const SinglePhone = (props) => {
     }, []);
 
     useEffect(() => {
-        console.log(cartItems);
-        console.log(cont);
+        console.log("cart changed...");
+        if (status === pageStatus.SUCCESS) {
+            setQuantity();
+        }
     }, [cartItems]);
+
+    const setQuantity = () => {
+        if (cartItems != null && cartItems.length > 0) {
+            let pIndex = cartItems.findIndex((item) => item.product._id === id);
+            if (pIndex > -1) {
+                let q = cartItems[pIndex].quantity;
+                setNumInCart(q);
+                if (q > 0) {
+                    setIsInCart(true);
+                }
+            }
+        }
+    };
 
     const handleLogCart = () => {
         console.log(cont);
         console.log(cartItems);
     };
 
-    useEffect(() => {
-        // if (cartItems.length > 0) {
-        //     if (cartItems != null && cartItems.length > 0) {
-        //         let p = cartItems.find((ph) => ph._id === phone._id);
-        //         if (p != undefined && "quantity" in p) {
-        //             let q = cartItems.find(
-        //                 (ph) => ph._id === phone._id
-        //             ).quantity;
-        //             setNumInCart(q);
-        //             if (q > 0) {
-        //                 setIsInCart(true);
-        //             }
-        //         }
-        //     } else {
-        //         setNumInCart(0);
-        //     }
-        // }
-    }, [cartItems]);
-
     const handleSaveModal = (num) => {
-        // addPhone(phone, num);
         addPhone({ phone, num });
-
-        // if (cartItems.find((ph) => ph._id === phone._id)) {
-        //     // is already in cart.
-        //     console.log(`num passed to save: ${num}`);
-        //     for (let i = 0; i < num; i++) {
-        //         increase(phone);
-        //     }
-        // } else {
-        //     // not in cart
-        //     console.log(`num passed to save: ${num}`);
-        //     addPhone(phone);
-        //     for (let i = 0; i < num - 1; i++) {
-        //         increase(phone);
-        //     }
-        // }
 
         handleCloseModal();
         // increase(phone)
@@ -153,41 +135,19 @@ const SinglePhone = (props) => {
                         </div>
                         <div>
                             {/* this bit feels a bit messy */}
-                            {/* <button onClick={increaseQuantity}>
-                                    Add more to cart
-                                </button> */}
+                            {/* Matt: moved the svg cart icon to it's own component for reuse (CartIcon.js) */}
                             {auth.user ? (
                                 <Button
                                     variant="primary"
                                     onClick={handleShowModal}
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="16"
-                                        height="16"
-                                        fill="currentColor"
-                                        class="bi bi-cart-plus"
-                                        viewBox="0 0 16 16"
-                                    >
-                                        <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z" />
-                                        <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                                    </svg>{" "}
+                                    <CartIcon />
                                     Add to cart
                                 </Button>
                             ) : (
                                 <Link to="/login">
                                     <Button variant="primary">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="16"
-                                            height="16"
-                                            fill="currentColor"
-                                            class="bi bi-cart-plus"
-                                            viewBox="0 0 16 16"
-                                        >
-                                            <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z" />
-                                            <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                                        </svg>{" "}
+                                        <CartIcon />
                                         Add to cart
                                     </Button>
                                 </Link>
@@ -198,22 +158,12 @@ const SinglePhone = (props) => {
                                     variant="danger"
                                     onClick={() => removePhone(phone)}
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="16"
-                                        height="16"
-                                        fill="currentColor"
-                                        class="bi bi-cart-x"
-                                        viewBox="0 0 16 16"
-                                    >
-                                        <path d="M7.354 5.646a.5.5 0 1 0-.708.708L7.793 7.5 6.646 8.646a.5.5 0 1 0 .708.708L8.5 8.207l1.146 1.147a.5.5 0 0 0 .708-.708L9.207 7.5l1.147-1.146a.5.5 0 0 0-.708-.708L8.5 6.793 7.354 5.646z" />
-                                        <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                                    </svg>{" "}
+                                    <CartIcon />
                                     Remove from cart{" "}
                                 </Button>
-                                <Button onClick={handleLogCart}>
+                                {/* <Button onClick={handleLogCart}>
                                     Console log the cart{" "}
-                                </Button>
+                                </Button> */}
                             </div>
                         </div>
                     </Col>

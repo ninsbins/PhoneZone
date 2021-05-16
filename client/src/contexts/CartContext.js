@@ -19,7 +19,19 @@ const CartContextProvider = ({ children }) => {
     const auth = useAuth();
 
     const addPhone = (payload) => {
-        dispatch({ type: "ADD_PHONE", user: auth.user, payload });
+        axios
+            .put("/cart/addToCart", {
+                userId: auth.user,
+                phoneId: payload.phone._id,
+                quantity: payload.num,
+            })
+            .then((response) => {
+                console.log(response);
+                setCart();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     const increase = (payload) => {
@@ -30,22 +42,45 @@ const CartContextProvider = ({ children }) => {
         dispatch({ type: "REMOVE_PHONE", payload });
     };
 
-    const fetchCartFromApi = () => {
-        return (dispatch) => {
-            return axios
-                .get("http://localhost:9000/cart", {
-                    params: { userId: auth.user },
-                })
-                .then((response) => {
-                    dispatch({
-                        type: "LOAD_CART",
-                        payload: response.data.cart,
-                    });
-                })
-                .catch((err) => {
-                    console.log(err);
+    // const fetchCartFromApi = () => {
+    //     return (dispatch) => {
+    //         return axios
+    //             .get("http://localhost:9000/cart", {
+    //                 params: { userId: auth.user },
+    //             })
+    //             .then((response) => {
+    //                 dispatch({
+    //                     type: "LOAD_CART",
+    //                     payload: response.data.cart,
+    //                 });
+    //             })
+    //             .catch((err) => {
+    //                 console.log(err);
+    //             });
+    //     };
+    // };
+
+    const setCartDummy = () => {
+        dispatch({
+            type: "SET_CART",
+            payload: [{ something: "something" }, { another: "another" }],
+        });
+    };
+
+    const setCart = () => {
+        axios
+            .get("http://localhost:9000/cart", {
+                params: { userId: auth.user },
+            })
+            .then((response) => {
+                dispatch({
+                    type: "SET_CART",
+                    payload: response.data.cart.items,
                 });
-        };
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     // const clearCart = () => {
@@ -59,7 +94,7 @@ const CartContextProvider = ({ children }) => {
         if (!auth.user) return;
         // console.log(auth);
         console.log("triggered log in");
-        fetchCartFromApi();
+        setCart();
     }, [auth.user]);
 
     const contextValues = {
@@ -67,6 +102,7 @@ const CartContextProvider = ({ children }) => {
         // increase,
         // removePhone,
         // getCart,
+        setCart,
 
         // clearCart,
         // handleCheckout,

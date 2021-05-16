@@ -9,6 +9,7 @@ const Checkout = ({ location }) => {
 
     return (
         <div>
+            {/* to the from trick like in mainpagesection here to send back to the proper state */}
             <button onClick={() => history.replace("/", { from: location })}>
                 Back to shopping
             </button>
@@ -18,7 +19,8 @@ const Checkout = ({ location }) => {
                     cartItems.map((phone) => {
                         return (
                             <li>
-                                name: {phone.title} quantity: {phone.quantity}
+                                name: {phone.product.title} quantity:{" "}
+                                {phone.quantity}
                             </li>
                         );
                     })

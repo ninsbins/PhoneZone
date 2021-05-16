@@ -2,7 +2,7 @@ import axios from "axios";
 
 const BASE_URL = "http://localhost:9000";
 
-export const CartReducer = async (state, action) => {
+export const CartReducer = (state, action) => {
     switch (action.type) {
         case "ADD_PHONE":
             console.log("adding");
@@ -10,23 +10,20 @@ export const CartReducer = async (state, action) => {
             console.log(action.payload);
 
             // TODO
-            try {
-                const newCart = await axios
-                    .put("/cart/addToCart", {
-                        userId: action.user,
-                        phoneId: action.payload.phone._id,
-                        quantity: action.payload.num,
-                    })
-                    .then((response) => {
-                        return response.data.cart;
-                    });
-                console.log(`new cart`);
-                console.log(newCart);
-                return { ...state, cartItems: newCart };
-            } catch (error) {
-                console.log(error);
-                return { ...state };
-            }
+
+            axios
+                .put("/cart/addToCart", {
+                    userId: action.user,
+                    phoneId: action.payload.phone._id,
+                    quantity: action.payload.num,
+                })
+                .then((response) => {
+                    return { ...state, cartItems: response.data.cart.items };
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return { ...state };
+                });
 
         // case "INCREASE":
         //     console.log("increasing");
@@ -57,6 +54,12 @@ export const CartReducer = async (state, action) => {
             // state.cartItems.push(...action.payload.items);
 
             return { ...state, cartItems: ["hei", "there"] };
+
+        case "SET_CART":
+            console.log("setting cart");
+            console.log(state.cartItems);
+            console.log(action.payload);
+            return { ...state, cartItems: action.payload };
 
         // // TODO
 
