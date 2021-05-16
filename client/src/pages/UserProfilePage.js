@@ -1,9 +1,10 @@
 import React from "react";
-import {Container, Row, Col, Modal, Button, Form, InputGroup} from "react-bootstrap";
+import {Container, Row, Col, Modal, Button, 
+        Form, InputGroup, Navbar, Nav, NavbarBrand, Image, Tab, Tabs} from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useAuth } from "../services/useAuth";
 import axios from "axios";
-import { BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Link, useHistory} from "react-router-dom";
 
 const UserProfile = () => {
     // TODO add header?
@@ -38,41 +39,42 @@ const UserProfile = () => {
     }
 
     return (
-        <Router basename="userProfile">
-            <div>
-                <nav>
-                    <ul>
-                        <li>
-                            <Link to="/">Edit Profile</Link>
-                        </li>
-                        <li>
-                            <Link to="/password">Change Password</Link>
-                        </li>
-                        <li>
-                            <Link to="/listings">Manage Listings</Link>
-                        </li>
-                    </ul>
-                </nav>
-                <Switch>
-                    <Route path="/password">
-                        <ChangePassword userdetails={userDetails} />
-                    </Route>
-                    <Route path="/listings">
-                        <ManageListings userdetails={userDetails} />
-                    </Route>
-                    <Route path="/">
-                        <Profile userdetails={userDetails} />
-                    </Route>
-                </Switch>
-            </div>
-        </Router>
+        <>
+            <Header />
+            <Tabs defaultActiveKey="profile">
+                <Tab eventKey="profile" title="Profile">
+                    <Profile userdetails={userDetails} />
+                </Tab>
+                <Tab eventKey="password" title="Change Password">
+                    <ChangePassword userdetails={userDetails} />
+                </Tab>
+                <Tab eventKey="listings" title="Manage Listings">
+                    <ManageListings userdetails={userDetails} />
+                </Tab>
+            </Tabs>
+        </>
     );
+
 };
 
+function Header() {
+    let auth = useAuth();
+
+    return (
+        <Navbar bg="light">
+            <Link to="../">
+                <NavbarBrand><Image src={"/images/3.png"} width="50px" />PhoneZone</NavbarBrand>
+            </Link>
+            <Nav className="ml-auto"> 
+                <Link to="../">
+                    <Button variant="outline-danger" onClick={() => { auth.signout(); }}>Sign out</Button>
+                </Link>
+            </Nav>
+        </Navbar>
+    )
+}
+
 function Profile({userdetails}) {
-    // TODO add modal to confirm password before submitting changes
-    // May need to add to backend api thing to confirm password
-    
     let auth = useAuth();
 
     const [firstname, setFirstname] = useState("");
@@ -294,6 +296,25 @@ function ManageListings({userdetails}) {
                 setNewListingAdded={setNewListingAdded} 
             />
             <Container>
+            <Row>
+                <Col>
+                    <b>Title</b>
+                </Col>
+                <Col>
+                    <b>Brand</b>
+                </Col>
+                <Col>
+                    <b>Stock</b>
+                </Col>
+                <Col>
+                    <b>Price</b>
+                </Col>
+                <Col>
+                    <b>Disabled</b>
+                </Col>
+                <Col>
+                </Col>
+            </Row>
             {phones}
             </Container>
         </div>
@@ -357,12 +378,11 @@ function Phone({data, setListingsChanged}){
                 {data.stock}
             </Col>
             <Col>
-                {data.price}
+                ${data.price}
             </Col>
             <Col>
                 <Form.Check 
                     type="checkbox" 
-                    label="disabled" 
                     defaultChecked={'disabled' in data} 
                     onClick={onDisable}
                 />
