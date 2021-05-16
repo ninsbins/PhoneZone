@@ -57,6 +57,9 @@ export const CartReducer = (state, action) => {
 
             return { ...state, cartId: action.payload };
 
+        case "SET_CART_TOTAL":
+            return { ...state, cartTotal: action.payload };
+
         // // TODO
 
         // case "CLEAR":

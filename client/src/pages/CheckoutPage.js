@@ -1,11 +1,26 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { useHistory } from "react-router-dom";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import "../styles/Checkout.scss";
 
+const CheckoutStatus = {
+    LOADING: "loading",
+    ERROR: "error",
+    SUCCESS: "success",
+    WAITING: "waiting",
+};
+
 const Checkout = ({ location }) => {
-    const { cartItems, removePhone } = useContext(CartContext);
+    const {
+        cartItems,
+        removePhone,
+        increase,
+        decrease,
+        cartTotal,
+        handleCheckout,
+    } = useContext(CartContext);
+    const [checkoutStatus, setCheckoutState] = useState(CheckoutStatus.WAITING);
     const history = useHistory();
     // history.replace('/', {from: location})
 
@@ -15,9 +30,19 @@ const Checkout = ({ location }) => {
         return (
             <Row className="checkout__tile">
                 <Col sm={4}>{props.item.product.title}</Col>
-                <Col sm={3}> - {props.item.quantity} +</Col>
                 <Col sm={3}>
-                    {Number(props.item.product.price) * Number(props.quantity)}
+                    {" "}
+                    <button onClick={() => decrease(props.item.product)}>
+                        -{" "}
+                    </button>
+                    {props.item.quantity}
+                    <button onClick={() => increase(props.item.product)}>
+                        +
+                    </button>
+                </Col>
+                <Col sm={3}>
+                    {Number(props.item.product.price) *
+                        Number(props.item.quantity)}
                 </Col>
                 <Col sm={2}>
                     <Button
@@ -41,12 +66,9 @@ const Checkout = ({ location }) => {
         });
     };
 
-    const renderCartItems = () => {
-        return cartItems != null ? (
-            <ItemList items={cartItems} />
-        ) : (
-            <div>No items in the cart</div>
-        );
+    const checkout = () => {
+        // wait for checkout repsonse, on success show success, on error, show error.
+        handleCheckout();
     };
 
     return (
@@ -64,7 +86,7 @@ const Checkout = ({ location }) => {
                         Back to shopping
                     </Button>
                 </Row>
-                <Row>
+                <Row className="checkout__title">
                     <h2>Shopping Cart</h2>
                 </Row>
                 {/* {renderCartItems} */}
@@ -75,8 +97,18 @@ const Checkout = ({ location }) => {
                     <div>No items in the cart</div>
                 )}
 
-                <Row>Total: $0000.0</Row>
-                <Row>Confirm order button</Row>
+                <Row className="checkout__total">Total: ${cartTotal}</Row>
+                <Row>
+                    <Button block onClick={() => checkout()}>
+                        Confirm Order
+                    </Button>
+                </Row>
+                {checkoutStatus === CheckoutStatus.ERROR && (
+                    <div>Sorry, an error occured</div>
+                )}
+                {checkoutStatus === CheckoutStatus.SUCCESS && (
+                    <div>Successful checkout</div>
+                )}
             </Container>
         </div>
     );

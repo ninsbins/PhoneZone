@@ -20,7 +20,9 @@ exports.add_to_cart = (req, res, next) => {
                 let cartId = result.cart._id;
 
                 try {
-                    let cart = await Cart.findOne(cartId);
+                    let cart = await Cart.findOne(cartId).populate(
+                        "items.product"
+                    );
 
                     if (cart.items) {
                         let itemIndex = cart.items.findIndex((p) =>
@@ -32,6 +34,9 @@ exports.add_to_cart = (req, res, next) => {
                             cart.items[itemIndex].quantity = quantity
                                 ? (cart.items[itemIndex].quantity += quantity)
                                 : 1;
+                            cart.order_total = computeOrderTotal(cart);
+                            // let total = computeTotal(cart);
+                            // cart.order_total = total;
                             await cart
                                 .save()
                                 .then((result) => {
@@ -58,6 +63,17 @@ exports.add_to_cart = (req, res, next) => {
                             });
 
                             cart.items.push(item);
+
+                            let total = 0;
+                            for (let i = 0; i < cart.items.length - 1; i++) {
+                                total +=
+                                    Number(cart.items[i].quantity) *
+                                    Number(cart.items[i].product.price);
+                            }
+                            let phone = await Phone.findById(phoneId);
+                            total += phone.price * quantity;
+                            cart.order_total = total;
+
                             await cart
                                 .save()
                                 .then((result) => {
@@ -95,6 +111,9 @@ exports.add_to_cart = (req, res, next) => {
                 });
 
                 cart.items.push(item);
+
+                cart.order_total = computeOrderTotal(cart);
+
                 cart.save().then((result) => {
                     User.findByIdAndUpdate(userId, { cart: cart })
                         .then((result) => {
@@ -155,7 +174,7 @@ exports.remove_product_from_cart = async (req, res, next) => {
 
     // console.log(`phone id: ${phoneId}`);
 
-    const cart = await Cart.findOne({ _id: cartId });
+    const cart = await Cart.findOne({ _id: cartId }).populate("items.product");
 
     if (cart) {
         let cartItemIndex = cart.items.findIndex((item) =>
@@ -169,6 +188,10 @@ exports.remove_product_from_cart = async (req, res, next) => {
             );
         }
         console.log(cart);
+        cart.order_total = computeOrderTotal(cart);
+
+        // let total = computeTotal(cart);
+        // cart.order_total = total;
 
         cart.save()
             .then((result) => {
@@ -190,6 +213,92 @@ exports.update_quantity = (req, res, next) => {
     return res.status(200).json({
         message: "updated product",
     });
+};
+
+exports.decrease_quantity = async (req, res, next) => {
+    let cartId = req.body.cartId;
+    let phoneId = req.body.productId;
+    let cart = await Cart.findOne({ _id: cartId }).populate("items.product");
+
+    let indexOfItem = cart.items.findIndex((item) =>
+        item.product.equals(phoneId)
+    );
+    if (indexOfItem > -1) {
+        if (cart.items[indexOfItem].quantity - 1 <= 0) {
+            // remove cart item.
+            cart.items = cart.items.filter(
+                (item) => !item.product.equals(phoneId)
+            );
+        } else {
+            cart.items[indexOfItem].quantity--;
+        }
+    }
+
+    // let total = await computeTotal(cart);
+    // cart.order_total = total;
+    cart.order_total = computeOrderTotal(cart);
+
+    cart.save()
+        .then((result) => {
+            console.log(result);
+            return res
+                .status(200)
+                .json({ message: "decreased quantity by one" });
+        })
+        .catch((err) => {
+            console.log(err);
+            return res
+                .status(500)
+                .json({ message: "unable to decrease quantity" });
+        });
+};
+
+const computeOrderTotal = (cart) => {
+    let total = 0;
+    cart.items.forEach((item) => {
+        console.log(`q${item.quantity} p${item.product.price}`);
+        total += Number(item.quantity) * Number(item.product.price);
+    });
+
+    return total;
+};
+
+exports.increase_quantity = async (req, res, next) => {
+    let cartId = req.body.cartId;
+    let phoneId = req.body.productId;
+    let cart = await Cart.findOne({ _id: cartId }).populate("items.product");
+
+    let indexOfItem = cart.items.findIndex((item) =>
+        item.product.equals(phoneId)
+    );
+    if (indexOfItem > -1) {
+        cart.items[indexOfItem].quantity++;
+    }
+
+    // let total = 0;
+    // cart.items.forEach((item) => {
+    //     console.log(`q${item.quantity} p${item.product.price}`);
+    //     total += Number(item.quantity) * Number(item.product.price);
+    // });
+
+    cart.order_total = computeOrderTotal(cart);
+
+    // let total = await computeTotal(cart);
+    // cart.order_total = total;
+
+    cart.save()
+        .then((result) => {
+            console.log(result);
+            return res
+                .status(200)
+                .json({ message: "increased quantity by one" });
+        })
+        .catch((err) => {
+            console.log(err);
+            return res
+                .status(500)
+                .json({ message: "unable to increase quantity" });
+        });
 };
 
 exports.clear_cart = async (req, res, next) => {

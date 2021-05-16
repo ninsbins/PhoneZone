@@ -2,7 +2,7 @@
     background-color: #f2f2f2;
     height: 100vh;
     &__header {
-        background-color: darkslategray;
+        background-color: #343a40;
         min-height: 5em;
         padding: 2em;
         &__brand {
@@ -12,6 +12,11 @@
 
     &__main {
         // background-color:
+        padding: 1em 4em;
+    }
+
+    &__title {
+        padding-top: 3em;
     }
 
     &__tile {
@@ -23,6 +28,13 @@
     }
 
     &__list {
-        padding: 1em;
+        padding: 0.5em;
+    }
+
+    &__total {
+        font-weight: bold;
+        font-size: 2.5em;
+        justify-content: flex-end;
+        padding-top: 1em;
     }
 }

@@ -12,7 +12,7 @@ const storage = localStorage.getItem("cart")
     ? localStorage.getItem("cart")
     : [];
 
-const initialState = { cartItems: storage, cartId: "" };
+const initialState = { cartItems: storage, cartId: "", cartTotal: 0 };
 
 const CartContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(CartReducer, initialState);
@@ -36,7 +36,35 @@ const CartContextProvider = ({ children }) => {
     };
 
     const increase = (payload) => {
-        dispatch({ type: "INCREASE", payload });
+        axios
+            .put("http://localhost:9000/cart/increaseQuantity", {
+                cartId: state.cartId,
+                productId: payload._id,
+            })
+            .then((response) => {
+                console.log(response);
+                setCart();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
+        // dispatch({ type: "INCREASE", payload });
+    };
+
+    const decrease = (payload) => {
+        axios
+            .put("http://localhost:9000/cart/decreaseQuantity", {
+                cartId: state.cartId,
+                productId: payload._id,
+            })
+            .then((response) => {
+                console.log(response);
+                setCart();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     const removePhone = (payload) => {
@@ -75,6 +103,11 @@ const CartContextProvider = ({ children }) => {
                     type: "SET_CART_ID",
                     payload: response.data.cart._id,
                 });
+
+                dispatch({
+                    type: "SET_CART_TOTAL",
+                    payload: response.data.cart.order_total,
+                });
             })
             .catch((err) => {
                 console.log(err);
@@ -84,6 +117,10 @@ const CartContextProvider = ({ children }) => {
     // const clearCart = () => {
     //     dispatch({ type: "CLEAR" });
     // };
+
+    const handleCheckout = () => {
+        // send axios request to handle checkout
+    };
 
     // const handleCheckout = () => {
     //     dispatch({ type: "CHECKOUT" });
@@ -97,13 +134,12 @@ const CartContextProvider = ({ children }) => {
 
     const contextValues = {
         addPhone,
-        // increase,
+        increase,
+        decrease,
         removePhone,
-        // getCart,
         setCart,
-
         // clearCart,
-        // handleCheckout,
+        handleCheckout,
         ...state,
     };
 
