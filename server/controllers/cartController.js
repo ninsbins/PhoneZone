@@ -148,8 +148,10 @@ exports.get_cart = async (req, res, next) => {
 
 // cartId, productId
 exports.remove_product_from_cart = async (req, res, next) => {
-    let phoneId = req.body.productID;
+    let phoneId = req.body.productId;
     let cartId = req.body.cartId;
+
+    console.log(`phoneId: ${phoneId} cartId: ${cartId}`);
 
     // console.log(`phone id: ${phoneId}`);
 

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { useHistory } from "react-router-dom";
 import { Container, Row, Col, Button } from "react-bootstrap";
@@ -9,6 +9,8 @@ const Checkout = ({ location }) => {
     const history = useHistory();
     // history.replace('/', {from: location})
 
+    useEffect(() => {}, [cartItems]);
+
     const ItemTile = (props) => {
         return (
             <Row className="checkout__tile">
@@ -18,7 +20,10 @@ const Checkout = ({ location }) => {
                     {Number(props.item.product.price) * Number(props.quantity)}
                 </Col>
                 <Col sm={2}>
-                    <Button onclick={() => removePhone(props.item.product)}>
+                    <Button
+                        variant="danger"
+                        onClick={() => removePhone(props.item.product)}
+                    >
                         Delete item
                     </Button>
                 </Col>
@@ -28,8 +33,20 @@ const Checkout = ({ location }) => {
 
     const ItemList = (props) => {
         return props.items.map((item) => {
-            return <ItemTile item={item} />;
+            return (
+                <div className="checkout__list">
+                    <ItemTile item={item} />
+                </div>
+            );
         });
+    };
+
+    const renderCartItems = () => {
+        return cartItems != null ? (
+            <ItemList items={cartItems} />
+        ) : (
+            <div>No items in the cart</div>
+        );
     };
 
     return (
@@ -50,6 +67,7 @@ const Checkout = ({ location }) => {
                 <Row>
                     <h2>Shopping Cart</h2>
                 </Row>
+                {/* {renderCartItems} */}
 
                 {cartItems != null ? (
                     <ItemList items={cartItems} />
