@@ -42,31 +42,6 @@ const CartContextProvider = ({ children }) => {
         dispatch({ type: "REMOVE_PHONE", payload });
     };
 
-    // const fetchCartFromApi = () => {
-    //     return (dispatch) => {
-    //         return axios
-    //             .get("http://localhost:9000/cart", {
-    //                 params: { userId: auth.user },
-    //             })
-    //             .then((response) => {
-    //                 dispatch({
-    //                     type: "LOAD_CART",
-    //                     payload: response.data.cart,
-    //                 });
-    //             })
-    //             .catch((err) => {
-    //                 console.log(err);
-    //             });
-    //     };
-    // };
-
-    const setCartDummy = () => {
-        dispatch({
-            type: "SET_CART",
-            payload: [{ something: "something" }, { another: "another" }],
-        });
-    };
-
     const setCart = () => {
         axios
             .get("http://localhost:9000/cart", {

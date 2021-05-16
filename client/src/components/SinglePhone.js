@@ -141,14 +141,12 @@ const SinglePhone = (props) => {
                                     variant="primary"
                                     onClick={handleShowModal}
                                 >
-                                    <CartIcon />
-                                    Add to cart
+                                    <CartIcon /> Add to cart
                                 </Button>
                             ) : (
                                 <Link to="/login">
                                     <Button variant="primary">
-                                        <CartIcon />
-                                        Add to cart
+                                        <CartIcon /> Add to cart
                                     </Button>
                                 </Link>
                             )}
@@ -158,12 +156,8 @@ const SinglePhone = (props) => {
                                     variant="danger"
                                     onClick={() => removePhone(phone)}
                                 >
-                                    <CartIcon />
-                                    Remove from cart{" "}
+                                    <CartIcon /> Remove from cart
                                 </Button>
-                                {/* <Button onClick={handleLogCart}>
-                                    Console log the cart{" "}
-                                </Button> */}
                             </div>
                         </div>
                     </Col>
