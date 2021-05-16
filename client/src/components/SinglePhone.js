@@ -55,7 +55,7 @@ const SinglePhone = (props) => {
         if (status === pageStatus.SUCCESS) {
             setQuantity();
         }
-    }, [cartItems]);
+    }, [cartItems, cartItems.items]);
 
     const setQuantity = () => {
         if (cartItems != null && cartItems.length > 0) {
@@ -66,7 +66,11 @@ const SinglePhone = (props) => {
                 if (q > 0) {
                     setIsInCart(true);
                 }
+            } else {
+                setNumInCart(0);
             }
+        } else {
+            setNumInCart(0);
         }
     };
 

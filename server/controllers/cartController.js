@@ -9,6 +9,7 @@ exports.add_to_cart = (req, res, next) => {
     let userId = req.body.userId;
     let phoneId = req.body.phoneId;
     let quantity = Number(req.body.quantity);
+    // let cartId = req.body.cartId;
 
     User.findById(userId)
         .then(async (result) => {
@@ -21,55 +22,56 @@ exports.add_to_cart = (req, res, next) => {
                 try {
                     let cart = await Cart.findOne(cartId);
 
-                    let itemIndex = cart.items.findIndex((p) =>
-                        p.product.equals(phoneId)
-                    );
+                    if (cart.items) {
+                        let itemIndex = cart.items.findIndex((p) =>
+                            p.product.equals(phoneId)
+                        );
 
-                    console.log(itemIndex);
-                    console.log(`item at index ${cart.items[itemIndex]}`);
+                        if (itemIndex > -1) {
+                            // item exists in the cart, update the quantity
+                            cart.items[itemIndex].quantity = quantity
+                                ? (cart.items[itemIndex].quantity += quantity)
+                                : 1;
+                            await cart
+                                .save()
+                                .then((result) => {
+                                    console.log(result.items);
 
-                    if (itemIndex > -1) {
-                        // item exists in the cart, update the quantity
-                        cart.items[itemIndex].quantity = quantity
-                            ? (cart.items[itemIndex].quantity += quantity)
-                            : 1;
-                        await cart
-                            .save()
-                            .then((result) => {
-                                console.log(result.items);
-
-                                return res.status(200).json({
-                                    message: "updated quantity in cart",
-                                    cart: result.items,
+                                    return res.status(200).json({
+                                        message: "updated quantity in cart",
+                                        cart: result.items,
+                                    });
+                                })
+                                .catch((err) => {
+                                    console.log(err);
+                                    return res.status(500).json({
+                                        message: "error",
+                                        error: err,
+                                    });
                                 });
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                                return res
-                                    .status(500)
-                                    .json({ message: "error", error: err });
+                        } else {
+                            console.log("HIT NEW ITEM");
+                            // item doesn't exit, add new
+                            const item = new CartItem({
+                                product: phoneId,
+                                quantity: quantity ? quantity : 1,
                             });
-                    } else {
-                        // item doesn't exit, add new
-                        const item = new CartItem({
-                            product: phoneId,
-                            quantity: 1,
-                        });
 
-                        cart.items.push(item);
-                        await cart
-                            .save()
-                            .then((result) => {
-                                console.log(result);
-                                return res.status(200).json({
-                                    message: "added new item in cart",
-                                    cart: result.cart.items,
+                            cart.items.push(item);
+                            await cart
+                                .save()
+                                .then((result) => {
+                                    console.log(result);
+                                    return res.status(200).json({
+                                        message: "added new item in cart",
+                                        // cart: result.cart.items,
+                                    });
+                                })
+                                .catch((err) => {
+                                    console.log(err);
+                                    return res.status(500);
                                 });
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                                return res.status(500);
-                            });
+                        }
                     }
                 } catch (err) {
                     console.log(err);
@@ -144,10 +146,42 @@ exports.get_cart = async (req, res, next) => {
         });
 };
 
-exports.remove_product_from_cart = (req, res, next) => {
-    return res.status(200).json({
-        message: "removed product",
-    });
+// cartId, productId
+exports.remove_product_from_cart = async (req, res, next) => {
+    let phoneId = req.body.productID;
+    let cartId = req.body.cartId;
+
+    // console.log(`phone id: ${phoneId}`);
+
+    const cart = await Cart.findOne({ _id: cartId });
+
+    if (cart) {
+        let cartItemIndex = cart.items.findIndex((item) =>
+            item.product.equals(phoneId)
+        );
+        console.log(cartItemIndex);
+
+        if (cartItemIndex > -1) {
+            cart.items = cart.items.filter(
+                (item) => !item.product.equals(phoneId)
+            );
+        }
+        console.log(cart);
+
+        cart.save()
+            .then((result) => {
+                console.log(result);
+                return res
+                    .status(200)
+                    .json({ message: "phone deleted from cart" });
+            })
+            .catch((err) => {
+                console.log(err);
+                return res
+                    .status(500)
+                    .json({ message: "unable to delete from cart" });
+            });
+    }
 };
 
 exports.update_quantity = (req, res, next) => {
@@ -156,8 +190,27 @@ exports.update_quantity = (req, res, next) => {
     });
 };
 
-exports.clear_cart = (req, res, next) => {
-    return res.status(200).json({
-        message: "cart cleared",
-    });
+exports.clear_cart = async (req, res, next) => {
+    let userId = req.body.userId;
+
+    // get user and get the cart id, remove the cart.
+
+    User.findByIdAndUpdate(userId, { cart: [] })
+        .then((result) => {
+            let cartId = result.cart._id;
+            Cart.findByIdAndDelete(cartId)
+                .then((result) => {
+                    return res.status(200).json({ message: "cart cleared" });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    return res
+                        .status(500)
+                        .json({ message: "unable to clear cart" });
+                });
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ message: "unable to clear cart" });
+        });
 };

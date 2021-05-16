@@ -44,22 +44,18 @@ export const CartReducer = (state, action) => {
         //         ),
         //     ],
         // };
-        case "LOAD_CART":
-            console.log("loading cart");
-
-            return { ...state, somethingElse: "Is it something else" };
-            // console.log(state.cartItems);
-            // state.cartItems.push("testing");
-            // console.log(action.payload.items);
-            // state.cartItems.push(...action.payload.items);
-
-            return { ...state, cartItems: ["hei", "there"] };
 
         case "SET_CART":
             console.log("setting cart");
             console.log(state.cartItems);
             console.log(action.payload);
             return { ...state, cartItems: action.payload };
+
+        case "SET_CART_ID":
+            console.log("setting cart id");
+            console.log(action.payload);
+
+            return { ...state, cartId: action.payload };
 
         // // TODO
 

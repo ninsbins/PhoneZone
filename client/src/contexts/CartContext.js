@@ -12,7 +12,7 @@ const storage = localStorage.getItem("cart")
     ? localStorage.getItem("cart")
     : [];
 
-const initialState = { cartItems: storage };
+const initialState = { cartItems: storage, cartId: "" };
 
 const CartContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(CartReducer, initialState);
@@ -24,6 +24,7 @@ const CartContextProvider = ({ children }) => {
                 userId: auth.user,
                 phoneId: payload.phone._id,
                 quantity: payload.num,
+                cartId: state.cartId,
             })
             .then((response) => {
                 console.log(response);
@@ -39,7 +40,22 @@ const CartContextProvider = ({ children }) => {
     };
 
     const removePhone = (payload) => {
-        dispatch({ type: "REMOVE_PHONE", payload });
+        // sent cart id and the id of the phone to remove
+        // product id, cart id.
+        axios
+            .put("http://localhost:9000/cart/removeFromCart", {
+                cartId: state.cartId,
+                productId: payload._id,
+            })
+            .then((response) => {
+                console.log(response);
+                setCart();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
+        // dispatch({ type: "REMOVE_PHONE", payload });
     };
 
     const setCart = () => {
@@ -48,9 +64,16 @@ const CartContextProvider = ({ children }) => {
                 params: { userId: auth.user },
             })
             .then((response) => {
+                console.log(response);
+
                 dispatch({
                     type: "SET_CART",
                     payload: response.data.cart.items,
+                });
+
+                dispatch({
+                    type: "SET_CART_ID",
+                    payload: response.data.cart._id,
                 });
             })
             .catch((err) => {
@@ -75,7 +98,7 @@ const CartContextProvider = ({ children }) => {
     const contextValues = {
         addPhone,
         // increase,
-        // removePhone,
+        removePhone,
         // getCart,
         setCart,
 
