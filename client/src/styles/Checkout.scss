@@ -1,3 +1,4 @@
+$main-grey: #404040;
 .checkout {
     background-color: #f2f2f2;
     height: 100vh;
@@ -15,8 +16,25 @@
         padding: 1em 4em;
     }
 
+    &__overlay {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        background-color: rgba(255, 255, 255, 0.6);
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+    }
+
+    &__spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+    }
+
     &__title {
         padding-top: 3em;
+        color: $main-grey;
     }
 
     &__tile {
@@ -25,6 +43,9 @@
         border-radius: 0.5em;
         min-height: 5em;
         padding: 1em;
+        align-items: center;
+        /* offset-x | offset-y | blur-radius | spread-radius | color */
+        box-shadow: 3px 4px 5px 0px rgba(0, 0, 0, 0.1);
     }
 
     &__list {
@@ -32,9 +53,40 @@
     }
 
     &__total {
-        font-weight: bold;
+        color: $main-grey;
+        font-weight: 400;
         font-size: 2.5em;
         justify-content: flex-end;
         padding-top: 1em;
+    }
+
+    &__product {
+        &__brand {
+            font-weight: 500;
+            font-size: large;
+            align-self: center;
+        }
+
+        &__title {
+            font-weight: 500;
+            align-self: center;
+            color: $main-grey;
+        }
+
+        &__quantity {
+            font-weight: 500;
+            align-self: center;
+        }
+
+        &__total {
+            align-self: center;
+            font-weight: 500;
+            font-size: large;
+        }
+
+        &__remove {
+            display: flex;
+            justify-content: flex-end;
+        }
     }
 }

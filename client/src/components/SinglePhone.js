@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Container, Row, Col, Button, Image } from "react-bootstrap";
+import { Container, Row, Col, Button, Image, Spinner } from "react-bootstrap";
 import { CartContext } from "../contexts/CartContext";
 import QuantityPopup from "./QuantityPopup";
 import "../styles/SinglePhone.scss";
@@ -9,6 +9,7 @@ import useAuth from "../services/useAuth";
 import { Link, useParams } from "react-router-dom";
 import CartIcon from "./CartIcon";
 import Stars from "./Stars";
+import "../styles/SpinnerOverlay.scss";
 
 const IMAGEBASEURL = `/images/`;
 
@@ -21,7 +22,8 @@ const pageStatus = {
 const SinglePhone = (props) => {
     // let phone = props.phone || null;
 
-    const { addPhone, cartItems, removePhone } = useContext(CartContext);
+    const { addPhone, cartItems, removePhone, requestInProgress } =
+        useContext(CartContext);
     const cont = useContext(CartContext);
     const [phone, setPhone] = useState(null);
     const [status, setStatus] = useState(pageStatus.LOADING);
@@ -103,6 +105,15 @@ const SinglePhone = (props) => {
         console.log(phone);
         return (
             <Container fluid>
+                {requestInProgress && (
+                    <div className="spinner__overlay">
+                        <Spinner
+                            animation="border"
+                            className="spinner__spinner"
+                            variant="info"
+                        />
+                    </div>
+                )}
                 <QuantityPopup
                     showModal={showModal}
                     handleCloseModal={handleCloseModal}

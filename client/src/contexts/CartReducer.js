@@ -49,7 +49,11 @@ export const CartReducer = (state, action) => {
             console.log("setting cart");
             console.log(state.cartItems);
             console.log(action.payload);
-            return { ...state, cartItems: action.payload };
+            return {
+                ...state,
+                cartItems: action.payload,
+                requestInProgress: false,
+            };
 
         case "SET_CART_ID":
             console.log("setting cart id");
@@ -59,6 +63,9 @@ export const CartReducer = (state, action) => {
 
         case "SET_CART_TOTAL":
             return { ...state, cartTotal: action.payload };
+
+        case "FETCH_CART":
+            return { ...state, requestInProgress: true };
 
         // // TODO
 

@@ -12,13 +12,19 @@ const storage = localStorage.getItem("cart")
     ? localStorage.getItem("cart")
     : [];
 
-const initialState = { cartItems: storage, cartId: "", cartTotal: 0 };
+const initialState = {
+    cartItems: storage,
+    cartId: "",
+    cartTotal: 0,
+    requestInProgress: false,
+};
 
 const CartContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(CartReducer, initialState);
     const auth = useAuth();
 
     const addPhone = (payload) => {
+        dispatch({ type: "FETCH_CART" });
         axios
             .put("/cart/addToCart", {
                 userId: auth.user,
@@ -36,6 +42,7 @@ const CartContextProvider = ({ children }) => {
     };
 
     const increase = (payload) => {
+        dispatch({ type: "FETCH_CART" });
         axios
             .put("/cart/increaseQuantity", {
                 cartId: state.cartId,
@@ -53,6 +60,7 @@ const CartContextProvider = ({ children }) => {
     };
 
     const decrease = (payload) => {
+        dispatch({ type: "FETCH_CART" });
         axios
             .put("/cart/decreaseQuantity", {
                 cartId: state.cartId,
@@ -70,6 +78,7 @@ const CartContextProvider = ({ children }) => {
     const removePhone = (payload) => {
         // sent cart id and the id of the phone to remove
         // product id, cart id.
+        dispatch({ type: "FETCH_CART" });
         axios
             .put("/cart/removeFromCart", {
                 cartId: state.cartId,

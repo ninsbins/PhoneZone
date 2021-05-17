@@ -1,0 +1,17 @@
+.spinner {
+    &__overlay {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        background-color: rgba(255, 255, 255, 0.6);
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+    }
+
+    &__spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+    }
+}
