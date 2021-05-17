@@ -3,11 +3,11 @@ import {Container, Row, Col, Modal, Button,
         Form, InputGroup, Navbar, Nav, NavbarBrand, Image, Tab, Tabs} from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useAuth } from "../services/useAuth";
+import SignOutButton from "../components/SignOutButton";
 import axios from "axios";
-import { BrowserRouter as Router, Switch, Route, Link, useHistory} from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 const UserProfile = () => {
-    // TODO add header?
     
     let auth = useAuth();
     const [loading, setLoading] = useState(true);
@@ -58,7 +58,11 @@ const UserProfile = () => {
 };
 
 function Header() {
-    let auth = useAuth();
+    let history = useHistory();
+
+    function backToMain(){
+        history.push("../");
+    }
 
     return (
         <Navbar bg="light">
@@ -66,9 +70,7 @@ function Header() {
                 <NavbarBrand><Image src={"/images/3.png"} width="50px" />PhoneZone</NavbarBrand>
             </Link>
             <Nav className="ml-auto"> 
-                <Link to="../">
-                    <Button variant="outline-danger" onClick={() => { auth.signout(); }}>Sign out</Button>
-                </Link>
+                <SignOutButton callback={backToMain}/> 
             </Nav>
         </Navbar>
     )
