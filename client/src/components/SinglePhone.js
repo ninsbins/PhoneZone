@@ -8,6 +8,7 @@ import axios from "axios";
 import useAuth from "../services/useAuth";
 import { Link, useParams } from "react-router-dom";
 import CartIcon from "./CartIcon";
+import Stars from "./Stars";
 
 const IMAGEBASEURL = `http://localhost:9000/images/`;
 
@@ -121,6 +122,7 @@ const SinglePhone = (props) => {
                             <h2>{phone.title}</h2>
                             <h3>{phone.brand}</h3>
                             <h3>${phone.price.toFixed(2)}</h3>
+                            <h3><Stars num={phone.RatingAverage}/></h3>
                             <Button
                                 className="tags"
                                 variant="outline-secondary"

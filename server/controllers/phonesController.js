@@ -60,23 +60,32 @@ exports.get_most_expensive_phone = (req, res, next) => {
     })
 }
 
+function getRatingAverage(phone){
+    let acc = 0;
+    for(let i=0; i<phone.reviews.length; i++){
+        acc += phone.reviews[i].rating;
+    }
+    return acc/phone.reviews.length;
+}
+
 exports.get_phone_from_id = (req, res, next) => {
     const id = req.params.id;
 
     console.log(id);
 
     Phone.findById(id)
-        .populate({path: "seller", select: "-password"}) 
+        .populate({path: "seller", select:  "_id firstname lastname email"}) 
         .populate({
             path: 'reviews.reviewer',
-            select: "-password"
+            select: "_id firstname lastname email"
         }) 
         .then((result) => {
-        console.log(result);
-        res.status(200).json({
-            message: "phone listing returned",
-            phone: result,
-        });
+            result.set("RatingAverage", getRatingAverage(result),{strict: false});
+            console.log(result);
+            res.status(200).json({
+                message: "phone listing returned",
+                phone: result,
+            });
     }).catch((err) => {
         res.status(500).json({
             message: "unable to get phone listing",
