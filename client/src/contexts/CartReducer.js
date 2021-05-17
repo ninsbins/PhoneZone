@@ -25,25 +25,9 @@ export const CartReducer = (state, action) => {
                     return { ...state };
                 });
 
-        // case "INCREASE":
-        //     console.log("increasing");
-        //     state.cartItems[
-        //         state.cartItems.findIndex((ph) => ph._id === action.payload._id)
-        //     ].quantity++;
-
-        //     return { ...state, cartItems: [...state.cartItems] };
-
         case "REMOVE_PHONE":
             console.log("removing phone");
             return { ...state };
-        // return {
-        //     ...state,
-        //     cartItems: [
-        //         ...state.cartItems.filter(
-        //             (ph) => ph._id !== action.payload._id
-        //         ),
-        //     ],
-        // };
 
         case "SET_CART":
             console.log("setting cart");
@@ -67,6 +51,15 @@ export const CartReducer = (state, action) => {
         case "FETCH_CART":
             return { ...state, requestInProgress: true };
 
+        case "START_CHECKOUT":
+            return { ...state, requestInProgress: true };
+        case "CHECKOUT_SUCCESS":
+            return { ...state, requestInProgress: false, checkedOut: true };
+        case "CHECKOUT_FAIL":
+            return { ...state, requestInProgress: false };
+
+        case "CLEAR":
+            return { ...state, cartId: "", cartItems: [] };
         // // TODO
 
         // case "CLEAR":

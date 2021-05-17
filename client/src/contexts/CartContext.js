@@ -17,6 +17,7 @@ const initialState = {
     cartId: "",
     cartTotal: 0,
     requestInProgress: false,
+    checkedOut: false,
 };
 
 const CartContextProvider = ({ children }) => {
@@ -129,6 +130,21 @@ const CartContextProvider = ({ children }) => {
 
     const handleCheckout = () => {
         // send axios request to handle checkout
+        dispatch({ type: "START_CHECKOUT" });
+        axios
+            .post("/cart/checkout", {
+                cartId: state.cartId,
+                userId: auth.user,
+            })
+            .then((response) => {
+                console.log(response);
+                dispatch({ type: "CLEAR" });
+                dispatch({ type: "CHECKOUT_SUCCESS" });
+            })
+            .catch((err) => {
+                console.log(err);
+                dispatch({ type: "CHECKOUT_FAIL" });
+            });
     };
 
     // const handleCheckout = () => {

@@ -3,6 +3,7 @@ const Phone = require("../models/phone");
 const { Cart, CartItem } = require("../models/cart");
 const User = require("../models/user");
 const { populate } = require("../models/phone");
+const phoneController = require("./phonesController");
 
 // requires userid, phoneid, optional quantity (adds 1 if not present)
 exports.add_to_cart = (req, res, next) => {
@@ -112,7 +113,9 @@ exports.add_to_cart = (req, res, next) => {
 
                 cart.items.push(item);
 
-                cart.order_total = computeOrderTotal(cart);
+                let phone = await Phone.findById(phoneId);
+                let total = phone.price * quantity;
+                cart.order_total = total;
 
                 cart.save().then((result) => {
                     User.findByIdAndUpdate(userId, { cart: cart })
@@ -120,7 +123,7 @@ exports.add_to_cart = (req, res, next) => {
                             return res.status(200).json({
                                 message: "created and added to cart",
                                 user: result._id,
-                                cart: result.cart.items,
+                                // cart: result.cart.items,
                             });
                         })
                         .catch((err) => {
@@ -264,6 +267,7 @@ const computeOrderTotal = (cart) => {
 };
 
 exports.increase_quantity = async (req, res, next) => {
+    // need to add validation that the increase won't be over stock (already on frontend but never trust it!)
     let cartId = req.body.cartId;
     let phoneId = req.body.productId;
     let cart = await Cart.findOne({ _id: cartId }).populate("items.product");
@@ -275,16 +279,7 @@ exports.increase_quantity = async (req, res, next) => {
         cart.items[indexOfItem].quantity++;
     }
 
-    // let total = 0;
-    // cart.items.forEach((item) => {
-    //     console.log(`q${item.quantity} p${item.product.price}`);
-    //     total += Number(item.quantity) * Number(item.product.price);
-    // });
-
     cart.order_total = computeOrderTotal(cart);
-
-    // let total = await computeTotal(cart);
-    // cart.order_total = total;
 
     cart.save()
         .then((result) => {
@@ -323,5 +318,49 @@ exports.clear_cart = async (req, res, next) => {
         .catch((err) => {
             console.log(err);
             return res.status(500).json({ message: "unable to clear cart" });
+        });
+};
+
+exports.checkout = async (req, res, next) => {
+    let cartId = req.body.cartId;
+    let userId = req.body.userId;
+
+    console.log(`cartId: ${cartId} userId: ${userId}`);
+
+    // validate order first (it should be valid but best to check)
+
+    // set cart completed to true.
+    let cart = await Cart.findById({ _id: cartId });
+    cart.completed = true;
+    // update stock.
+
+    cart.items.forEach((item) => {
+        // find phone, deduct quantity
+        phoneController.update_quantity(item.product._id, item.quantity);
+    });
+
+    await cart
+        .save()
+        .then((result) => {
+            console.log(result);
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ message: "something went wrong" });
+        });
+
+    // move cart from user's cart to previous_orders
+
+    let user = await User.findById(userId);
+    user.previousOrders = [...user.previousOrders, cart];
+    user.cart = undefined;
+
+    user.save()
+        .then((result) => {
+            return res.status(200).json({ message: "successful order" });
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ message: "something went wrong" });
         });
 };

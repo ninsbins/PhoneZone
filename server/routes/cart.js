@@ -19,6 +19,8 @@ router.put("/increaseQuantity", cartController.increase_quantity);
 // decrease quantity of product
 router.put("/decreaseQuantity", cartController.decrease_quantity);
 
+router.post("/checkout", cartController.checkout);
+
 // get users cart.
 router.get("/", cartController.get_cart);
 

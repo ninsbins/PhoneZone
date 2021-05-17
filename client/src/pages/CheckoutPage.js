@@ -21,6 +21,7 @@ const Checkout = ({ location }) => {
         cartTotal,
         handleCheckout,
         requestInProgress,
+        checkedOut,
     } = useContext(CartContext);
     const [checkoutStatus, setCheckoutState] = useState(CheckoutStatus.WAITING);
     const history = useHistory();
@@ -36,6 +37,13 @@ const Checkout = ({ location }) => {
     // }, []);
 
     useEffect(() => {}, [cartItems]);
+
+    useEffect(() => {
+        // REDIRECT ON CHECKOUT
+        // if (checkedOut) {
+        //     history.push("/");
+        // }
+    }, [checkedOut]);
 
     const ItemTile = (props) => {
         let quantity = props.item.quantity;
