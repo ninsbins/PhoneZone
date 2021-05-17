@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Button } from "react-bootstrap";
 import "../styles/PhoneCard.scss";
 
-const IMAGEBASEURL = `http://localhost:9000/images/`;
+const IMAGEBASEURL = `/images/`;
 
 const PhoneCard = (props) => {
     return (
@@ -35,10 +35,7 @@ const PhoneCard = (props) => {
                         </svg>
                     </Button>
                 )}
-                <Button
-                    variant="outline-secondary"
-                    disabled="true"
-                >
+                <Button variant="outline-secondary" disabled="true">
                     In stock: {props.phone.stock}
                 </Button>
             </Card.Footer>

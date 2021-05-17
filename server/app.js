@@ -3,6 +3,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 // DB SETUP
 const mongoDBUri =
@@ -39,6 +40,11 @@ app.use("/orders", orderRoutes);
 app.use("/cart", cartRoutes);
 
 // CORS
+// DEV: This is just for dev work, opens it up to any requests so not good security once we've built.
+// Uncomment the Prod configuration and comment out the Dev version for final product.
+// app.use(cors());
+// app.options("*", cors());
+// PROD:
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(

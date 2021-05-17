@@ -37,7 +37,7 @@ const CartContextProvider = ({ children }) => {
 
     const increase = (payload) => {
         axios
-            .put("http://localhost:9000/cart/increaseQuantity", {
+            .put("/cart/increaseQuantity", {
                 cartId: state.cartId,
                 productId: payload._id,
             })
@@ -54,7 +54,7 @@ const CartContextProvider = ({ children }) => {
 
     const decrease = (payload) => {
         axios
-            .put("http://localhost:9000/cart/decreaseQuantity", {
+            .put("/cart/decreaseQuantity", {
                 cartId: state.cartId,
                 productId: payload._id,
             })
@@ -71,7 +71,7 @@ const CartContextProvider = ({ children }) => {
         // sent cart id and the id of the phone to remove
         // product id, cart id.
         axios
-            .put("http://localhost:9000/cart/removeFromCart", {
+            .put("/cart/removeFromCart", {
                 cartId: state.cartId,
                 productId: payload._id,
             })
@@ -88,7 +88,7 @@ const CartContextProvider = ({ children }) => {
 
     const setCart = () => {
         axios
-            .get("http://localhost:9000/cart", {
+            .get("/cart", {
                 params: { userId: auth.user },
             })
             .then((response) => {

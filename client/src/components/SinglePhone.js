@@ -10,7 +10,7 @@ import { Link, useParams } from "react-router-dom";
 import CartIcon from "./CartIcon";
 import Stars from "./Stars";
 
-const IMAGEBASEURL = `http://localhost:9000/images/`;
+const IMAGEBASEURL = `/images/`;
 
 const pageStatus = {
     LOADING: "loading",
@@ -39,7 +39,7 @@ const SinglePhone = (props) => {
         setStatus(pageStatus.LOADING);
 
         axios
-            .get(`http://localhost:9000/phones/${id}`)
+            .get(`/phones/${id}`)
             .then((result) => {
                 setPhone(result.data.phone);
                 setStatus(pageStatus.SUCCESS);
@@ -122,7 +122,9 @@ const SinglePhone = (props) => {
                             <h2>{phone.title}</h2>
                             <h3>{phone.brand}</h3>
                             <h3>${phone.price.toFixed(2)}</h3>
-                            <h3><Stars num={phone.RatingAverage}/></h3>
+                            <h3>
+                                <Stars num={phone.RatingAverage} />
+                            </h3>
                             <Button
                                 className="tags"
                                 variant="outline-secondary"

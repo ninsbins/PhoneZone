@@ -24,7 +24,7 @@ const MainPage = () => {
 
         setPageState(MainPageStatus.LOADING);
         await axios
-            .get(`http://localhost:9000/phones/search?search_term=${term}`)
+            .get(`phones/search?search_term=${term}`)
             .then((result) => {
                 setSearchResults(result.data);
                 setPageState(MainPageStatus.SEARCH);
@@ -65,7 +65,7 @@ const MainPage = () => {
         setPageState(MainPageStatus.LOADING);
         // get sold out soon
         axios
-            .get("http://localhost:9000/phones/soldoutsoon")
+            .get("phones/soldoutsoon")
             .then((result) => {
                 setSoldOutSoon(result.data);
                 setPageState(MainPageStatus.SUCCESS);
@@ -76,7 +76,7 @@ const MainPage = () => {
             });
         setPageState(MainPageStatus.LOADING);
         axios
-            .get("http://localhost:9000/phones/bestsellers")
+            .get("phones/bestsellers")
             .then((result) => {
                 setBestSellers(result.data);
                 setPageState(MainPageStatus.SUCCESS);

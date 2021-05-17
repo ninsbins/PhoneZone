@@ -19,7 +19,7 @@ function useProvideAuth() {
     const signin = (email, password, success, failure) => {
         // do sign in functionality and return user
         axios
-            .post("http://localhost:9000/users/login", {
+            .post("/users/login", {
                 username: email,
                 password: password,
             })
@@ -42,7 +42,7 @@ function useProvideAuth() {
     const signup = (firstName, lastName, email, password, cb) => {
         // set user to server
         axios
-            .post("http://localhost:9000/users/signup", {
+            .post("/users/signup", {
                 firstName,
                 lastName,
                 email,
