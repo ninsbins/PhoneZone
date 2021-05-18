@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { CartContext } from "../contexts/CartContext";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import LeftArrowIcon from "../components/LeftArrowIcon";
 import "../styles/Checkout.scss";
@@ -12,7 +12,7 @@ const CheckoutStatus = {
     WAITING: "waiting",
 };
 
-const Checkout = ({ location }) => {
+const Checkout = () => {
     const {
         cartItems,
         removePhone,
@@ -25,6 +25,7 @@ const Checkout = ({ location }) => {
     } = useContext(CartContext);
     const [checkoutStatus, setCheckoutState] = useState(CheckoutStatus.WAITING);
     const history = useHistory();
+    const location = useLocation();
     // history.replace('/', {from: location})
 
     // const [disabled, setDisabled] = useState(false);
@@ -127,6 +128,10 @@ const Checkout = ({ location }) => {
         handleCheckout();
     };
 
+    const handleGoBack = () => {
+        history.goBack();
+    };
+
     return (
         <div className="checkout">
             <Container className="checkout__header" fluid>
@@ -148,7 +153,7 @@ const Checkout = ({ location }) => {
                     {/* to the from trick like in mainpagesection here to send back to the proper state */}
                     <Button
                         variant="outline-dark"
-                        onClick={() => history.replace("/", { from: location })}
+                        onClick={() => handleGoBack()}
                     >
                         <LeftArrowIcon /> Back to shopping
                     </Button>

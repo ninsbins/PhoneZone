@@ -6,7 +6,7 @@ import "../styles/SinglePhone.scss";
 import ReviewList from "../components/ReviewList";
 import axios from "axios";
 import useAuth from "../services/useAuth";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useHistory } from "react-router-dom";
 import CartIcon from "./CartIcon";
 import Stars from "./Stars";
 import "../styles/SpinnerOverlay.scss";
@@ -36,6 +36,7 @@ const SinglePhone = (props) => {
     const handleShowModal = () => setShowModal(true);
     const auth = useAuth();
     const { id } = useParams();
+    const history = useHistory();
 
     useEffect(() => {
         setStatus(pageStatus.LOADING);
@@ -124,6 +125,30 @@ const SinglePhone = (props) => {
                     quantityInCart={numInCart}
                 />
                 <Row>
+                    <div>
+                        <Button onClick={() => history.goBack()}>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                class="bi bi-chevron-left"
+                                viewBox="0 0 16 16"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
+                                />
+                            </svg>{" "}
+                            Back
+                        </Button>
+                        {/* <Route path="/phone/:id">
+                    <SinglePhone phone={selectedPhone} />
+                </Route> */}
+                    </div>
+                </Row>
+
+                <Row>
                     <Col xs={3}>
                         <Image src={IMAGEBASEURL + phone.image} fluid />
                     </Col>
@@ -141,7 +166,7 @@ const SinglePhone = (props) => {
                                 variant="outline-secondary"
                                 disabled="true"
                             >
-                                In stock: {props.phone.stock}
+                                In stock: {phone.stock}
                             </Button>
                             <Button
                                 className="tags"

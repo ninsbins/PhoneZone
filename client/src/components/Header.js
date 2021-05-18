@@ -29,6 +29,7 @@ const Header = (props) => {
     let [searchTerm, setSearchTerm] = useState("");
     let [selectedBrand, setSelectedBrand] = useState(null);
     let inSearchState = props.searchState || false;
+    let mainState = props.mainState || "";
 
     useEffect(() => {
         axios
@@ -97,7 +98,14 @@ const Header = (props) => {
                                     Profile
                                 </Button>
                             </Link>
-                            <Link to="/checkout">
+                            <Link
+                                to={{
+                                    pathname: "/checkout",
+                                    state: {
+                                        fromMainPageStatus: mainState,
+                                    },
+                                }}
+                            >
                                 <Button
                                     variant="outline-light"
                                     className="navLinks"
@@ -124,7 +132,14 @@ const Header = (props) => {
                                     Login
                                 </Button>
                             </Link>
-                            <Link to="/checkout">
+                            <Link
+                                to={{
+                                    pathname: "/checkout",
+                                    state: {
+                                        fromMainPageStatus: mainState,
+                                    },
+                                }}
+                            >
                                 <Button
                                     variant="outline-light"
                                     className="navLinks"

@@ -3,22 +3,24 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import axios from "axios";
 import MainPageStatus from "../services/constants";
-import MainPageSection from "../components/MainPageSection";
+import { useHistory, useRouteMatch, Switch, Route } from "react-router-dom";
+import SinglePhone from "../components/SinglePhone";
+import SearchResult from "../components/SearchResult";
+import DefaultMain from "../components/DefaultMain";
 
 const MainPage = () => {
     const [searchState, setSearchState] = useState(false);
-    const [soldOutSoon, setSoldOutSoon] = useState(null);
-    const [bestSellers, setBestSellers] = useState(null);
     const [pageState, setPageState] = useState(MainPageStatus.LOADING);
     const [searchResults, setSearchResults] = useState(null);
     const [filteredState, setFilteredState] = useState(false);
     const [filteredResults, setFilteredResult] = useState(null);
+    let { path, url } = useRouteMatch();
+    let history = useHistory();
 
     // This search function is passed to the header, it will use this function.
     const search = async (term) => {
         // do search
         setFilteredState(false);
-
         console.log(`searching for ${term}`);
         // send search term to backend and get results
 
@@ -29,6 +31,7 @@ const MainPage = () => {
                 setSearchResults(result.data);
                 setPageState(MainPageStatus.SEARCH);
                 setSearchState(true);
+                history.push(`/search?term=${term}`);
             })
             .catch((err) => {
                 console.log(err);
@@ -61,42 +64,29 @@ const MainPage = () => {
         setSearchState(true);
     };
 
-    useEffect(() => {
-        setPageState(MainPageStatus.LOADING);
-        // get sold out soon
-        axios
-            .get("phones/soldoutsoon")
-            .then((result) => {
-                setSoldOutSoon(result.data);
-                setPageState(MainPageStatus.SUCCESS);
-            })
-            .catch((err) => {
-                console.log(err);
-                setPageState(MainPageStatus.ERROR);
-            });
-        setPageState(MainPageStatus.LOADING);
-        axios
-            .get("phones/bestsellers")
-            .then((result) => {
-                setBestSellers(result.data);
-                setPageState(MainPageStatus.SUCCESS);
-            })
-            .catch((err) => {
-                console.log(err);
-                setPageState(MainPageStatus.ERROR);
-            });
-    }, []);
-
     return (
         <div className="Main">
-            <Header search={search} filter={filter} searchState={searchState} />
-            <MainPageSection
-                pageState={pageState}
-                setPageState={setPageState}
-                bestSellers={bestSellers}
-                soldOutSoon={soldOutSoon}
-                searchResults={filteredState ? filteredResults : searchResults}
+            <Header
+                search={search}
+                filter={filter}
+                searchState={searchState}
+                mainState={pageState}
             />
+            <Switch>
+                <Route path={`/search`}>
+                    <SearchResult
+                        searchResults={
+                            filteredState ? filteredResults : searchResults
+                        }
+                    />
+                </Route>
+                <Route path={`/phone/:id`}>
+                    <SinglePhone />
+                </Route>
+                <Route exact path={path}>
+                    <DefaultMain />
+                </Route>
+            </Switch>
         </div>
     );
 };
