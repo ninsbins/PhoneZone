@@ -21,9 +21,9 @@ const LoginPage = () => {
 
     const findErrors = () => {
         const errors = {};
-        if (email == "") errors.email = "Username cannot be blank";
+        if (email === "") errors.email = "Username cannot be blank";
         else if (email.length < 3) errors.email = "Enter a valid username";
-        if (password == "") errors.password = "Password cannot be blank";
+        if (password === "") errors.password = "Password cannot be blank";
 
         return errors;
     };

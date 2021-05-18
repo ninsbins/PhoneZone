@@ -18,6 +18,7 @@ const initialState = {
     cartTotal: 0,
     requestInProgress: false,
     checkedOut: false,
+    errors: [],
 };
 
 const CartContextProvider = ({ children }) => {
@@ -34,7 +35,7 @@ const CartContextProvider = ({ children }) => {
                 cartId: state.cartId,
             })
             .then((response) => {
-                console.log(response);
+                // console.log(response);
                 setCart();
             })
             .catch((err) => {
@@ -50,7 +51,7 @@ const CartContextProvider = ({ children }) => {
                 productId: payload._id,
             })
             .then((response) => {
-                console.log(response);
+                // console.log(response);
                 setCart();
             })
             .catch((err) => {
@@ -86,7 +87,7 @@ const CartContextProvider = ({ children }) => {
                 productId: payload._id,
             })
             .then((response) => {
-                console.log(response);
+                // console.log(response);
                 setCart();
             })
             .catch((err) => {
@@ -102,22 +103,25 @@ const CartContextProvider = ({ children }) => {
                 params: { userId: auth.user },
             })
             .then((response) => {
-                console.log(response);
+                // console.log(response);
+                if (response.data.cart) {
+                    dispatch({
+                        type: "SET_CART",
+                        payload: response.data.cart.items,
+                    });
 
-                dispatch({
-                    type: "SET_CART",
-                    payload: response.data.cart.items,
-                });
+                    dispatch({
+                        type: "SET_CART_ID",
+                        payload: response.data.cart._id,
+                    });
 
-                dispatch({
-                    type: "SET_CART_ID",
-                    payload: response.data.cart._id,
-                });
-
-                dispatch({
-                    type: "SET_CART_TOTAL",
-                    payload: response.data.cart.order_total,
-                });
+                    dispatch({
+                        type: "SET_CART_TOTAL",
+                        payload: response.data.cart.order_total,
+                    });
+                } else {
+                    // console.log("no current cart for user");
+                }
             })
             .catch((err) => {
                 console.log(err);
@@ -138,8 +142,8 @@ const CartContextProvider = ({ children }) => {
             })
             .then((response) => {
                 console.log(response);
-                dispatch({ type: "CLEAR" });
                 dispatch({ type: "CHECKOUT_SUCCESS" });
+                dispatch({ type: "CLEAR" });
             })
             .catch((err) => {
                 console.log(err);

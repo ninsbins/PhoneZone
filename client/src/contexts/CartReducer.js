@@ -1,34 +1,5 @@
-import axios from "axios";
-
-const BASE_URL = "http://localhost:9000";
-
 export const CartReducer = (state, action) => {
     switch (action.type) {
-        case "ADD_PHONE":
-            console.log("adding");
-            // return {...state, cartItems}
-            console.log(action.payload);
-
-            // TODO
-
-            axios
-                .put("/cart/addToCart", {
-                    userId: action.user,
-                    phoneId: action.payload.phone._id,
-                    quantity: action.payload.num,
-                })
-                .then((response) => {
-                    return { ...state, cartItems: response.data.cart.items };
-                })
-                .catch((err) => {
-                    console.log(err);
-                    return { ...state };
-                });
-
-        case "REMOVE_PHONE":
-            console.log("removing phone");
-            return { ...state };
-
         case "SET_CART":
             console.log("setting cart");
             console.log(state.cartItems);
@@ -53,19 +24,24 @@ export const CartReducer = (state, action) => {
 
         case "START_CHECKOUT":
             return { ...state, requestInProgress: true };
+
         case "CHECKOUT_SUCCESS":
-            return { ...state, requestInProgress: false, checkedOut: true };
+            return {
+                ...state,
+                requestInProgress: false,
+                checkedOut: true,
+                errors: [],
+            };
         case "CHECKOUT_FAIL":
-            return { ...state, requestInProgress: false };
+            return {
+                ...state,
+                requestInProgress: false,
+                errors: ["bad vibes from this order"],
+            };
 
         case "CLEAR":
             return { ...state, cartId: "", cartItems: [] };
-        // // TODO
 
-        // case "CLEAR":
-        // // TODO
-        // case "CHECKOUT":
-        // TODO
         default:
             return state;
     }

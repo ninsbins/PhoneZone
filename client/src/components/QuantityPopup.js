@@ -10,7 +10,7 @@ const QuantityPopup = (props) => {
         if (maxNum === 0) {
             setDisabled(true);
         }
-    }, []);
+    }, [maxNum]);
 
     const handleInputChange = (e) => {
         setQuantity(e.target.value);

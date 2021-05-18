@@ -2,7 +2,7 @@ import "../styles/Main.scss";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import MainPageStatus from "../services/constants";
-import { useRouteMatch, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Container, CardDeck, Spinner } from "react-bootstrap";
 import PhoneCard from "../components/PhoneCard";
 
@@ -53,7 +53,7 @@ const DefaultMain = () => {
             <p className="sectionSubtitle">Get in quick before they're gone!</p>
 
             {/* Map through soldOutSoon phones for display */}
-            {pageState == MainPageStatus.LOADING && (
+            {pageState === MainPageStatus.LOADING && (
                 <Spinner animation="border" />
             )}
             {soldOutSoon != null ? (
@@ -78,7 +78,7 @@ const DefaultMain = () => {
             {/* Map through bestSeller phones for display */}
             <h2 className="sectionTitle">Best Sellers</h2>
             <p className="sectionSubtitle">Check out our best sellers!</p>
-            {pageState == MainPageStatus.LOADING && (
+            {pageState === MainPageStatus.LOADING && (
                 <Spinner animation="border" />
             )}
             {bestSellers != null ? (

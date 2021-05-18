@@ -1,5 +1,5 @@
 import "../styles/Main.scss";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Header from "../components/Header";
 import axios from "axios";
 import MainPageStatus from "../services/constants";
@@ -46,7 +46,7 @@ const MainPage = () => {
         searchResults.map((phone) => {
             if (brand != null) {
                 if (
-                    brand == phone.brand &&
+                    brand === phone.brand &&
                     phone.price <= max &&
                     phone.price >= min
                 ) {

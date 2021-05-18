@@ -52,14 +52,15 @@ const SinglePhone = (props) => {
                 console.log(err);
                 setStatus(pageStatus.ERROR);
             });
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         console.log("cart changed...");
+
         if (status === pageStatus.SUCCESS) {
             setQuantity();
         }
-    }, [cartItems, cartItems.items]);
+    }, [cartItems, cartItems.items, status]);
 
     const setQuantity = () => {
         if (cartItems != null && cartItems.length > 0) {
@@ -75,6 +76,7 @@ const SinglePhone = (props) => {
             }
         } else {
             setNumInCart(0);
+            setIsInCart(false);
         }
     };
 
@@ -182,29 +184,40 @@ const SinglePhone = (props) => {
                         <div>
                             {/* this bit feels a bit messy */}
                             {/* Matt: moved the svg cart icon to it's own component for reuse (CartIcon.js) */}
-                            {auth.user ? (
-                                <Button
-                                    variant="primary"
-                                    onClick={handleShowModal}
-                                >
-                                    <CartIcon /> Add to cart
-                                </Button>
-                            ) : (
-                                <Link to="/login">
-                                    <Button variant="primary">
-                                        <CartIcon /> Add to cart
-                                    </Button>
-                                </Link>
-                            )}
-
-                            <div>
-                                <Button
-                                    variant="danger"
-                                    onClick={() => removePhone(phone)}
-                                >
-                                    <CartIcon /> Remove from cart
-                                </Button>
-                            </div>
+                            <Row>
+                                <Col sm={2}>
+                                    {auth.user ? (
+                                        <Button
+                                            block
+                                            variant="primary"
+                                            onClick={handleShowModal}
+                                        >
+                                            <CartIcon /> Add to cart
+                                        </Button>
+                                    ) : (
+                                        <Link to="/login">
+                                            <Button variant="primary">
+                                                <CartIcon /> Add to cart
+                                            </Button>
+                                        </Link>
+                                    )}
+                                </Col>
+                                <Col sm={2}>
+                                    {isInCart && (
+                                        <div>
+                                            <Button
+                                                block
+                                                variant="danger"
+                                                onClick={() =>
+                                                    removePhone(phone)
+                                                }
+                                            >
+                                                <CartIcon /> Remove from cart
+                                            </Button>
+                                        </div>
+                                    )}
+                                </Col>
+                            </Row>
                         </div>
                     </Col>
                 </Row>

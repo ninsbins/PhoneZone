@@ -25,26 +25,8 @@ const Checkout = () => {
     } = useContext(CartContext);
     const [checkoutStatus, setCheckoutState] = useState(CheckoutStatus.WAITING);
     const history = useHistory();
-    const location = useLocation();
-    // history.replace('/', {from: location})
-
-    // const [disabled, setDisabled] = useState(false);
-    // const maxNum = props.stock - props.quantityInCart;
-
-    // useEffect(() => {
-    //     if (maxNum === 0) {
-    //         setDisabled(true);
-    //     }
-    // }, []);
 
     useEffect(() => {}, [cartItems]);
-
-    useEffect(() => {
-        // REDIRECT ON CHECKOUT
-        // if (checkedOut) {
-        //     history.push("/");
-        // }
-    }, [checkedOut]);
 
     const ItemTile = (props) => {
         let quantity = props.item.quantity;
@@ -126,6 +108,14 @@ const Checkout = () => {
     const checkout = () => {
         // wait for checkout repsonse, on success show success, on error, show error.
         handleCheckout();
+        handleCheckout();
+
+        // console.log(checkedOut);
+        // if (checkedOut && errors) {
+        //     history.push("/");
+        // } else {
+        //     setCheckoutState(CheckoutStatus.ERROR);
+        // }
     };
 
     const handleGoBack = () => {
@@ -163,25 +153,30 @@ const Checkout = () => {
                 </Row>
                 {/* {renderCartItems} */}
 
-                {cartItems != null ? (
-                    <ItemList items={cartItems} />
+                {cartItems.length > 0 ? (
+                    <>
+                        <ItemList items={cartItems} />
+                        <Row className="checkout__total">
+                            Total: ${cartTotal.toFixed(2)}
+                        </Row>
+                        <Row>
+                            <Button
+                                variant="success"
+                                block
+                                onClick={() => checkout()}
+                            >
+                                Confirm Order
+                            </Button>
+                        </Row>
+                    </>
                 ) : (
-                    <div>No items in the cart</div>
+                    <div style={{ marginLeft: "50%" }}>
+                        Empty cart. Let's fill it!
+                    </div>
                 )}
 
-                <Row className="checkout__total">
-                    Total: ${cartTotal.toFixed(2)}
-                </Row>
-                <Row>
-                    <Button variant="success" block onClick={() => checkout()}>
-                        Confirm Order
-                    </Button>
-                </Row>
                 {checkoutStatus === CheckoutStatus.ERROR && (
-                    <div>Sorry, an error occured</div>
-                )}
-                {checkoutStatus === CheckoutStatus.SUCCESS && (
-                    <div>Successful checkout</div>
+                    <div>Sorry, an error occured.</div>
                 )}
             </div>
         </div>

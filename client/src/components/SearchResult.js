@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, CardDeck, Spinner } from "react-bootstrap";
+import { Container, CardDeck } from "react-bootstrap";
 import PhoneCard from "../components/PhoneCard";
 import { Link } from "react-router-dom";
 
