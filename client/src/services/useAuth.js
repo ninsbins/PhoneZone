@@ -12,8 +12,12 @@ export const useAuth = () => {
     return useContext(authContext);
 };
 
+const storage = localStorage.getItem("user")
+    ? localStorage.getItem("user")
+    : "";
+
 function useProvideAuth() {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(storage || null);
     const [token, setToken] = useState(null);
 
     const signin = (email, password, success, failure) => {
@@ -25,6 +29,7 @@ function useProvideAuth() {
             })
             .then((result) => {
                 console.log(result);
+                localStorage.setItem("user", result.data.userId);
                 setUser(result.data.userId);
                 setToken(result.data.token);
                 success();
@@ -63,6 +68,7 @@ function useProvideAuth() {
     const signout = (cb) => {
         // setUser(false);
         setUser(null);
+        localStorage.removeItem("user");
         cb();
     };
 
