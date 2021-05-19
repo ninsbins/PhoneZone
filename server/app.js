@@ -38,6 +38,10 @@ app.use("/users", usersRoutes);
 app.use("/phones", phoneRoutes);
 app.use("/orders", orderRoutes);
 app.use("/cart", cartRoutes);
+// Fallback for the client-side routing.
+app.get("/*", (req, res, next) => {
+    res.sendFile(path.join(__dirname, "../client/build/index.html"));
+});
 
 // CORS
 // DEV: This is just for dev work, opens it up to any requests so not good security once we've built.
