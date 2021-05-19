@@ -7,6 +7,7 @@ import { useHistory, useRouteMatch, Switch, Route } from "react-router-dom";
 import SinglePhone from "../components/SinglePhone";
 import SearchResult from "../components/SearchResult";
 import DefaultMain from "../components/DefaultMain";
+import NotFound from "../components/NotFound";
 
 const MainPage = () => {
     const [searchState, setSearchState] = useState(false);
@@ -86,6 +87,8 @@ const MainPage = () => {
                 <Route exact path={path}>
                     <DefaultMain />
                 </Route>
+
+                <Route component={NotFound} />
             </Switch>
         </div>
     );

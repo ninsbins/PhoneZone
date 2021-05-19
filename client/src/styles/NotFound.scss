@@ -1,0 +1,45 @@
+$text-color: #32333b;
+$highlight-color: rgb(9, 138, 202);
+$background-color: rgba(52, 58, 64, 0.7);
+.notfound {
+    // background-color: red;
+    background-color: $background-color;
+    height: 96vh;
+
+    &__title {
+        font-size: 10em;
+        font-family: Arial, Helvetica, sans-serif;
+        color: $text-color;
+        margin: 0.2em;
+    }
+
+    &__text {
+        font-size: 2em;
+        color: white;
+        margin: 0.2em;
+    }
+
+    &__link {
+        width: 200px;
+        border: 2px solid white;
+        border-radius: 15px;
+        padding: 5px;
+        display: flex;
+        justify-content: center;
+
+        &__link {
+            color: white;
+            font-weight: 600;
+            font-size: large;
+        }
+        &:hover {
+            background-color: white;
+        }
+
+        &:hover & {
+            &__link {
+                color: $text-color;
+            }
+        }
+    }
+}

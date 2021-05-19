@@ -10,6 +10,7 @@ import { Link, useParams, useHistory } from "react-router-dom";
 import CartIcon from "./CartIcon";
 import Stars from "./Stars";
 import "../styles/SpinnerOverlay.scss";
+import NotFound from "./NotFound";
 
 const IMAGEBASEURL = `/images/`;
 
@@ -101,7 +102,8 @@ const SinglePhone = (props) => {
     }
 
     if (status === pageStatus.ERROR) {
-        return <div>Error loading phone...</div>;
+        // return <div>Error loading phone...</div>;
+        return <NotFound />;
     }
 
     if (status === pageStatus.SUCCESS) {
