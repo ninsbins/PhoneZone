@@ -5,6 +5,13 @@ import { Link } from "react-router-dom";
 
 const SearchResult = (props) => {
     let searchResults = props.searchResults;
+    if (searchResults.length == 0) {
+        return (
+            <Container fluid>
+                <div>No items match your search</div>
+            </Container>
+        );
+    }
 
     return (
         <Container fluid>
