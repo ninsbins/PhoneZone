@@ -7,7 +7,7 @@ const cors = require("cors");
 
 // DB SETUP
 const mongoDBUri =
-    "mongodb+srv://matt:testadmin@phonezone.ixyyf.mongodb.net/phonezone?retryWrites=true&w=majority";
+    "mongodb+srv://matt:testadmin@phonezone.ixyyf.mongodb.net/phonezonetester?retryWrites=true&w=majority";
 mongoose
     .connect(mongoDBUri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then()

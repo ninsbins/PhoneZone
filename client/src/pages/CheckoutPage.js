@@ -108,7 +108,8 @@ const Checkout = () => {
     const checkout = () => {
         // wait for checkout repsonse, on success show success, on error, show error.
         handleCheckout();
-        handleCheckout();
+        // was it succesful?
+        history.push("/");
 
         // console.log(checkedOut);
         // if (checkedOut && errors) {
