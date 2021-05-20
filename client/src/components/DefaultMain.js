@@ -57,7 +57,7 @@ const DefaultMain = () => {
                 <Spinner animation="border" />
             )}
             {soldOutSoon != null ? (
-                <CardDeck>
+                <CardDeck className="justify-content-center">
                     {soldOutSoon.map((phone) => {
                         return (
                             <Link
@@ -82,7 +82,7 @@ const DefaultMain = () => {
                 <Spinner animation="border" />
             )}
             {bestSellers != null ? (
-                <CardDeck>
+                <CardDeck className="justify-content-center">
                     {bestSellers.map((phone) => {
                         return (
                             <Link
