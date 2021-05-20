@@ -1,5 +1,3 @@
-// EXAMPLE CART CONTEXT, NOT IN USE YET!
-
 import React, { createContext, useReducer, useEffect } from "react";
 import { CartReducer } from "./CartReducer";
 import useAuth from "../services/useAuth";
@@ -19,6 +17,8 @@ const initialState = {
     requestInProgress: false,
     checkedOut: false,
     errors: [],
+    checkingOutInProgress: false,
+    checkoutSuccessful: false,
 };
 
 const CartContextProvider = ({ children }) => {
@@ -26,81 +26,133 @@ const CartContextProvider = ({ children }) => {
     const auth = useAuth();
 
     const addPhone = (payload) => {
-        dispatch({ type: "FETCH_CART" });
-        axios
-            .put("/cart/addToCart", {
-                userId: auth.user,
-                phoneId: payload.phone._id,
-                quantity: payload.num,
-                cartId: state.cartId,
-            })
-            .then((response) => {
-                // console.log(response);
-                setCart();
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        let expired = auth.isJWTExpired();
+        console.log(`expired? ${expired}`);
+
+        if (!expired) {
+            dispatch({ type: "FETCH_CART" });
+            axios
+                .put(
+                    "/cart/addToCart",
+                    {
+                        phoneId: payload.phone._id,
+                        quantity: payload.num,
+                        cartId: state.cartId,
+                    },
+                    {
+                        headers: { Authorization: "Bearer " + auth.token },
+                    }
+                )
+                .then((response) => {
+                    // console.log(response);
+                    setCart();
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        } else {
+            auth.signout();
+        }
     };
 
     const increase = (payload) => {
-        dispatch({ type: "FETCH_CART" });
-        axios
-            .put("/cart/increaseQuantity", {
-                cartId: state.cartId,
-                productId: payload._id,
-            })
-            .then((response) => {
-                // console.log(response);
-                setCart();
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        let expired = auth.isJWTExpired();
+        console.log(`expired? ${expired}`);
+        if (!expired) {
+            dispatch({ type: "FETCH_CART" });
+            axios
+                .put(
+                    "/cart/increaseQuantity",
+                    {
+                        cartId: state.cartId,
+                        productId: payload._id,
+                    },
+                    {
+                        headers: { Authorization: "Bearer " + auth.token },
+                    }
+                )
+                .then((response) => {
+                    // console.log(response);
+                    setCart();
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        } else {
+            auth.signout();
+        }
 
         // dispatch({ type: "INCREASE", payload });
     };
 
     const decrease = (payload) => {
-        dispatch({ type: "FETCH_CART" });
-        axios
-            .put("/cart/decreaseQuantity", {
-                cartId: state.cartId,
-                productId: payload._id,
-            })
-            .then((response) => {
-                console.log(response);
-                setCart();
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        let expired = auth.isJWTExpired();
+        if (!expired) {
+            dispatch({ type: "FETCH_CART" });
+            axios
+                .put(
+                    "/cart/decreaseQuantity",
+                    {
+                        cartId: state.cartId,
+                        productId: payload._id,
+                    },
+                    {
+                        headers: { Authorization: "Bearer " + auth.token },
+                    }
+                )
+                .then((response) => {
+                    console.log(response);
+                    setCart();
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        } else {
+            auth.signout();
+        }
     };
 
     const removePhone = (payload) => {
         // sent cart id and the id of the phone to remove
         // product id, cart id.
-        dispatch({ type: "FETCH_CART" });
-        axios
-            .put("/cart/removeFromCart", {
-                cartId: state.cartId,
-                productId: payload._id,
-            })
-            .then((response) => {
-                // console.log(response);
-                setCart();
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        let expired = auth.isJWTExpired();
+        if (!expired) {
+            dispatch({ type: "FETCH_CART" });
+            axios
+                .put(
+                    "/cart/removeFromCart",
+                    {
+                        cartId: state.cartId,
+                        productId: payload._id,
+                    },
+                    {
+                        headers: { Authorization: "Bearer " + auth.token },
+                    }
+                )
+                .then((response) => {
+                    // console.log(response);
+                    setCart();
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        } else {
+            auth.signout();
+        }
 
         // dispatch({ type: "REMOVE_PHONE", payload });
     };
 
+    // axios.put(`/phones/delete`,
+    // {phoneId: data._id},
+    // {headers: {"Authorization": "Bearer " + auth.token}})
+    // .then((result) => {
+
     const setCart = () => {
+        console.log(`token being sent ${auth.token}`);
         axios
             .get("/cart", {
-                params: { userId: auth.user },
+                headers: { Authorization: "Bearer " + auth.token },
             })
             .then((response) => {
                 // console.log(response);
@@ -132,23 +184,41 @@ const CartContextProvider = ({ children }) => {
     //     dispatch({ type: "CLEAR" });
     // };
 
-    const handleCheckout = () => {
+    const handleCheckout = async () => {
         // send axios request to handle checkout
-        dispatch({ type: "START_CHECKOUT" });
-        axios
-            .post("/cart/checkout", {
-                cartId: state.cartId,
-                userId: auth.user,
-            })
-            .then((response) => {
-                console.log(response);
-                dispatch({ type: "CHECKOUT_SUCCESS" });
-                dispatch({ type: "CLEAR" });
-            })
-            .catch((err) => {
-                console.log(err);
-                dispatch({ type: "CHECKOUT_FAIL" });
+
+        let expired = auth.isJWTExpired();
+        if (!expired) {
+            dispatch({ type: "START_CHECKOUT" });
+
+            return new Promise((resolve, reject) => {
+                axios
+                    .post(
+                        "/cart/checkout",
+                        {
+                            cartId: state.cartId,
+                        },
+                        {
+                            headers: { Authorization: "Bearer " + auth.token },
+                        }
+                    )
+                    .then((response) => {
+                        console.log(response);
+                        resolve("success on checkout");
+                        dispatch({ type: "CHECKOUT_SUCCESS" });
+                        dispatch({ type: "CLEAR" });
+                    })
+                    .catch((err) => {
+                        reject("unsuccessful checkout");
+                        console.log(err);
+                        dispatch({ type: "CHECKOUT_FAIL" });
+                    });
             });
+        } else {
+            auth.signout();
+        }
+
+        // return res;
     };
 
     // const handleCheckout = () => {

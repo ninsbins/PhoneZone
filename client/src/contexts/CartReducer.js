@@ -22,6 +22,12 @@ export const CartReducer = (state, action) => {
         case "FETCH_CART":
             return { ...state, requestInProgress: true };
 
+        // requestInProgress: false,
+        // checkedOut: false,
+        // errors: [],
+        // checkingOutInProgress: false,
+        // checkoutSuccessful: false,
+
         case "START_CHECKOUT":
             return { ...state, requestInProgress: true };
 

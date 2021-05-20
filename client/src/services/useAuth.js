@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import jwt_decode from "jwt-decode";
+import { useHistory } from "react-router-dom";
 
 const authContext = createContext();
 
@@ -17,8 +19,26 @@ const storage = localStorage.getItem("user")
     : "";
 
 function useProvideAuth() {
+    const history = useHistory();
     const [user, setUser] = useState(storage || null);
-    const [token, setToken] = useState(null);
+    const [token, setToken] = useState(storage || null);
+
+    const isJWTExpired = () => {
+        if (token != null) {
+            let decodedToken = jwt_decode(token);
+            console.log("decoded: ", decodedToken);
+            let currentDate = new Date();
+
+            if (decodedToken.exp * 1000 < currentDate.getTime()) {
+                console.log("token expired");
+                signout();
+                return true;
+            } else {
+                console.log("valid token");
+                return false;
+            }
+        }
+    };
 
     const signin = (email, password, success, failure) => {
         // do sign in functionality and return user
@@ -29,7 +49,7 @@ function useProvideAuth() {
             })
             .then((result) => {
                 console.log(result);
-                localStorage.setItem("user", result.data.userId);
+                localStorage.setItem("user", result.data.token);
                 setUser(result.data.userId);
                 setToken(result.data.token);
                 success();
@@ -69,12 +89,13 @@ function useProvideAuth() {
         // setUser(false);
         setUser(null);
         localStorage.removeItem("user");
+
         cb();
     };
 
-    useEffect(() => {}, [user]);
+    useEffect(() => {}, [token, user]);
 
-    return { user, signin, signup, signout, token };
+    return { user, signin, signup, signout, token, isJWTExpired };
 }
 
 export default useAuth;

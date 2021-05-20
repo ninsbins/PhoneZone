@@ -143,7 +143,8 @@ exports.create_new_user = (req, res, next) => {
 };
 
 exports.get_user_from_id = (req, res, next) => {
-    const id = req.params.userId;
+    // const id = req.params.userId;
+    const id = req.user.userId;
 
     User.findById(id, "-password")
         .then((result) => {
@@ -168,18 +169,18 @@ exports.update_user = (req, res, next) => {
     const id = req.user.userId;
 
     var user = {};
-    if(req.body.firstname){
+    if (req.body.firstname) {
         user.firstname = req.body.firstname;
     }
-    if(req.body.lastname){
+    if (req.body.lastname) {
         user.lastname = req.body.lastname;
     }
-    if(req.body.email){
+    if (req.body.email) {
         user.email = req.body.email;
     }
 
-    User.findById(id).then((result)=>{
-        if(result.password === encryptPassword(req.body.password)){
+    User.findById(id).then((result) => {
+        if (result.password === encryptPassword(req.body.password)) {
             User.updateOne({ _id: id }, user)
                 .then((result) => {
                     console.log(result);
@@ -369,6 +370,7 @@ exports.authenticate = (req, res, next) => {
 
         jwt.verify(token, accessTokenSecret, (err, user) => {
             if (err) {
+                console.log(err);
                 return res.status(401).send("Error verifying token");
             }
 

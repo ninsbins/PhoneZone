@@ -9,8 +9,16 @@ router.get("/", function (req, res, next) {
     // get all users (not that we'd want to do that...)
 });
 
-router.get("/:userId", UsersController.get_user_from_id);
-router.post("/update", UsersController.authenticate, UsersController.update_user);
+router.get(
+    "/:userId",
+    UsersController.authenticate,
+    UsersController.get_user_from_id
+);
+router.post(
+    "/update",
+    UsersController.authenticate,
+    UsersController.update_user
+);
 
 router.get("/get_phones_sold_by/:userId", UsersController.get_phones_sold_by);
 
@@ -47,6 +55,10 @@ router.get("/get_phones_sold_by/:userId", UsersController.get_phones_sold_by);
 router.post("/signup", UsersController.create_new_user);
 router.post("/login", UsersController.login_user);
 
-router.post("/change_password", UsersController.authenticate, UsersController.change_password);
+router.post(
+    "/change_password",
+    UsersController.authenticate,
+    UsersController.change_password
+);
 
 module.exports = router;

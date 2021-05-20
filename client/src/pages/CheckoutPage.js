@@ -25,6 +25,7 @@ const Checkout = () => {
     } = useContext(CartContext);
     const [checkoutStatus, setCheckoutState] = useState(CheckoutStatus.WAITING);
     const history = useHistory();
+    const [errors, setErrors] = useState([]);
 
     useEffect(() => {}, [cartItems]);
 
@@ -105,18 +106,25 @@ const Checkout = () => {
         });
     };
 
-    const checkout = () => {
+    const checkout = async () => {
         // wait for checkout repsonse, on success show success, on error, show error.
-        handleCheckout();
-        // was it succesful?
-        history.push("/");
 
-        // console.log(checkedOut);
-        // if (checkedOut && errors) {
-        //     history.push("/");
-        // } else {
-        //     setCheckoutState(CheckoutStatus.ERROR);
-        // }
+        //
+        // let result = handleCheckout();
+
+        // let result = await handleCheckout();
+
+        handleCheckout()
+            .then((result) => {
+                console.log(result);
+                history.push("/");
+                setErrors([]);
+            })
+            .catch((err) => {
+                console.log(err);
+                let errs = [...errors, "Failed to checkout"];
+                setErrors(errs);
+            });
     };
 
     const handleGoBack = () => {
@@ -160,6 +168,14 @@ const Checkout = () => {
                         <Row className="checkout__total">
                             Total: ${cartTotal.toFixed(2)}
                         </Row>
+                        {errors.length > 0 && (
+                            <Row className="justify-content-center">
+                                <div style={{ color: "red" }}>
+                                    Failed to checkout
+                                </div>
+                            </Row>
+                        )}
+
                         <Row>
                             <Button
                                 variant="success"

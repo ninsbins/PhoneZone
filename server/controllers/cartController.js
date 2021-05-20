@@ -7,7 +7,7 @@ const phoneController = require("./phonesController");
 
 // requires userid, phoneid, optional quantity (adds 1 if not present)
 exports.add_to_cart = (req, res, next) => {
-    let userId = req.body.userId;
+    let userId = req.user.userId;
     let phoneId = req.body.phoneId;
     let quantity = Number(req.body.quantity);
     // let cartId = req.body.cartId;
@@ -145,7 +145,9 @@ exports.add_to_cart = (req, res, next) => {
 };
 
 exports.get_cart = async (req, res, next) => {
-    let userId = req.query.userId;
+    let userId = req.user.userId;
+
+    // let userId = req.query.userId;
 
     User.findById(userId)
         .populate({
@@ -297,7 +299,7 @@ exports.increase_quantity = async (req, res, next) => {
 };
 
 exports.clear_cart = async (req, res, next) => {
-    let userId = req.body.userId;
+    let userId = req.user.userId;
 
     // get user and get the cart id, remove the cart.
 
@@ -323,11 +325,13 @@ exports.clear_cart = async (req, res, next) => {
 
 exports.checkout = async (req, res, next) => {
     let cartId = req.body.cartId;
-    let userId = req.body.userId;
+    let userId = req.user.userId;
 
     console.log(`cartId: ${cartId} userId: ${userId}`);
 
     // validate order first (it should be valid but best to check)
+
+    // return res.status(500).json({ message: "rejected order" });
 
     // set cart completed to true.
     let cart = await Cart.findById({ _id: cartId });
