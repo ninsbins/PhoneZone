@@ -67,6 +67,8 @@ const SinglePhone = (props) => {
     useEffect(() => {
         console.log("cart changed...");
 
+        console.log(status);
+
         if (status === pageStatus.SUCCESS) {
             setQuantity();
         }
@@ -83,6 +85,7 @@ const SinglePhone = (props) => {
                 }
             } else {
                 setNumInCart(0);
+                setIsInCart(false);
             }
         } else {
             setNumInCart(0);
