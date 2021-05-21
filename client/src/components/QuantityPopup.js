@@ -9,8 +9,10 @@ const QuantityPopup = (props) => {
     useEffect(() => {
         if (maxNum === 0) {
             setDisabled(true);
+        } else {
+            setDisabled(false);
         }
-    }, [maxNum]);
+    }, [maxNum, props.quantityInCart]);
 
     const handleInputChange = (e) => {
         if (e.target.value > maxNum) {
