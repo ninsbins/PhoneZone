@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Row } from "react-bootstrap";
+import { Modal, Button, Row, Select, Form } from "react-bootstrap";
 
 const QuantityPopup = (props) => {
     const [quantity, setQuantity] = useState(1);
@@ -13,7 +13,25 @@ const QuantityPopup = (props) => {
     }, [maxNum]);
 
     const handleInputChange = (e) => {
-        setQuantity(e.target.value);
+        if (e.target.value > maxNum) {
+            setQuantity(maxNum);
+        } else {
+            setQuantity(e.target.value);
+        }
+    };
+
+    const generateOptions = () => {
+        let items = [];
+
+        for (let i = 1; i <= maxNum; i++) {
+            items.push(
+                <option key={i} value={i}>
+                    {i}
+                </option>
+            );
+        }
+
+        return items;
     };
     return (
         <>
@@ -23,16 +41,32 @@ const QuantityPopup = (props) => {
 
             <Modal show={props.showModal} onHide={props.handleCloseModal}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Modal heading</Modal.Title>
+                    <Modal.Title>Quantity</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    <Row>Phone: {props.phoneTitle}</Row>
-                    {disabled && (
+                <Modal.Body style={{ marginLeft: "10px", padding: "1.5em" }}>
+                    <Row className="pb-5">
+                        <span style={{ fontWeight: "bold" }}>Phone:</span>{" "}
+                        {props.phoneTitle}
+                    </Row>
+                    {disabled ? (
                         <Row>
                             <p>Unable to add to cart, insufficient stock</p>
                         </Row>
+                    ) : (
+                        <Row>
+                            <Form>
+                                <Form.Label>Quantity</Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    onChange={handleInputChange}
+                                >
+                                    {generateOptions()}
+                                </Form.Control>
+                            </Form>
+                        </Row>
                     )}
-                    <Row>
+
+                    {/* <Row>
                         <input
                             type="number"
                             value={quantity}
@@ -41,7 +75,7 @@ const QuantityPopup = (props) => {
                             min={0}
                             disabled={disabled}
                         />
-                    </Row>
+                    </Row> */}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button
@@ -50,12 +84,15 @@ const QuantityPopup = (props) => {
                     >
                         Cancel
                     </Button>
-                    <Button
-                        variant="primary"
-                        onClick={() => props.handleSaveModal(quantity)}
-                    >
-                        Confirm
-                    </Button>
+                    {!disabled && (
+                        <Button
+                            variant="primary"
+                            onClick={() => props.handleSaveModal(quantity)}
+                            disabled={disabled}
+                        >
+                            Confirm
+                        </Button>
+                    )}
                 </Modal.Footer>
             </Modal>
         </>

@@ -1,5 +1,13 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Container, Row, Col, Button, Image, Spinner } from "react-bootstrap";
+import {
+    Container,
+    Row,
+    Col,
+    Button,
+    Image,
+    Spinner,
+    Badge,
+} from "react-bootstrap";
 import { CartContext } from "../contexts/CartContext";
 import QuantityPopup from "./QuantityPopup";
 import "../styles/SinglePhone.scss";
@@ -130,75 +138,132 @@ const SinglePhone = (props) => {
                     quantityInCart={numInCart}
                 />
 
-                <Row>
+                <Row className="singlephone">
                     <Col xs={3}>
-                        <Image src={IMAGEBASEURL + phone.image} fluid />
+                        <Image
+                            src={IMAGEBASEURL + phone.image}
+                            fluid
+                            className="singlephone__image"
+                        />
                     </Col>
-                    <Col>
-                        {" "}
-                        <div>
-                            <h2>{phone.brand}</h2>
-                            <h3>{phone.title}</h3>
-                            <h3>${phone.price.toFixed(2)}</h3>
-                            <h3>
-                                <Stars num={phone.RatingAverage} />
-                            </h3>
-                            <Button
-                                className="tags"
-                                variant="outline-secondary"
-                                disabled="true"
-                            >
-                                In stock: {phone.stock}
-                            </Button>
-                            <Button
-                                className="tags"
-                                variant="outline-secondary"
-                                disabled="true"
-                            >
-                                Seller: {phone.seller.firstname}{" "}
-                                {phone.seller.lastname}
-                            </Button>
+                    <Col className="singlephone__info">
+                        <Row>
+                            <div className="singlephone__title">
+                                {phone.title}
+                            </div>
+                            <div className="singlephone__brand">
+                                {phone.brand}
+                            </div>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <Row>
+                                    <div className="singlephone__rating">
+                                        <Stars num={phone.RatingAverage} />
+                                    </div>
+                                </Row>
+                                <Row>
+                                    <div className="singlephone__price">
+                                        {phone.price.toFixed(2)} AUD
+                                    </div>
+                                </Row>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <div className="singlephone__seller">
+                                <span className="singlephone__info__label">
+                                    Seller:
+                                </span>{" "}
+                                <span className="singlephone__info__value">
+                                    {phone.seller.firstname}{" "}
+                                    {phone.seller.lastname}
+                                </span>
+                            </div>
+                        </Row>{" "}
+                        <div></div>
+                    </Col>
 
-                            <p>Quantity in cart: {numInCart}</p>
-                        </div>
-                        <div>
-                            {/* this bit feels a bit messy */}
-                            {/* Matt: moved the svg cart icon to it's own component for reuse (CartIcon.js) */}
-                            <Row>
-                                <Col sm={2}>
-                                    {auth.user ? (
+                    <Col xs={3} className="singlephone__cart">
+                        <Container>
+                            <Row className="pb-3">
+                                <Col>
+                                    <div className="singlephone__stock">
+                                        <span
+                                            className="singlephone__cart__label"
+                                            style={{
+                                                color: "black",
+                                            }}
+                                        >
+                                            In Stock:
+                                        </span>{" "}
+                                        <span className="singlephone__cart__value">
+                                            {phone.stock}
+                                        </span>
+                                        {/* <span className="singlephone__stock__box">
+                                        In Stock{" "}
+                                        <Badge variant="light">
+                                            {" "}
+                                            {phone.stock}
+                                        </Badge>
+                                    </span> */}
+                                    </div>
+                                </Col>
+                                <Col>
+                                    {" "}
+                                    <div className="singlephone__cartquantity">
+                                        <span className="singlephone__cart__label">
+                                            Quantity in cart:
+                                        </span>{" "}
+                                        <span className="singlephone__cart__value">
+                                            {numInCart}
+                                        </span>
+                                    </div>
+                                </Col>
+                            </Row>
+
+                            <Row className="py-2">
+                                {auth.user ? (
+                                    isInCart ? (
                                         <Button
                                             block
-                                            variant="primary"
+                                            variant="info"
+                                            onClick={handleShowModal}
+                                        >
+                                            <CartIcon /> Add more to cart
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            block
+                                            variant="info"
                                             onClick={handleShowModal}
                                         >
                                             <CartIcon /> Add to cart
                                         </Button>
-                                    ) : (
-                                        <Link to="/login">
-                                            <Button variant="primary">
-                                                <CartIcon /> Add to cart
-                                            </Button>
-                                        </Link>
-                                    )}
-                                </Col>
-                                <Col sm={2}>
-                                    {isInCart && (
-                                        <div>
-                                            <Button
-                                                block
-                                                variant="danger"
-                                                onClick={() =>
-                                                    removePhone(phone)
-                                                }
-                                            >
-                                                <CartIcon /> Remove from cart
-                                            </Button>
-                                        </div>
-                                    )}
-                                </Col>
+                                    )
+                                ) : (
+                                    // <Link to="/login">
+                                    <Button
+                                        block
+                                        variant="info"
+                                        onClick={() => history.push("/login")}
+                                    >
+                                        <CartIcon /> Add to cart
+                                    </Button>
+                                    // </Link>
+                                )}
                             </Row>
-                        </div>
+                            <Row>
+                                {isInCart && (
+                                    <Button
+                                        block
+                                        variant="danger"
+                                        onClick={() => removePhone(phone)}
+                                    >
+                                        <CartIcon /> Remove from cart
+                                    </Button>
+                                )}
+                            </Row>
+                        </Container>
                     </Col>
                 </Row>
                 <br></br>

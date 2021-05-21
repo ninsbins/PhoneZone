@@ -89,8 +89,11 @@ function useProvideAuth() {
         // setUser(false);
         setUser(null);
         localStorage.removeItem("user");
-
-        cb();
+        if (cb) {
+            cb();
+        } else {
+            window.location.href = "/";
+        }
     };
 
     useEffect(() => {}, [token, user]);
