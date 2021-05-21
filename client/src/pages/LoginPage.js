@@ -41,7 +41,7 @@ const LoginPage = () => {
     };
 
     const success = () => {
-        history.replace(from);
+        history.goBack();
     };
 
     const failure = () => {
