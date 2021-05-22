@@ -496,8 +496,15 @@ function AddListingForm({ newListingAdded, setNewListingAdded }) {
                     price: price,
                     disabled: disabled,
                 },
-                { headers: { Authorization: "Bearer " + auth.token } }
-            )
+                { headers: { Authorization: "Bearer " + auth.token } },
+            (error)=>{
+                console.log(error);
+                console.log("Invalid inputs");
+                setInvalidInput(true);
+                setTimeout(() => {
+                    setInvalidInput(false);
+                }, 3000);
+            })
             .then((result) => {
                 setNewListingAdded(true);
                 setSuccess(true);

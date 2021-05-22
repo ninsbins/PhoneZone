@@ -3,6 +3,9 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useHistory } from "react-router-dom";
 
+
+
+
 const authContext = createContext();
 
 export function ProvideAuth({ children }) {
@@ -14,14 +17,19 @@ export const useAuth = () => {
     return useContext(authContext);
 };
 
-const storage = localStorage.getItem("user")
-    ? localStorage.getItem("user")
-    : "";
+
 
 function useProvideAuth() {
+    const tokenStorage = localStorage.getItem("token")
+        ? localStorage.getItem("token")
+        : "";
+    const refreshStorage = localStorage.getItem("refresh")
+        ? localStorage.getItem("refresh")
+        : "";
     const history = useHistory();
-    const [user, setUser] = useState(storage || null);
-    const [token, setToken] = useState(storage || null);
+    const [user, setUser] = useState(tokenStorage || null);
+    const [token, setToken] = useState(tokenStorage || null);
+    const [refresh, setRefresh] = useState(refreshStorage || null);
 
     const isJWTExpired = () => {
         if (token != null) {
@@ -49,14 +57,18 @@ function useProvideAuth() {
             })
             .then((result) => {
                 console.log(result);
-                localStorage.setItem("user", result.data.token);
+                localStorage.setItem("token", result.data.token);
+                localStorage.setItem("refresh", result.data.refresh);
+                setRefresh(result.data.refresh);
                 setUser(result.data.userId);
                 setToken(result.data.token);
                 success();
             })
             .catch((err) => {
                 console.log(err);
+                setRefresh(null);
                 setUser(null);
+                setToken(null);
                 failure();
             });
 
@@ -75,27 +87,83 @@ function useProvideAuth() {
             })
             .then((result) => {
                 console.log(result);
+                setRefresh(result.data.refresh);
                 setUser(result.data.userId);
                 setToken(result.data.token);
                 cb();
             })
             .catch((err) => {
                 console.log(err);
+                setRefresh(null);
                 setUser(null);
+                setToken(null);
             });
     };
 
     const signout = (cb) => {
         // setUser(false);
         setUser(null);
-        localStorage.removeItem("user");
+        setToken(null);
+        setRefresh(null);
+        localStorage.removeItem("token");
+        localStorage.removeItem("refresh");
 
         cb();
     };
 
-    useEffect(() => {}, [token, user]);
+    const refreshToken = (success, failure) => {
+        axios
+            .post("/users/refreshToken", {
+                refresh: refresh,
+                token: token,
+            },(error)=>{
+                console.log("aowiejfwoiej");
+            })
+            .then((result) => {
+                console.log(result);
+                localStorage.setItem("token", result.data.token);
+                localStorage.setItem("refresh", result.data.refresh);
+                setRefresh(result.data.refresh);
+                setUser(result.data.userId);
+                setToken(result.data.token);
+                success(token);
+            })
+            .catch((err) => {
+                console.log(err);
+                setRefresh(null);
+                setUser(null);
+                setToken(null);
+                failure(err);
+            });
+    }
 
-    return { user, signin, signup, signout, token, isJWTExpired };
+    axios.interceptors.response.use((response) => {
+        return response;
+    }, (error) => {
+        return new Promise((resolve) => {
+            let originalRequest = error.config;
+            console.log("ORIGINAL REQUEST");
+            console.log(originalRequest);
+            if(error.response && error.response.status === 401 && refresh){
+                originalRequest._retry = true;
+
+                refreshToken((token)=>{
+                    // update authentication header
+                    originalRequest.headers.Authorization = "Bearer " + token;
+                    return axios(originalRequest);
+                },
+                (err)=>{
+                    return Promise.reject(err);
+                });
+            } else {
+                return Promise.reject(error);
+            }
+        });
+    });
+
+    useEffect(() => {}, [token, user, refresh]);
+
+    return { user, signin, refreshToken, signup, signout, token, isJWTExpired };
 }
 
 export default useAuth;
