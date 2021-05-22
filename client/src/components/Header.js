@@ -17,7 +17,7 @@ import {
 import "../styles/Header.scss";
 import InputRange from "react-input-range";
 import "react-input-range/lib/css/index.css";
-import axios from "axios";
+import axiosConfig from "../services/axiosConfig";
 import { CartContext } from "../contexts/CartContext";
 
 const IMAGEBASEURL = `/images/`;
@@ -36,7 +36,7 @@ const Header = (props) => {
     const { cartItems } = useContext(CartContext);
 
     useEffect(() => {
-        axios
+        axiosConfig
             .get("phones/brands")
             .then((result) => {
                 setBrands(result.data.brands);
@@ -80,6 +80,7 @@ const Header = (props) => {
                     <Button
                         variant="outline-light"
                         onClick={() => props.search(searchTerm)}
+                        style={{ marginRight: "0.6rem" }}
                     >
                         Search
                     </Button>
@@ -148,7 +149,11 @@ const Header = (props) => {
                     ) : (
                         <>
                             <Link to="/login">
-                                <Button variant="light" className="navLinks">
+                                <Button
+                                    variant="light"
+                                    className="navLinks"
+                                    style={{ marginRight: "0.6rem" }}
+                                >
                                     Login
                                 </Button>
                             </Link>
@@ -163,6 +168,7 @@ const Header = (props) => {
                                 <Button
                                     variant="outline-light"
                                     className="navLinks"
+                                    style={{ marginRight: "0.6rem" }}
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"

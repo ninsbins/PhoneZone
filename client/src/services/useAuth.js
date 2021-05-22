@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import axiosConfig from "../services/axiosConfig";
 import jwt_decode from "jwt-decode";
 import { useHistory } from "react-router-dom";
 
@@ -41,11 +41,12 @@ function useProvideAuth() {
                 return false;
             }
         }
+        return true;
     };
 
     const signin = (email, password, success, failure) => {
         // do sign in functionality and return user
-        axios
+        axiosConfig
             .post("/users/login", {
                 username: email,
                 password: password,
@@ -73,7 +74,7 @@ function useProvideAuth() {
 
     const signup = (firstName, lastName, email, password, cb) => {
         // set user to server
-        axios
+        axiosConfig
             .post("/users/signup", {
                 firstName,
                 lastName,
@@ -108,11 +109,11 @@ function useProvideAuth() {
             window.location.href = "/";
         }
 
-        cb();
+        // cb();
     };
 
     const refreshToken = (success, failure) => {
-        axios
+        axiosConfig
             .post(
                 "/users/refreshToken",
                 {
@@ -141,7 +142,7 @@ function useProvideAuth() {
             });
     };
 
-    axios.interceptors.response.use(
+    axiosConfig.interceptors.response.use(
         (response) => {
             return response;
         },
@@ -162,7 +163,7 @@ function useProvideAuth() {
                             // update authentication header
                             originalRequest.headers.Authorization =
                                 "Bearer " + token;
-                            return axios(originalRequest);
+                            return axiosConfig(originalRequest);
                         },
                         (err) => {
                             return Promise.reject(err);

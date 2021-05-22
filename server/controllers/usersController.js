@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 // Secret token
 const accessTokenSecret =
     "9283jf9oewjfjsdiufhew293fwjehelpimtrappedinasecretfactoryaoweijfwuhew";
-const refreshTokenSecret = 
+const refreshTokenSecret =
     "8374hfnw98hf9a8wjef9sa8ue aufe9s8ewjf9sidjc8c7ah84ew7c87wheiwudh98h&*";
 
 const encryptPassword = (string) => {
@@ -262,13 +262,9 @@ exports.login_user = (req, res, next) => {
                 });
 
                 //TODO check if user clicked remember me and set time accordingly
-                const refreshToken = jwt.sign(
-                    payload,
-                    refreshTokenSecret,
-                    {
-                        expiresIn: "168h",
-                    }
-                );
+                const refreshToken = jwt.sign(payload, refreshTokenSecret, {
+                    expiresIn: "168h",
+                });
                 res.status(200).json({
                     token: accessToken,
                     refresh: refreshToken,
@@ -286,25 +282,21 @@ exports.login_user = (req, res, next) => {
         });
 };
 
-
 exports.refreshToken = (req, res, next) => {
-
     let refreshToken = req.body.refresh;
     let oldToken = req.body.token;
-    let payload = jwt.verify(oldToken, accessTokenSecret, {ignoreExpiration:true});
+    let payload = jwt.verify(oldToken, accessTokenSecret, {
+        ignoreExpiration: true,
+    });
     console.log(payload);
 
     let newPayload = {
         userId: payload.userId,
         username: payload.username,
-    }
-    const accessToken = jwt.sign(
-        newPayload,
-        accessTokenSecret,
-        {
-            expiresIn: "5m", // For testing
-        }
-    );
+    };
+    const accessToken = jwt.sign(newPayload, accessTokenSecret, {
+        expiresIn: "5m", // For testing
+    });
 
     console.log("verifying refresh token");
     jwt.verify(refreshToken, refreshTokenSecret, (err, payload) => {
@@ -323,9 +315,9 @@ exports.refreshToken = (req, res, next) => {
             userId: newPayload.userId,
         });
         next();
-    })
+    });
     console.log("end of refresh function");
-}
+};
 
 /**
  * /users/change_password:
@@ -431,7 +423,7 @@ exports.authenticate = (req, res, next) => {
         console.log("Authentication middleware: ", token);
 
         jwt.verify(token, accessTokenSecret, (err, user) => {
-            console.log("verifying token")
+            console.log("verifying token");
             if (err) {
                 console.log(err);
                 res.status(401).send("Error verifying token");
@@ -447,9 +439,3 @@ exports.authenticate = (req, res, next) => {
         return res.status(401).send("No authorization header");
     }
 };
-
-
-
-
-
-
