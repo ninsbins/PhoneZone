@@ -3,9 +3,6 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useHistory } from "react-router-dom";
 
-
-
-
 const authContext = createContext();
 
 export function ProvideAuth({ children }) {
@@ -16,8 +13,6 @@ export function ProvideAuth({ children }) {
 export const useAuth = () => {
     return useContext(authContext);
 };
-
-
 
 function useProvideAuth() {
     const tokenStorage = localStorage.getItem("token")
@@ -107,18 +102,27 @@ function useProvideAuth() {
         setRefresh(null);
         localStorage.removeItem("token");
         localStorage.removeItem("refresh");
+        if (cb) {
+            cb();
+        } else {
+            window.location.href = "/";
+        }
 
         cb();
     };
 
     const refreshToken = (success, failure) => {
         axios
-            .post("/users/refreshToken", {
-                refresh: refresh,
-                token: token,
-            },(error)=>{
-                console.log("aowiejfwoiej");
-            })
+            .post(
+                "/users/refreshToken",
+                {
+                    refresh: refresh,
+                    token: token,
+                },
+                (error) => {
+                    console.log("aowiejfwoiej");
+                }
+            )
             .then((result) => {
                 console.log(result);
                 localStorage.setItem("token", result.data.token);
@@ -135,31 +139,41 @@ function useProvideAuth() {
                 setToken(null);
                 failure(err);
             });
-    }
+    };
 
-    axios.interceptors.response.use((response) => {
-        return response;
-    }, (error) => {
-        return new Promise((resolve) => {
-            let originalRequest = error.config;
-            console.log("ORIGINAL REQUEST");
-            console.log(originalRequest);
-            if(error.response && error.response.status === 401 && refresh){
-                originalRequest._retry = true;
+    axios.interceptors.response.use(
+        (response) => {
+            return response;
+        },
+        (error) => {
+            return new Promise((resolve) => {
+                let originalRequest = error.config;
+                console.log("ORIGINAL REQUEST");
+                console.log(originalRequest);
+                if (
+                    error.response &&
+                    error.response.status === 401 &&
+                    refresh
+                ) {
+                    originalRequest._retry = true;
 
-                refreshToken((token)=>{
-                    // update authentication header
-                    originalRequest.headers.Authorization = "Bearer " + token;
-                    return axios(originalRequest);
-                },
-                (err)=>{
-                    return Promise.reject(err);
-                });
-            } else {
-                return Promise.reject(error);
-            }
-        });
-    });
+                    refreshToken(
+                        (token) => {
+                            // update authentication header
+                            originalRequest.headers.Authorization =
+                                "Bearer " + token;
+                            return axios(originalRequest);
+                        },
+                        (err) => {
+                            return Promise.reject(err);
+                        }
+                    );
+                } else {
+                    return Promise.reject(error);
+                }
+            });
+        }
+    );
 
     useEffect(() => {}, [token, user, refresh]);
 

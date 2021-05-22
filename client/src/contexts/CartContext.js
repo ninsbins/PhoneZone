@@ -228,7 +228,10 @@ const CartContextProvider = ({ children }) => {
         if (!auth.user) return;
         // console.log(auth);
         console.log("triggered log in");
-        setCart();
+        let expired = auth.isJWTExpired();
+        if (!expired) {
+            setCart();
+        }
     }, [auth.user]);
 
     const contextValues = {
