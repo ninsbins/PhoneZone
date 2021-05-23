@@ -28,7 +28,7 @@ const UserProfile = () => {
 
     useEffect(() => {
         axiosConfig
-            .get(`/users/${auth.token}`, {
+            .get(`/users/${auth.user}`, {
                 headers: { Authorization: "Bearer " + auth.token },
             })
             .then((result) => {
