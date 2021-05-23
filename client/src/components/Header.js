@@ -67,10 +67,12 @@ const Header = (props) => {
                 variant="dark"
                 expand="lg"
             >
-                <NavbarBrand>
-                    <Image src={IMAGEBASEURL + "3.png"} width="50px" />
-                    PhoneZone
-                </NavbarBrand>
+                <Link to="/">
+                    <NavbarBrand>
+                        <Image src={IMAGEBASEURL + "3.png"} width="50px" />
+                        PhoneZone
+                    </NavbarBrand>
+                </Link>
                 <Nav className="ml-auto mr-5">
                     <input
                         type="text"
