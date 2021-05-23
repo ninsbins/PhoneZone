@@ -24,14 +24,18 @@ const MainPage = () => {
         setFilteredState(false);
         console.log(`searching for ${term}`);
         // send search term to backend and get results
+        console.log(`path: ${path} url: ${url}`);
+        console.log(history.location);
+        console.log(axiosConfig);
 
         setPageState(MainPageStatus.LOADING);
         await axiosConfig
-            .get(`phones/search?search_term=${term}`)
+            .get(`/phones/search?search_term=${term}`)
             .then((result) => {
                 setSearchResults(result.data);
                 setPageState(MainPageStatus.SEARCH);
                 setSearchState(true);
+                console.log(result);
                 history.push(`/search?term=${term}`);
             })
             .catch((err) => {
