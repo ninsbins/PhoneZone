@@ -12,7 +12,7 @@ import { CartContext } from "../contexts/CartContext";
 import QuantityPopup from "./QuantityPopup";
 import "../styles/SinglePhone.scss";
 import ReviewList from "../components/ReviewList";
-import axios from "axios";
+import axiosConfig from "../services/axiosConfig";
 import useAuth from "../services/useAuth";
 import { Link, useParams, useHistory } from "react-router-dom";
 import CartIcon from "./CartIcon";
@@ -51,7 +51,7 @@ const SinglePhone = (props) => {
     useEffect(() => {
         setStatus(pageStatus.LOADING);
 
-        axios
+        axiosConfig
             .get(`/phones/${id}`)
             .then((result) => {
                 setPhone(result.data.phone);

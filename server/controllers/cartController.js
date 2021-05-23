@@ -336,6 +336,10 @@ exports.clear_cart = async (req, res, next) => {
 };
 
 exports.checkout = async (req, res, next) => {
+    if (req.body.cartId === undefined || req.user === undefined) {
+        return res.status(500).json({ message: "unable to get cart" });
+    }
+
     let cartId = req.body.cartId;
     let userId = req.user.userId;
 

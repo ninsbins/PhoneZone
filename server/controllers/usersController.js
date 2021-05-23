@@ -7,6 +7,8 @@ const jwt = require("jsonwebtoken");
 // Secret token
 const accessTokenSecret =
     "9283jf9oewjfjsdiufhew293fwjehelpimtrappedinasecretfactoryaoweijfwuhew";
+const refreshTokenSecret =
+    "8374hfnw98hf9a8wjef9sa8ue aufe9s8ewjf9sidjc8c7ah84ew7c87wheiwudh98h&*";
 
 const encryptPassword = (string) => {
     return crypto.createHash("md5").update(string).digest("hex");
@@ -108,7 +110,14 @@ exports.create_new_user = (req, res, next) => {
                             payload,
                             accessTokenSecret,
                             {
-                                expiresIn: "30m",
+                                expiresIn: "1m",
+                            }
+                        );
+                        const refreshToken = jwt.sign(
+                            payload,
+                            refreshTokenSecret,
+                            {
+                                expiresIn: "168h",
                             }
                         );
 
@@ -117,6 +126,7 @@ exports.create_new_user = (req, res, next) => {
                             message: "user created",
                             token: accessToken,
                             userId: newUser._id,
+                            refresh: refreshToken,
                         });
                     })
                     .catch((err) => {
@@ -248,10 +258,16 @@ exports.login_user = (req, res, next) => {
                 // if same, return jwt
                 let payload = { userId: result[0]._id, username: username };
                 const accessToken = jwt.sign(payload, accessTokenSecret, {
-                    expiresIn: "30m",
+                    expiresIn: "1m",
+                });
+
+                //TODO check if user clicked remember me and set time accordingly
+                const refreshToken = jwt.sign(payload, refreshTokenSecret, {
+                    expiresIn: "168h",
                 });
                 res.status(200).json({
                     token: accessToken,
+                    refresh: refreshToken,
                     userId: result[0]._id,
                 });
             } else {
@@ -264,6 +280,45 @@ exports.login_user = (req, res, next) => {
             console.log(err);
             res.status(500).json({ error: err });
         });
+};
+
+exports.refreshToken = (req, res, next) => {
+    let refreshToken = req.body.refresh;
+    let oldToken = req.body.token;
+    console.log("GETTING OLD PAYLOAD");
+    console.log(oldToken);
+    console.log(refreshToken);
+    let payload = jwt.verify(oldToken, accessTokenSecret, {
+        ignoreExpiration: true,
+    });
+    console.log("PAYLOAD");
+    console.log(payload);
+
+    let newPayload = {
+        userId: payload.userId,
+        username: payload.username,
+    };
+    const accessToken = jwt.sign(newPayload, accessTokenSecret, {
+        expiresIn: "1m", // For testing
+    });
+
+    console.log("verifying refresh token");
+    jwt.verify(refreshToken, refreshTokenSecret, (err, payload) => {
+        if (err) {
+            console.log(err);
+            return res.status(401).send("Error verifying refresh token");
+        }
+        console.log("verified authorization of", newPayload);
+        req.user = newPayload;
+        console.log(req.user);
+        return res.status(200).json({
+            message: "token refreshed",
+            token: accessToken,
+            refresh: refreshToken,
+            userId: newPayload.userId,
+        });
+    });
+    console.log("end of refresh function");
 };
 
 /**
@@ -367,8 +422,10 @@ exports.authenticate = (req, res, next) => {
     if (req.headers.authorization) {
         // Get 2nd section of authorization header, containing token
         let token = req.headers.authorization.split(" ")[1];
+        console.log("Authentication middleware: ", token);
 
         jwt.verify(token, accessTokenSecret, (err, user) => {
+            console.log("verifying token");
             if (err) {
                 console.log(err);
                 return res.status(401).send("Error verifying token");
@@ -383,3 +440,5 @@ exports.authenticate = (req, res, next) => {
         return res.status(401).send("No authorization header");
     }
 };
+
+

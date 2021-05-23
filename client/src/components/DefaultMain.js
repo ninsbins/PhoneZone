@@ -1,6 +1,6 @@
 import "../styles/Main.scss";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosConfig from "../services/axiosConfig";
 import MainPageStatus from "../services/constants";
 import { Link } from "react-router-dom";
 import { Container, CardDeck, Spinner } from "react-bootstrap";
@@ -14,7 +14,7 @@ const DefaultMain = () => {
     useEffect(() => {
         setPageState(MainPageStatus.LOADING);
         // get sold out soon
-        axios
+        axiosConfig
             .get("phones/soldoutsoon")
             .then((result) => {
                 setSoldOutSoon(result.data);
@@ -25,7 +25,7 @@ const DefaultMain = () => {
                 setPageState(MainPageStatus.ERROR);
             });
         setPageState(MainPageStatus.LOADING);
-        axios
+        axiosConfig
             .get("phones/bestsellers")
             .then((result) => {
                 setBestSellers(result.data);

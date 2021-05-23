@@ -1,7 +1,7 @@
 import React, { createContext, useReducer, useEffect } from "react";
 import { CartReducer } from "./CartReducer";
 import useAuth from "../services/useAuth";
-import axios from "axios";
+import axiosConfig from "../services/axiosConfig";
 
 export const CartContext = createContext();
 
@@ -32,7 +32,7 @@ const CartContextProvider = ({ children }) => {
 
         if (!expired) {
             dispatch({ type: "FETCH_CART" });
-            axios
+            axiosConfig
                 .put(
                     "/cart/addToCart",
                     {
@@ -61,7 +61,7 @@ const CartContextProvider = ({ children }) => {
         console.log(`expired? ${expired}`);
         if (!expired) {
             dispatch({ type: "FETCH_CART" });
-            axios
+            axiosConfig
                 .put(
                     "/cart/increaseQuantity",
                     {
@@ -90,7 +90,7 @@ const CartContextProvider = ({ children }) => {
         let expired = auth.isJWTExpired();
         if (!expired) {
             dispatch({ type: "FETCH_CART" });
-            axios
+            axiosConfig
                 .put(
                     "/cart/decreaseQuantity",
                     {
@@ -119,7 +119,7 @@ const CartContextProvider = ({ children }) => {
         let expired = auth.isJWTExpired();
         if (!expired) {
             dispatch({ type: "FETCH_CART" });
-            axios
+            axiosConfig
                 .put(
                     "/cart/removeFromCart",
                     {
@@ -150,41 +150,39 @@ const CartContextProvider = ({ children }) => {
     // .then((result) => {
 
     const setCart = () => {
-        console.log(`token being sent ${auth.token}`);
-        axios
-            .get("/cart", {
-                headers: { Authorization: "Bearer " + auth.token },
-            })
-            .then((response) => {
-                // console.log(response);
-                if (response.data.cart) {
-                    dispatch({
-                        type: "SET_CART",
-                        payload: response.data.cart.items,
-                    });
+        if (auth.token) console.log(`token being sent ${auth.token}`);
 
-                    dispatch({
-                        type: "SET_CART_ID",
-                        payload: response.data.cart._id,
-                    });
+        let expired = auth.isJWTExpired();
+        if (!expired) {
+            axiosConfig
+                .get("/cart", {
+                    headers: { Authorization: "Bearer " + auth.token },
+                })
+                .then((response) => {
+                    // console.log(response);
+                    if (response.data.cart) {
+                        dispatch({
+                            type: "SET_CART",
+                            payload: response.data.cart.items,
+                        });
 
-                    dispatch({
-                        type: "SET_CART_TOTAL",
-                        payload: response.data.cart.order_total,
-                    });
+                        dispatch({
+                            type: "SET_CART_ID",
+                            payload: response.data.cart._id,
+                        });
 
-                    dispatch({
-                        type: "SET_NUM_TOTAL_ITEMS",
-                        payload: response.data.totalItems,
-                    });
-                } else {
-                    // console.log("no current cart for user");
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                dispatch({ type: "SET_CART_FAIL" });
-            });
+                        dispatch({
+                            type: "SET_CART_TOTAL",
+                            payload: response.data.cart.order_total,
+                        });
+                    } else {
+                        // console.log("no current cart for user");
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
     };
 
     // const clearCart = () => {
@@ -199,7 +197,7 @@ const CartContextProvider = ({ children }) => {
             dispatch({ type: "START_CHECKOUT" });
 
             return new Promise((resolve, reject) => {
-                axios
+                axiosConfig
                     .post(
                         "/cart/checkout",
                         {
@@ -235,7 +233,10 @@ const CartContextProvider = ({ children }) => {
         if (!auth.user) return;
         // console.log(auth);
         console.log("triggered log in");
-        setCart();
+        let expired = auth.isJWTExpired();
+        if (!expired && auth.user) {
+            setCart();
+        }
     }, [auth.user]);
 
     const contextValues = {

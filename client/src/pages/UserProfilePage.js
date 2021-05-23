@@ -17,7 +17,7 @@ import {
 import { useState, useEffect } from "react";
 import { useAuth } from "../services/useAuth";
 import SignOutButton from "../components/SignOutButton";
-import axios from "axios";
+import axiosConfig from "../services/axiosConfig";
 import { Link, useHistory } from "react-router-dom";
 
 const UserProfile = () => {
@@ -27,11 +27,12 @@ const UserProfile = () => {
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        axios
-            .get(`/users/${auth.token}`, {
+        axiosConfig
+            .get(`/users/${auth.user}`, {
                 headers: { Authorization: "Bearer " + auth.token },
             })
             .then((result) => {
+                console.log("got response");
                 console.log(result);
                 setUserDetails(result.data.user);
                 setLoading(false);
@@ -114,7 +115,7 @@ function Profile({ userdetails }) {
     };
 
     const handleModalSubmit = (event) => {
-        axios
+        axiosConfig
             .post(
                 "/users/update",
                 {
@@ -239,7 +240,7 @@ function ChangePassword({ userdetails }) {
 
     const handleSubmit = (event) => {
         if (newPassword1 === newPassword2) {
-            axios
+            axiosConfig
                 .post(
                     "/users/change_password",
                     {
@@ -322,7 +323,7 @@ function ManageListings({ userdetails }) {
     const [newListingAdded, setNewListingAdded] = useState(false);
 
     useEffect(() => {
-        axios
+        axiosConfig
             .get(`/users/get_phones_sold_by/${auth.user}`)
             .then((result) => {
                 console.log(result);
@@ -387,7 +388,7 @@ function Phone({ data, setListingsChanged }) {
     let onDelete = () => {
         console.log("clicked onDelete");
         // send request
-        axios
+        axiosConfig
             .put(
                 `/phones/delete`,
                 { phoneId: data._id },
@@ -407,7 +408,7 @@ function Phone({ data, setListingsChanged }) {
             `sending request to toggle disable to ${event.target.checked}`
         );
         if (event.target.checked) {
-            axios
+            axiosConfig
                 .put(
                     `/phones/disable`,
                     { phoneId: data._id },
@@ -421,7 +422,7 @@ function Phone({ data, setListingsChanged }) {
                     console.log(error);
                 });
         } else {
-            axios
+            axiosConfig
                 .put(
                     `/phones/enable`,
                     { phoneId: data._id },
@@ -470,7 +471,7 @@ function AddListingForm({ newListingAdded, setNewListingAdded }) {
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
-        axios
+        axiosConfig
             .get("/phones/brands")
             .then((result) => {
                 setBrandList(result.data.brands);
@@ -485,7 +486,7 @@ function AddListingForm({ newListingAdded, setNewListingAdded }) {
 
     const handleSubmit = (event) => {
         console.log(title, brand, stock, price);
-        axios
+        axiosConfig
             .post(
                 "/phones/createlisting",
                 {
@@ -496,7 +497,15 @@ function AddListingForm({ newListingAdded, setNewListingAdded }) {
                     price: price,
                     disabled: disabled,
                 },
-                { headers: { Authorization: "Bearer " + auth.token } }
+                { headers: { Authorization: "Bearer " + auth.token } },
+                (error) => {
+                    console.log(error);
+                    console.log("Invalid inputs");
+                    setInvalidInput(true);
+                    setTimeout(() => {
+                        setInvalidInput(false);
+                    }, 3000);
+                }
             )
             .then((result) => {
                 setNewListingAdded(true);

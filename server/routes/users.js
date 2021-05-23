@@ -55,6 +55,8 @@ router.get("/get_phones_sold_by/:userId", UsersController.get_phones_sold_by);
 router.post("/signup", UsersController.create_new_user);
 router.post("/login", UsersController.login_user);
 
+router.post("/refreshToken", UsersController.refreshToken);
+
 router.post(
     "/change_password",
     UsersController.authenticate,

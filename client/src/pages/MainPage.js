@@ -1,7 +1,7 @@
 import "../styles/Main.scss";
 import React, { useState } from "react";
 import Header from "../components/Header";
-import axios from "axios";
+import axiosConfig from "../services/axiosConfig";
 import MainPageStatus from "../services/constants";
 import { useHistory, useRouteMatch, Switch, Route } from "react-router-dom";
 import SinglePhone from "../components/SinglePhone";
@@ -26,7 +26,7 @@ const MainPage = () => {
         // send search term to backend and get results
 
         setPageState(MainPageStatus.LOADING);
-        await axios
+        await axiosConfig
             .get(`phones/search?search_term=${term}`)
             .then((result) => {
                 setSearchResults(result.data);
