@@ -10,7 +10,7 @@ exports.create_new_listing = async (req, res, next) => {
     let phone = new Phone({
         title: req.body.title,
         brand: req.body.brand,
-        image: req.body.brand+".jpg",
+        image: req.body.image,
         stock: req.body.stock,
         seller: req.user.userId,
         price: req.body.price,
