@@ -110,7 +110,7 @@ exports.create_new_user = (req, res, next) => {
                             payload,
                             accessTokenSecret,
                             {
-                                expiresIn: "1m",
+                                expiresIn: "15m",
                             }
                         );
                         const refreshToken = jwt.sign(
@@ -258,7 +258,7 @@ exports.login_user = (req, res, next) => {
                 // if same, return jwt
                 let payload = { userId: result[0]._id, username: username };
                 const accessToken = jwt.sign(payload, accessTokenSecret, {
-                    expiresIn: "1m",
+                    expiresIn: "15m",
                 });
 
                 //TODO check if user clicked remember me and set time accordingly
@@ -299,7 +299,7 @@ exports.refreshToken = (req, res, next) => {
         username: payload.username,
     };
     const accessToken = jwt.sign(newPayload, accessTokenSecret, {
-        expiresIn: "1m", // For testing
+        expiresIn: "15m", 
     });
 
     console.log("verifying refresh token");
