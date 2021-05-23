@@ -118,7 +118,7 @@ exports.search = (req, res, next) => {
     let search_term = req.query.search_term;
     console.log(search_term);
 
-    Phone.find({ title: { $regex: search_term, $options: "i" } })
+    Phone.find({ title: { $regex: search_term, $options: "i" }, disabled: { $exists: false }})
         .limit(20)
         .exec()
         .then((result) => {
