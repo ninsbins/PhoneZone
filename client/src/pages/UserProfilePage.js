@@ -503,7 +503,7 @@ function AddListingForm({ newListingAdded, setNewListingAdded }) {
                 {
                     title: title,
                     brand: brand,
-                    image: brand + ".jpg",
+                    image: brand + ".jpeg",
                     stock: Math.floor(stock),
                     price: price,
                     disabled: disabled,
