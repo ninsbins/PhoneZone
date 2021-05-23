@@ -164,8 +164,7 @@ function useProvideAuth() {
                 ) {
                     console.log(localRefreshToken);
                     console.log("just about to make request");
-                    originalRequest._retry = true;
-                    axiosConfig
+                    return axiosConfig
                         .post(
                             "/users/refreshToken",
                             {
@@ -183,11 +182,14 @@ function useProvideAuth() {
                             setRefresh(result.data.refresh);
                             setUser(result.data.userId);
                             setToken(result.data.token);
+                            originalRequest._retry = true;
                             originalRequest.headers.Authorization =
                                 "Bearer " + result.data.token;
                             console.log("NEW REQUEST");
                             console.log(originalRequest);
-                            return axiosConfig(originalRequest);
+                            let new_response = axiosConfig(originalRequest);
+                            console.log(new_response);
+                            return new_response;
                         })
                         .catch((err) => {
                             console.log(err);

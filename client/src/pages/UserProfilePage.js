@@ -32,6 +32,7 @@ const UserProfile = () => {
                 headers: { Authorization: "Bearer " + auth.token },
             })
             .then((result) => {
+                console.log("got response");
                 console.log(result);
                 setUserDetails(result.data.user);
                 setLoading(false);
