@@ -13,6 +13,7 @@ import {
     Image,
     Tab,
     Tabs,
+    Table,
 } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useAuth } from "../services/useAuth";
@@ -162,45 +163,47 @@ function Profile({ userdetails }) {
 
     return (
         <>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group>
-                    <Form.Label>First Name</Form.Label>
-                    <Form.Control
-                        type="text"
-                        defaultValue={userdetails.firstname}
-                        onChange={(e) => setFirstname(e.target.value)}
-                    />
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label>Last Name</Form.Label>
-                    <Form.Control
-                        type="text"
-                        defaultValue={userdetails.lastname}
-                        onChange={(e) => setLastname(e.target.value)}
-                    />
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                        type="text"
-                        defaultValue={userdetails.email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </Form.Group>
-                <Form.Group>
-                    <Button variant="primary" type="submit">
-                        Update your profile
-                    </Button>
-                </Form.Group>
-                {error ? (
-                    <span style={{ color: "red" }}>
-                        Error: Couldn&#39;t update info
-                    </span>
-                ) : null}
-                {success ? (
-                    <span style={{ color: "green" }}>Updated profile</span>
-                ) : null}
-            </Form>
+            <Container fluid="sm">
+                <Form onSubmit={handleSubmit}>
+                    <Form.Group>
+                        <Form.Label>First Name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            defaultValue={userdetails.firstname}
+                            onChange={(e) => setFirstname(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Last Name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            defaultValue={userdetails.lastname}
+                            onChange={(e) => setLastname(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control
+                            type="text"
+                            defaultValue={userdetails.email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group>
+                        <Button variant="primary" type="submit">
+                            Update your profile
+                        </Button>
+                    </Form.Group>
+                    {error ? (
+                        <span style={{ color: "red" }}>
+                            Error: Couldn&#39;t update info
+                        </span>
+                    ) : null}
+                    {success ? (
+                        <span style={{ color: "green" }}>Updated profile</span>
+                    ) : null}
+                </Form>
+            </Container>
             <Modal show={showModal} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm password</Modal.Title>
@@ -273,45 +276,47 @@ function ChangePassword({ userdetails }) {
         event.preventDefault();
     };
     return (
-        <Form onSubmit={handleSubmit}>
-            <Form.Group>
-                <Form.Label>Old Password</Form.Label>
-                <Form.Control
-                    type="password"
-                    onChange={(e) => setOldPassword(e.target.value)}
-                />
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>New Password</Form.Label>
-                <Form.Control
-                    type="password"
-                    onChange={(e) => setNewPassword1(e.target.value)}
-                />
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Repeat New Password</Form.Label>
-                <Form.Control
-                    type="password"
-                    onChange={(e) => setNewPassword2(e.target.value)}
-                />
-            </Form.Group>
-            <Form.Group>
-                <Button variant="primary" type="submit">
-                    Change Password
-                </Button>
-            </Form.Group>
-            {error ? (
-                <div style={{ color: "red" }}>
-                    Error: Couldn&#39;t change password
-                </div>
-            ) : null}
-            {nonMatching ? (
-                <div style={{ color: "red" }}>Passwords don&#39;t match</div>
-            ) : null}
-            {success ? (
-                <div style={{ color: "green" }}>Changed Password</div>
-            ) : null}
-        </Form>
+        <Container fluid="sm">
+            <Form onSubmit={handleSubmit}>
+                <Form.Group>
+                    <Form.Label>Old Password</Form.Label>
+                    <Form.Control
+                        type="password"
+                        onChange={(e) => setOldPassword(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>New Password</Form.Label>
+                    <Form.Control
+                        type="password"
+                        onChange={(e) => setNewPassword1(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Repeat New Password</Form.Label>
+                    <Form.Control
+                        type="password"
+                        onChange={(e) => setNewPassword2(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group>
+                    <Button variant="primary" type="submit">
+                        Change Password
+                    </Button>
+                </Form.Group>
+                {error ? (
+                    <div style={{ color: "red" }}>
+                        Error: Couldn&#39;t change password
+                    </div>
+                ) : null}
+                {nonMatching ? (
+                    <div style={{ color: "red" }}>Passwords don&#39;t match</div>
+                ) : null}
+                {success ? (
+                    <div style={{ color: "green" }}>Changed Password</div>
+                ) : null}
+            </Form>
+        </Container>
     );
 }
 
@@ -352,33 +357,39 @@ function ManageListings({ userdetails }) {
     ));
 
     return (
-        <div>
+        <Container fluid="sm">
+            <h1>Current Listings</h1>
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th>
+                            <b>Title</b>
+                        </th>
+                        <th>
+                            <b>Brand</b>
+                        </th>
+                        <th>
+                            <b>Stock</b>
+                        </th>
+                        <th>
+                            <b>Price</b>
+                        </th>
+                        <th>
+                            <b>Disabled</b>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {phones}
+                </tbody>
+            </Table>
+            <h1>Add Listing</h1>
             <AddListingForm
                 newListingAdded={newListingAdded}
                 setNewListingAdded={setNewListingAdded}
             />
-            <Container>
-                <Row>
-                    <Col>
-                        <b>Title</b>
-                    </Col>
-                    <Col>
-                        <b>Brand</b>
-                    </Col>
-                    <Col>
-                        <b>Stock</b>
-                    </Col>
-                    <Col>
-                        <b>Price</b>
-                    </Col>
-                    <Col>
-                        <b>Disabled</b>
-                    </Col>
-                    <Col></Col>
-                </Row>
-                {phones}
-            </Container>
-        </div>
+        </Container>
     );
 }
 
@@ -439,22 +450,22 @@ function Phone({ data, setListingsChanged }) {
     };
 
     return (
-        <Row>
-            <Col>{data.title}</Col>
-            <Col>{data.brand}</Col>
-            <Col>{data.stock}</Col>
-            <Col>${data.price}</Col>
-            <Col>
+        <tr>
+            <td>{data.title}</td>
+            <td>{data.brand}</td>
+            <td>{data.stock}</td>
+            <td>${data.price}</td>
+            <td>
                 <Form.Check
                     type="checkbox"
                     defaultChecked={"disabled" in data}
                     onClick={onDisable}
                 />
-            </Col>
-            <Col>
+            </td>
+            <td>
                 <Link onClick={onDelete}>Delete</Link>
-            </Col>
-        </Row>
+            </td>
+        </tr>
     );
 }
 
@@ -570,13 +581,13 @@ function AddListingForm({ newListingAdded, setNewListingAdded }) {
                 <Button variant="primary" type="submit">
                     Add Listing
                 </Button>
+                {invalidInput ? (
+                    <span style={{ color: "red" }}>{'  '} Invalid Listing Input</span>
+                ) : null}
+                {success ? (
+                    <span style={{ color: "green" }}>{'  '} New Listing Added!</span>
+                ) : null}
             </Form.Group>
-            {invalidInput ? (
-                <div style={{ color: "red" }}>Invalid Listing Input</div>
-            ) : null}
-            {success ? (
-                <div style={{ color: "green" }}>New Listing Added!</div>
-            ) : null}
         </Form>
     );
 }
