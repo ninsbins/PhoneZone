@@ -150,58 +150,56 @@ function useProvideAuth() {
             return response;
         },
         (error) => {
-            return new Promise((resolve) => {
-                let originalRequest = error.config;
-                console.log("ORIGINAL REQUEST");
-                console.log(originalRequest);
-                console.log(error.response);
-                let localRefreshToken = localStorage.getItem("refresh");
-                let localAccessToken = localStorage.getItem("token");
-                if (
-                    error.response &&
-                    error.response.status === 401 &&
-                    localRefreshToken
-                ) {
-                    console.log(localRefreshToken);
-                    console.log("just about to make request");
-                    return axiosConfig
-                        .post(
-                            "/users/refreshToken",
-                            {
-                                refresh: localRefreshToken,
-                                token: localAccessToken,
-                            },
-                            (error) => {
-                                console.log("aowiejfwoiej");
-                            }
-                        )
-                        .then((result) => {
-                            console.log(result);
-                            localStorage.setItem("token", result.data.token);
-                            localStorage.setItem("refresh", result.data.refresh);
-                            setRefresh(result.data.refresh);
-                            setUser(result.data.userId);
-                            setToken(result.data.token);
-                            originalRequest._retry = true;
-                            originalRequest.headers.Authorization =
-                                "Bearer " + result.data.token;
-                            console.log("NEW REQUEST");
-                            console.log(originalRequest);
-                            let new_response = axiosConfig(originalRequest);
-                            console.log(new_response);
-                            return new_response;
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            setRefresh(null);
-                            setUser(null);
-                            setToken(null);
-                            return Promise.reject(err);
-                        });
-                } else {
-                    return Promise.reject(error);
-                }
-            });
+            let originalRequest = error.config;
+            console.log("ORIGINAL REQUEST");
+            console.log(originalRequest);
+            console.log(error.response);
+            let localRefreshToken = localStorage.getItem("refresh");
+            let localAccessToken = localStorage.getItem("token");
+            if (
+                error.response &&
+                error.response.status === 401 &&
+                localRefreshToken
+            ) {
+                console.log(localRefreshToken);
+                console.log("just about to make request");
+                return axiosConfig
+                    .post(
+                        "/users/refreshToken",
+                        {
+                            refresh: localRefreshToken,
+                            token: localAccessToken,
+                        },
+                        (error) => {
+                            console.log("aowiejfwoiej");
+                        }
+                    )
+                    .then((result) => {
+                        console.log(result);
+                        localStorage.setItem("token", result.data.token);
+                        localStorage.setItem("refresh", result.data.refresh);
+                        setRefresh(result.data.refresh);
+                        setUser(result.data.userId);
+                        setToken(result.data.token);
+                        originalRequest._retry = true;
+                        originalRequest.headers.Authorization =
+                            "Bearer " + result.data.token;
+                        console.log("NEW REQUEST");
+                        console.log(originalRequest);
+                        let new_response = axiosConfig.request(originalRequest);
+                        console.log(new_response);
+                        return new_response;
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        setRefresh(null);
+                        setUser(null);
+                        setToken(null);
+                        return Promise.reject(err);
+                    });
+            } else {
+                return Promise.reject(error);
+            }
         }
     );
 
@@ -211,8 +209,6 @@ function useProvideAuth() {
 }
 
 export default useAuth;
-
-
 
 
 
