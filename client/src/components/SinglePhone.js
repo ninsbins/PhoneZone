@@ -154,6 +154,8 @@ const SinglePhone = (props) => {
                             <div className="singlephone__title">
                                 {phone.title}
                             </div>
+                        </Row>
+                        <Row>
                             <div className="singlephone__brand">
                                 {phone.brand}
                             </div>
