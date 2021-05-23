@@ -29,10 +29,12 @@ function useProvideAuth() {
     const isJWTExpired = () => {
         if (token != null) {
             let decodedToken = jwt_decode(token);
+            let decodedRefresh = jwt_decode(refresh);
             console.log("decoded: ", decodedToken);
             let currentDate = new Date();
-
-            if (decodedToken.exp * 1000 < currentDate.getTime()) {
+            // check if refresh is expired as well, if so sign out
+            if (decodedToken.exp * 1000 < currentDate.getTime() &&
+                decodedRefresh.exp * 1000 < currentDate.getTime()) {
                 console.log("token expired");
                 signout();
                 return true;
@@ -115,36 +117,6 @@ function useProvideAuth() {
         // cb();
     };
 
-    const refreshToken = (success, failure) => {
-        axiosConfig
-            .post(
-                "/users/refreshToken",
-                {
-                    refresh: refresh,
-                    token: token,
-                },
-                (error) => {
-                    console.log("aowiejfwoiej");
-                }
-            )
-            .then((result) => {
-                console.log(result);
-                localStorage.setItem("token", result.data.token);
-                localStorage.setItem("refresh", result.data.refresh);
-                setRefresh(result.data.refresh);
-                setUser(result.data.userId);
-                setToken(result.data.token);
-                success(token);
-            })
-            .catch((err) => {
-                console.log(err);
-                setRefresh(null);
-                setUser(null);
-                setToken(null);
-                failure(err);
-            });
-    };
-
     axiosConfig.interceptors.response.use(
         (response) => {
             return response;
@@ -205,7 +177,7 @@ function useProvideAuth() {
 
     useEffect(() => {}, [token, user, refresh]);
 
-    return { user, signin, refreshToken, signup, signout, token, isJWTExpired };
+    return { user, signin, signup, signout, token, isJWTExpired };
 }
 
 export default useAuth;
