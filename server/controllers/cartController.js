@@ -156,9 +156,13 @@ exports.get_cart = async (req, res, next) => {
         })
         .then((result) => {
             console.log(result);
+
+            let totalNumItems = getTotalItems(result.cart);
+
             return res.status(200).json({
                 message: "got cart!",
                 cart: result.cart,
+                totalItems: totalNumItems,
             });
         })
         .catch((err) => {
@@ -256,6 +260,14 @@ exports.decrease_quantity = async (req, res, next) => {
                 .status(500)
                 .json({ message: "unable to decrease quantity" });
         });
+};
+
+const getTotalItems = (cart) => {
+    let totalItems = 0;
+    cart.items.forEach((item) => {
+        totalItems += Number(item.quantity);
+    });
+    return totalItems;
 };
 
 const computeOrderTotal = (cart) => {

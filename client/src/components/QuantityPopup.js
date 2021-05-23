@@ -24,8 +24,9 @@ const QuantityPopup = (props) => {
 
     const generateOptions = () => {
         let items = [];
+        let numSelections = maxNum > 30 ? 30 : maxNum; // limit to 30
 
-        for (let i = 1; i <= maxNum; i++) {
+        for (let i = 1; i <= numSelections; i++) {
             items.push(
                 <option key={i} value={i}>
                     {i}

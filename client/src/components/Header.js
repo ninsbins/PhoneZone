@@ -33,7 +33,7 @@ const Header = (props) => {
     let inSearchState = props.searchState || false;
     let mainState = props.mainState || "";
 
-    const { cartItems } = useContext(CartContext);
+    const { cartItems, totalNumItems } = useContext(CartContext);
 
     useEffect(() => {
         axios
@@ -138,7 +138,7 @@ const Header = (props) => {
                                 Checkout{" "}
                                 {cartItems.length != 0 && (
                                     <Badge variant="light">
-                                        {cartItems.length}
+                                        {totalNumItems}
                                     </Badge>
                                 )}
                             </Button>

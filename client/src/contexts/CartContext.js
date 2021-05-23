@@ -14,6 +14,7 @@ const initialState = {
     cartItems: storage,
     cartId: "",
     cartTotal: 0,
+    totalNumItems: 0,
     requestInProgress: false,
     checkedOut: false,
     errors: [],
@@ -171,12 +172,18 @@ const CartContextProvider = ({ children }) => {
                         type: "SET_CART_TOTAL",
                         payload: response.data.cart.order_total,
                     });
+
+                    dispatch({
+                        type: "SET_NUM_TOTAL_ITEMS",
+                        payload: response.data.totalItems,
+                    });
                 } else {
                     // console.log("no current cart for user");
                 }
             })
             .catch((err) => {
                 console.log(err);
+                dispatch({ type: "SET_CART_FAIL" });
             });
     };
 

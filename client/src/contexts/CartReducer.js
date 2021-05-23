@@ -22,6 +22,13 @@ export const CartReducer = (state, action) => {
         case "FETCH_CART":
             return { ...state, requestInProgress: true };
 
+        case "SET_CART_FAIL":
+            return {
+                ...state,
+                requestInProgress: false,
+                errors: [...state.errors, "unable to get cart"],
+            };
+
         // requestInProgress: false,
         // checkedOut: false,
         // errors: [],
@@ -44,6 +51,9 @@ export const CartReducer = (state, action) => {
                 requestInProgress: false,
                 errors: ["bad vibes from this order"],
             };
+
+        case "SET_NUM_TOTAL_ITEMS":
+            return { ...state, totalNumItems: action.payload };
 
         case "CLEAR":
             return { ...state, cartId: "", cartItems: [] };
