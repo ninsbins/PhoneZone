@@ -175,6 +175,11 @@ const CartContextProvider = ({ children }) => {
                             type: "SET_CART_TOTAL",
                             payload: response.data.cart.order_total,
                         });
+
+                        dispatch({
+                            type: "SET_NUM_TOTAL_ITEMS",
+                            payload: response.data.totalItems,
+                        });
                     } else {
                         // console.log("no current cart for user");
                     }
