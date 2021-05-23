@@ -21,8 +21,13 @@ function useProvideAuth() {
     const refreshStorage = localStorage.getItem("refresh")
         ? localStorage.getItem("refresh")
         : "";
+
+    let userDecoded = "";
+    if(tokenStorage){
+        userDecoded = jwt_decode(tokenStorage).userId;
+    }
     const history = useHistory();
-    const [user, setUser] = useState(tokenStorage || null); // TODO this shouldn't be reading from token storage
+    const [user, setUser] = useState(userDecoded || null); 
     const [token, setToken] = useState(tokenStorage || null);
     const [refresh, setRefresh] = useState(refreshStorage || null);
 
