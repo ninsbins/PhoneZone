@@ -184,7 +184,7 @@ function useProvideAuth() {
                             setUser(result.data.userId);
                             setToken(result.data.token);
                             originalRequest.headers.Authorization =
-                                "Bearer " + token;
+                                "Bearer " + result.data.token;
                             console.log("NEW REQUEST");
                             console.log(originalRequest);
                             return axiosConfig(originalRequest);

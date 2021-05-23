@@ -428,8 +428,7 @@ exports.authenticate = (req, res, next) => {
             console.log("verifying token");
             if (err) {
                 console.log(err);
-                res.status(401).send("Error verifying token");
-                next();
+                return res.status(401).send("Error verifying token");
             }
 
             req.user = user; // contains userId and username
@@ -441,7 +440,5 @@ exports.authenticate = (req, res, next) => {
         return res.status(401).send("No authorization header");
     }
 };
-
-
 
 
