@@ -5,7 +5,10 @@ import { Link } from "react-router-dom";
 
 const SearchResult = (props) => {
     let searchResults = props.searchResults;
-    if (searchResults == null || searchResults.length == 0) {
+    console.log(props);
+    console.log(props.searchResults);
+
+    if (!searchResults || searchResults == null || searchResults.length == 0) {
         return (
             <Container fluid>
                 <Row className="justify-content-center pt-4">
