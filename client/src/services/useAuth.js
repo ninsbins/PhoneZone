@@ -22,7 +22,7 @@ function useProvideAuth() {
         ? localStorage.getItem("refresh")
         : "";
     const history = useHistory();
-    const [user, setUser] = useState(tokenStorage || null);
+    const [user, setUser] = useState(tokenStorage || null); // TODO this shouldn't be reading from token storage
     const [token, setToken] = useState(tokenStorage || null);
     const [refresh, setRefresh] = useState(refreshStorage || null);
 
@@ -55,6 +55,7 @@ function useProvideAuth() {
                 console.log(result);
                 localStorage.setItem("token", result.data.token);
                 localStorage.setItem("refresh", result.data.refresh);
+                console.log("CREATED REFRESH TOKEN: ",result.data.refresh);
                 setRefresh(result.data.refresh);
                 setUser(result.data.userId);
                 setToken(result.data.token);
@@ -83,6 +84,8 @@ function useProvideAuth() {
             })
             .then((result) => {
                 console.log(result);
+                localStorage.setItem("token", result.data.token);
+                localStorage.setItem("refresh", result.data.refresh);
                 setRefresh(result.data.refresh);
                 setUser(result.data.userId);
                 setToken(result.data.token);
@@ -151,24 +154,48 @@ function useProvideAuth() {
                 let originalRequest = error.config;
                 console.log("ORIGINAL REQUEST");
                 console.log(originalRequest);
+                console.log(error.response);
+                let localRefreshToken = localStorage.getItem("refresh");
+                let localAccessToken = localStorage.getItem("token");
                 if (
                     error.response &&
                     error.response.status === 401 &&
-                    refresh
+                    localRefreshToken
                 ) {
+                    console.log(localRefreshToken);
+                    console.log("just about to make request");
                     originalRequest._retry = true;
-
-                    refreshToken(
-                        (token) => {
-                            // update authentication header
+                    axiosConfig
+                        .post(
+                            "/users/refreshToken",
+                            {
+                                refresh: localRefreshToken,
+                                token: localAccessToken,
+                            },
+                            (error) => {
+                                console.log("aowiejfwoiej");
+                            }
+                        )
+                        .then((result) => {
+                            console.log(result);
+                            localStorage.setItem("token", result.data.token);
+                            localStorage.setItem("refresh", result.data.refresh);
+                            setRefresh(result.data.refresh);
+                            setUser(result.data.userId);
+                            setToken(result.data.token);
                             originalRequest.headers.Authorization =
                                 "Bearer " + token;
+                            console.log("NEW REQUEST");
+                            console.log(originalRequest);
                             return axiosConfig(originalRequest);
-                        },
-                        (err) => {
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            setRefresh(null);
+                            setUser(null);
+                            setToken(null);
                             return Promise.reject(err);
-                        }
-                    );
+                        });
                 } else {
                     return Promise.reject(error);
                 }
@@ -182,3 +209,9 @@ function useProvideAuth() {
 }
 
 export default useAuth;
+
+
+
+
+
+

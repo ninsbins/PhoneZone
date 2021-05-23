@@ -110,7 +110,7 @@ exports.create_new_user = (req, res, next) => {
                             payload,
                             accessTokenSecret,
                             {
-                                expiresIn: "5m",
+                                expiresIn: "1m",
                             }
                         );
                         const refreshToken = jwt.sign(
@@ -258,7 +258,7 @@ exports.login_user = (req, res, next) => {
                 // if same, return jwt
                 let payload = { userId: result[0]._id, username: username };
                 const accessToken = jwt.sign(payload, accessTokenSecret, {
-                    expiresIn: "5m",
+                    expiresIn: "1m",
                 });
 
                 //TODO check if user clicked remember me and set time accordingly
@@ -285,9 +285,13 @@ exports.login_user = (req, res, next) => {
 exports.refreshToken = (req, res, next) => {
     let refreshToken = req.body.refresh;
     let oldToken = req.body.token;
+    console.log("GETTING OLD PAYLOAD");
+    console.log(oldToken);
+    console.log(refreshToken);
     let payload = jwt.verify(oldToken, accessTokenSecret, {
         ignoreExpiration: true,
     });
+    console.log("PAYLOAD");
     console.log(payload);
 
     let newPayload = {
@@ -295,26 +299,24 @@ exports.refreshToken = (req, res, next) => {
         username: payload.username,
     };
     const accessToken = jwt.sign(newPayload, accessTokenSecret, {
-        expiresIn: "5m", // For testing
+        expiresIn: "1m", // For testing
     });
 
     console.log("verifying refresh token");
     jwt.verify(refreshToken, refreshTokenSecret, (err, payload) => {
         if (err) {
             console.log(err);
-            res.status(401).send("Error verifying refresh token");
-            next();
+            return res.status(401).send("Error verifying refresh token");
         }
         console.log("verified authorization of", newPayload);
         req.user = newPayload;
         console.log(req.user);
-        res.status(200).json({
+        return res.status(200).json({
             message: "token refreshed",
             token: accessToken,
             refresh: refreshToken,
             userId: newPayload.userId,
         });
-        next();
     });
     console.log("end of refresh function");
 };
@@ -439,3 +441,7 @@ exports.authenticate = (req, res, next) => {
         return res.status(401).send("No authorization header");
     }
 };
+
+
+
+
