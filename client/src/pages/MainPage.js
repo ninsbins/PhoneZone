@@ -1,5 +1,5 @@
 import "../styles/Main.scss";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import axiosConfig from "../services/axiosConfig";
 import MainPageStatus from "../services/constants";
@@ -68,6 +68,17 @@ const MainPage = () => {
         setPageState(MainPageStatus.SEARCH);
         setSearchState(true);
     };
+
+    useEffect(() => {
+        return history.listen((location) => {
+            console.log(location.pathname);
+            if (!(location.pathname).includes("search")) {
+                setSearchState(false);
+            } else {
+                setSearchState(true);
+            }
+        })
+    }, [history])
 
     return (
         <div className="Main">

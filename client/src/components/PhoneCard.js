@@ -8,7 +8,7 @@ const PhoneCard = (props) => {
     return (
         <Card className="phonecard">
             <Card.Body>
-                <Card.Title>{props.phone.title}</Card.Title>
+                <Card.Title className="limit">{props.phone.title}</Card.Title>
                 <Card.Subtitle>{props.phone.brand}</Card.Subtitle>
                 <Card.Img src={IMAGEBASEURL + props.phone.image} />
             </Card.Body>

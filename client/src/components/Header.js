@@ -13,6 +13,7 @@ import {
     Dropdown,
     Image,
     Badge,
+    Container
 } from "react-bootstrap";
 import "../styles/Header.scss";
 import InputRange from "react-input-range";
@@ -189,53 +190,56 @@ const Header = (props) => {
                     )}
                 </Nav>
             </Navbar>
-            <div>
-                {/* dropdown, and slider goes here */}
-                {inSearchState ? (
-                    <Row className="filters">
-                        <Col className="filterItem">
-                            <InputRange
-                                maxValue={1000}
-                                minValue={0}
-                                value={value}
-                                onChange={(value) => {
-                                    setValue(value);
-                                    props.filter(
-                                        selectedBrand,
-                                        value.min,
-                                        value.max
-                                    );
-                                }}
-                            />
-                        </Col>
-                        <Col>
-                            <Dropdown onSelect={handleSelect}>
-                                <Dropdown.Toggle
-                                    variant="secondary"
-                                    id="dropdown-basic"
-                                >
-                                    {selectedBrand == null
-                                        ? "Brands"
-                                        : selectedBrand}
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                    {brands == null ? (
-                                        <Dropdown.ItemText>
-                                            No brands to show
-                                        </Dropdown.ItemText>
-                                    ) : (
-                                        brands.map((brand, index) => (
-                                            <Dropdown.Item eventKey={index}>
-                                                {brand}
-                                            </Dropdown.Item>
-                                        ))
-                                    )}
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </Col>
-                    </Row>
-                ) : null}
-            </div>
+            {inSearchState ? (<Container fluid className="headerExt">
+                <Row fluid className="filters">
+                    <Col className="item"></Col>
+                    <Col className="item" style={{ textAlign: "right", fontWeight: "bold" }}>Filters</Col>
+                    <Col className="item">
+                        <InputRange
+                            style={{ width: "300px" }}
+                            maxValue={1000}
+                            minValue={0}
+                            value={value}
+                            onChange={(value) => {
+                                setValue(value);
+                                props.filter(
+                                    selectedBrand,
+                                    value.min,
+                                    value.max
+                                );
+                            }}
+                        />
+                        <div style={{ marginTop: "5px" }}>Price</div>
+                    </Col>
+                    <Col className="item">
+                        <Dropdown onSelect={handleSelect} style={{ width: "60px" }}>
+                            <Dropdown.Toggle
+                                variant="secondary"
+                                id="dropdown-basic"
+                            >
+                                {selectedBrand == null
+                                    ? "Brands"
+                                    : selectedBrand}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {brands == null ? (
+                                    <Dropdown.ItemText>
+                                        No brands to show
+                                    </Dropdown.ItemText>
+                                ) : (
+                                    brands.map((brand, index) => (
+                                        <Dropdown.Item eventKey={index}>
+                                            {brand}
+                                        </Dropdown.Item>
+                                    ))
+                                )}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </Col>
+                    <Col className="item"></Col>
+
+                </Row>
+            </Container>) : null}
         </div>
     );
 };

@@ -2,9 +2,20 @@
     cursor: pointer;
     width: 18rem;
     color: darkslategrey;
+    margin: 15px;
 }
 
 .phonecard:hover {
     color: darkslategrey;
     text-decoration: none;
+}
+
+.limit {
+    height: 50px;
+    white-space: pre-wrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }

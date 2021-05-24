@@ -1,6 +1,5 @@
 .header {
     min-height: 4.5em;
-    border: 1px solid black;
 }
 
 .logo {
@@ -8,14 +7,21 @@
 }
 
 .filters {
-    display: flex;
-    padding: 20px;
-    justify-content: center;
-    // align-content: space-between;
-    // flex-direction: row;
+    text-align: center;
+    margin: 0 auto;
+    color: white;
 }
 
-.filterItem {
-    max-width: 300px;
-    padding: 10px;
+.filters .item {
+    display: inline-block;
+    vertical-align: bottom;
+    float: none;
+    margin-left: 20px;
+    margin-top: 10px;    
+}
+
+.headerExt {
+    background-color: #343a3f;
+    text-align: center;
+    min-height: 4em;
 }
