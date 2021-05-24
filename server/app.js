@@ -20,7 +20,7 @@ mongoose
 var indexRouter = require("./routes/index");
 var usersRoutes = require("./routes/users");
 var phoneRoutes = require("./routes/phones");
-let orderRoutes = require("./routes/orders");
+// let orderRoutes = require("./routes/orders");
 let cartRoutes = require("./routes/cart");
 
 // APP SETUP
@@ -37,7 +37,7 @@ app.use("/images", express.static("public/images"));
 app.use("/", indexRouter);
 app.use("/users", usersRoutes);
 app.use("/phones", phoneRoutes);
-app.use("/orders", orderRoutes);
+// app.use("/orders", orderRoutes);
 app.use("/cart", cartRoutes);
 // Fallback for the client-side routing.
 app.get("/*", (req, res, next) => {

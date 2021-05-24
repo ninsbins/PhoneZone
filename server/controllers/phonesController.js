@@ -14,58 +14,74 @@ exports.create_new_listing = async (req, res, next) => {
         stock: req.body.stock,
         seller: req.user.userId,
         price: req.body.price,
-        reviews: [],            // We can't let the user add reviews themselves
+        reviews: [], // We can't let the user add reviews themselves
     });
-    if(req.body.disabled){
+    if (req.body.disabled) {
         phone.disabled = "";
     }
 
     console.log(phone._id);
 
-    phone.save().then((result) => {
-        console.log(result);
+    phone
+        .save()
+        .then((result) => {
+            console.log(result);
 
-        res.status(201).json({
-            message: "phone listing created",
-        })
-    }).catch((err) => {
-        if (!res.headerSent) {
-            res.status(500).json({
-                message: "unable to create phone listing",
-                error: err.message,
+            res.status(201).json({
+                message: "phone listing created",
             });
-        }
-    });
-
+        })
+        .catch((err) => {
+            if (!res.headerSent) {
+                res.status(500).json({
+                    message: "unable to create phone listing",
+                    error: err.message,
+                });
+            }
+        });
 };
 
 exports.get_brands = (req, res, next) => {
     res.status(200).json({
         message: "phone brands returned",
-        brands: ["Samsung", "Apple", "HTC", "Huawei", "Nokia", "LG", "Motorola", "Sony", "BlackBerry"]
+        brands: [
+            "Samsung",
+            "Apple",
+            "HTC",
+            "Huawei",
+            "Nokia",
+            "LG",
+            "Motorola",
+            "Sony",
+            "BlackBerry",
+        ],
     });
-}
+};
 
 exports.get_most_expensive_phone = (req, res, next) => {
-    Phone.find().sort({price: -1}).limit(1).then((result) => {
-        res.status(200).json({
-            message: "phone listing returned",
-            phone: result
+    Phone.find()
+        .sort({ price: -1 })
+        .limit(1)
+        .then((result) => {
+            res.status(200).json({
+                message: "phone listing returned",
+                phone: result,
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                message: "unable to get phone listing",
+                error: err.message,
+            });
         });
-    }).catch((err) => {
-        res.status(500).json({
-            message: "unable to get phone listing",
-            error: err.message,
-        });
-    })
-}
+};
 
-function getRatingAverage(phone){
+function getRatingAverage(phone) {
     let acc = 0;
-    for(let i=0; i<phone.reviews.length; i++){
+    for (let i = 0; i < phone.reviews.length; i++) {
         acc += phone.reviews[i].rating;
     }
-    return acc/phone.reviews.length;
+    return acc / phone.reviews.length;
 }
 
 exports.get_phone_from_id = (req, res, next) => {
@@ -74,25 +90,27 @@ exports.get_phone_from_id = (req, res, next) => {
     console.log(id);
 
     Phone.findById(id)
-        .populate({path: "seller", select:  "_id firstname lastname email"}) 
+        .populate({ path: "seller", select: "_id firstname lastname email" })
         .populate({
-            path: 'reviews.reviewer',
-            select: "_id firstname lastname email"
-        }) 
+            path: "reviews.reviewer",
+            select: "_id firstname lastname email",
+        })
         .then((result) => {
-            result.set("RatingAverage", getRatingAverage(result),{strict: false});
+            result.set("RatingAverage", getRatingAverage(result), {
+                strict: false,
+            });
             console.log(result);
             res.status(200).json({
                 message: "phone listing returned",
                 phone: result,
             });
-    }).catch((err) => {
-        res.status(500).json({
-            message: "unable to get phone listing",
-            error: err.message,
+        })
+        .catch((err) => {
+            res.status(500).json({
+                message: "unable to get phone listing",
+                error: err.message,
+            });
         });
-    });
-
 };
 
 exports.sold_out_soon = (req, res, next) => {
@@ -118,7 +136,10 @@ exports.search = (req, res, next) => {
     let search_term = req.query.search_term;
     console.log(search_term);
 
-    Phone.find({ title: { $regex: search_term, $options: "i" }, disabled: { $exists: false }})
+    Phone.find({
+        title: { $regex: search_term, $options: "i" },
+        disabled: { $exists: false },
+    })
         .limit(20)
         .exec()
         .then((result) => {
@@ -162,8 +183,8 @@ exports.enable_listing = (req, res, next) => {
 
     // check that this phone is sold by this user
     let userId = req.user.userId;
-    Phone.findById(phoneId).then((result)=> {
-        if(userId == result.seller){
+    Phone.findById(phoneId).then((result) => {
+        if (userId == result.seller) {
             Phone.findByIdAndUpdate(phoneId, {
                 $unset: { disabled: 1 },
             })
@@ -189,8 +210,8 @@ exports.disable_listing = (req, res, next) => {
 
     // check that this phone is sold by this user
     let userId = req.user.userId;
-    Phone.findById(phoneId).then((result)=> {
-        if(userId == result.seller){
+    Phone.findById(phoneId).then((result) => {
+        if (userId == result.seller) {
             Phone.findByIdAndUpdate(phoneId, {
                 disabled: "",
             })
@@ -216,9 +237,9 @@ exports.delete_listing = (req, res, next) => {
 
     // check that this phone is sold by this user
     let userId = req.user.userId;
-    Phone.findById(phoneId).then((result)=> {
-        if(userId == result.seller){
-            Phone.findOneAndDelete({_id:phoneId})
+    Phone.findById(phoneId).then((result) => {
+        if (userId == result.seller) {
+            Phone.findOneAndDelete({ _id: phoneId })
                 .then((result) => {
                     console.log(result);
                     return res.status(200).json({
@@ -272,7 +293,7 @@ exports.has_valid_items = async (items) => {
         await Promise.all(
             items.map(async (item) => {
                 let valid = await this.is_valid_order(
-                    item.phoneListing,
+                    item.product,
                     item.quantity
                 );
                 if (!valid) {

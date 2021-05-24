@@ -351,6 +351,16 @@ exports.checkout = async (req, res, next) => {
 
     // set cart completed to true.
     let cart = await Cart.findById({ _id: cartId });
+
+    try {
+        let valid = await isOrderValid(userId, cart.items);
+        console.log(valid);
+        // console.log(valid.result)
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "invalid order" });
+    }
+
     cart.completed = true;
     // update stock.
 
@@ -383,4 +393,37 @@ exports.checkout = async (req, res, next) => {
             console.log(err);
             return res.status(500).json({ message: "something went wrong" });
         });
+};
+
+const isValidUser = async (id) => {
+    return new Promise(async (resolve, reject) => {
+        await User.exists({ _id: id }, (err, result) => {
+            if (!err) {
+                resolve("user exists");
+            } else {
+                reject("no matching user");
+            }
+        });
+    });
+};
+
+const isOrderValid = (userId, items) => {
+    return new Promise(async (resolve, reject) => {
+        isValidUser(userId)
+            .then((result) => {
+                phoneController
+                    .has_valid_items(items)
+                    .then((result) => {
+                        resolve("valid order");
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        reject("not a valid order");
+                    });
+            })
+            .catch((err) => {
+                //
+                reject("not a valid order");
+            });
+    });
 };
