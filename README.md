@@ -1,23 +1,55 @@
-# COMP5347 Group Assignment
+# COMP5347 Group Assignment - PhoneZone
 
-eCommerce Web Application
+## Description
 
-## General Info
+This is an eCommerce SPA for use by PhoneZone. Collaboratively put together by group 30.
 
--   Repo split up into server and client
+It is split up into client and server directories. The server is using the build file of the client to serve the root page. The client will handle frontend routing from this point, and the server will act as a backend API.
 
-### Client
+## Gettings Started
 
--   Client is just created using create-react-app, don't need to do anything here yet but I wanted to show how the build is served by the server.
+### Dependencies
 
-### Server
+-   Node.js
+-   npm or yarn
 
-#### Database
+### Downloading
 
--   Imported phonelisting.json and userlisting.json into MongoDB via atlas. You'll have an invite via email a couple of days ago if you want to access it directly.
--   Server is connected to this database via mongoose.
+-   Either clone this repo or download a copy of the zip file.
 
-#### Structure
+### Database setup
+
+1. Unzip the database zip file
+2. Import the two json files into your database. Refer to [importing to db](##importing-database) for more information.
+3. Update the imageurls. Refer to [replacing urls](##updating-image-urls-in-database) for more information.
+4. modify the mongodb connection string in the .env file to point to your database.
+
+### Installing
+
+1.  Navigate to the server folder and install dependencies
+    > `cd server && npm install`
+2.  Install client dependencies and build
+    > `npm run build-client`
+        or
+
+> `cd client && npm install && npm run build`
+
+### Running
+
+1. Ensure you are in the root folder of the server
+2. Start the server
+    > `npm start`
+
+### Using
+
+1. View in browser.
+    > Open at [http://localhost:9000](http://localhost:9000) to view in browser.
+
+## Development Instructions
+
+### Folder Structure
+
+#### Server
 
 ```
 /controllers
@@ -26,24 +58,36 @@ eCommerce Web Application
 app.js
 ```
 
--   controllers - add all functionality interacting with the database here.
--   models - all mongoose/mongodb schemas here. These will need to mirror what's in the json schemas and any additional properties that are needed.
+-   controllers - all functionality interacting with the database is here.
+-   models - all mongoose/mongodb schemas here. These mirror what's in the json schemas and any additional properties that are needed.
 -   routes - route paths here, these will call needed functionality from controllers.
 -   app.js - entry point.
 
-## Running
+#### Client
 
-1. Start server (defaults to port 9000)
-    > `npm start`
-2. Start client (defaults to port 3000)
-    > `npm start`
-3. Open at [http://localhost:9000](http://localhost:9000) to view in browser.
+```
+src/
+    index.js
+    App.js
+    /components
+    /context
+    /services
+    /styles
 
-## Making changes
+```
+
+-   index.js - app entry point
+-   App.js - functionality entry point
+-   components - all the apps small components are here
+-   context - any important contexts (cart) is here along with any Reducers
+-   services - any app wide configuration is here (axios, auth hook, constant variables)
+-   styles - stylesheets referred to by components.
+
+### Making changes
 
 Note: The server is serving the production build file from the client. Found at `/build/index.html` in the client directory. If you're working on the client and viewing from the server you'll need to run `npm build` in the client directory beforehand, and restart the server.
 
-### Client
+#### Client only dev
 
 Note: If you're just working on the client:
 
@@ -51,66 +95,54 @@ Note: If you're just working on the client:
     > `npm start`
 2. Changes are hot reloaded at [http://localhost:3000](http://localhost:3000) in browser
 
-### Process
+## Importing database
 
-Pre-stage:
+1. Create a database in MongoDB Atlas
+2. Connect using the mongo shell
+3. Import the userlist and phonelisting json data
 
-1. Clone repo
-    > `git clone <repo>`
+```
+mongoimport \
+--uri mongodb+srv://adminname:testadmin@phonezone.ixyyf.mongodb.net/{db_name} \
+--collection users \
+--type json \
+--file {path}/userlist_demo.json \
+--jsonArray
+```
 
-Regulary (this is just a suggested workflow based on our meeting, no pull requests and just some feature branches to keep organised):
+```
+mongoimport \
+--uri mongodb+srv://adminname:testadmin@phonezone.ixyyf.mongodb.net/{db_name} \
+--collection phones \
+--type json \
+--file {path}/phonelisting_demo.json \
+--jsonArray
+```
 
-1. Create a branch for feature.
+## Updating image urls in database
 
-    > `git branch <name_of_feature>`
+-   The image urls in the dataset need to be updated. There are a number of ways to achieve this. The method described uses the mongo db shell.
 
-    > `git checkout <name_of_feature>`
+1. Connect to the db via mongo shell
 
-    or
+2. select the collection you are using
+    > `use phonezonetester`
+3. run update commands:
 
-    > `git checkout -b <name_of_feature>`
+    > `db.phones.update({"brand": "Apple"}, {$set: {"image": "Apple.jpeg"}}, {"multi":true});`
 
-2. Make changes, test everything works as excepted after change and commit.
+    > `db.phones.update({"brand": "BlackBerry"}, {$set: {"image": "BlackBerry.jpeg"}}, {"multi":true});`
 
-    > `git add .`
+    > `db.phones.update({"brand": "HTC"}, {$set: {"image": "HTC.jpeg"}}, {"multi":true});`
 
-    > `git commit -m "a useful commit message"`
+    > `db.phones.update({"brand": "Huawei"}, {$set: {"image": "Huawei.jpeg"}}, {"multi":true});`
 
-3. Check for changes that have happened and merge branch to main.
+    > `db.phones.update({"brand": "LG"}, {$set: {"image": "LG.jpeg"}}, {"multi":true});`
 
-    > `git checkout main`
+    > `db.phones.update({"brand": "Motorola"}, {$set: {"image": "Motorola.jpeg"}}, {"multi":true});`
 
-    > `git pull origin main`
+    > `db.phones.update({"brand": "Nokia"}, {$set: {"image": "Nokia.jpeg"}}, {"multi":true});`
 
-    > `git merge <name_of_feature>`
+    > `db.phones.update({"brand": "Samsung"}, {$set: {"image": "Samsung.jpeg"}}, {"multi":true});`
 
-4. Push to repo
-    > `git push origin main`
-
-..small change to check contribution settings
-
-## Mongo commands for updating phones via mongo shell.
-
-This is just one way to update the phone image fields, lots of other ways.
-
-1. Connect to the db
-2. `use phonezone`
-3. run the below commands:
-
-`db.phones.update({"brand": "Apple"}, {$set: {"image": "Apple.jpeg"}}, {"multi":true});`
-
-`db.phones.update({"brand": "BlackBerry"}, {$set: {"image": "BlackBerry.jpeg"}}, {"multi":true});`
-
-`db.phones.update({"brand": "HTC"}, {$set: {"image": "HTC.jpeg"}}, {"multi":true});`
-
-`db.phones.update({"brand": "Huawei"}, {$set: {"image": "Huawei.jpeg"}}, {"multi":true});`
-
-`db.phones.update({"brand": "LG"}, {$set: {"image": "LG.jpeg"}}, {"multi":true});`
-
-`db.phones.update({"brand": "Motorola"}, {$set: {"image": "Motorola.jpeg"}}, {"multi":true});`
-
-`db.phones.update({"brand": "Nokia"}, {$set: {"image": "Nokia.jpeg"}}, {"multi":true});`
-
-`db.phones.update({"brand": "Samsung"}, {$set: {"image": "Samsung.jpeg"}}, {"multi":true});`
-
-`db.phones.update({"brand": "Sony"}, {$set: {"image": "Sony.jpeg"}}, {"multi":true});`
+    > `db.phones.update({"brand": "Sony"}, {$set: {"image": "Sony.jpeg"}}, {"multi":true});`
