@@ -43,7 +43,7 @@ def main(arguments):
     res = subprocess.check_output(
         [f"ls {path}"], shell=True, encoding="utf8")
     asStr = res.splitlines()
-    if ("userlist.json" and 'phonelisting.json') not in asStr:
+    if ("userlist_demo.json" and 'phonelisting_demo.json') not in asStr:
         print('Error: A file named userlist.json and phonelisting.json must be present in the specified directory')
         exit(-1)
 
@@ -51,10 +51,10 @@ def main(arguments):
     print("Importing data...")
     db_name = arguments[1]
     subprocess.run(
-        [f"mongoimport --uri mongodb+srv://matt:testadmin@phonezone.ixyyf.mongodb.net/{db_name} --collection users --type json --file {path}/userlist.json --jsonArray"], shell=True)
+        [f"mongoimport --uri mongodb+srv://matt:testadmin@phonezone.ixyyf.mongodb.net/{db_name} --collection users --type json --file {path}/userlist_demo.json --jsonArray"], shell=True)
 
     subprocess.run(
-        [f"mongoimport --uri mongodb+srv://matt:testadmin@phonezone.ixyyf.mongodb.net/{db_name} --collection phones --type json --file {path}/phonelisting.json --jsonArray"], shell=True)
+        [f"mongoimport --uri mongodb+srv://matt:testadmin@phonezone.ixyyf.mongodb.net/{db_name} --collection phones --type json --file {path}/phonelisting_demo.json --jsonArray"], shell=True)
 
     # Update the phones with proper images
     print("Connecting with PyMongo to update phone images...")

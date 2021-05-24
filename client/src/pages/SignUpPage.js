@@ -21,9 +21,10 @@ const SignUpPage = () => {
 
     let signup = () => {
         console.log(`email: ${email} password: ${password}`);
+        // going back two as we will always route to /login before /signup.
 
         auth.signup(firstName, lastName, email, password, () => {
-            history.replace(from);
+            history.go(-2);
         });
     };
 

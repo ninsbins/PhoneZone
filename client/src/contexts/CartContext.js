@@ -239,10 +239,10 @@ const CartContextProvider = ({ children }) => {
         // console.log(auth);
         console.log("triggered log in");
         let expired = auth.isJWTExpired();
-        if (!expired && auth.user) {
+        if (!expired) {
             setCart();
         }
-    }, [auth.user]);
+    }, [auth.user, auth.token]);
 
     const contextValues = {
         addPhone,

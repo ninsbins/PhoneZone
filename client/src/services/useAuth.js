@@ -23,11 +23,11 @@ function useProvideAuth() {
         : "";
 
     let userDecoded = "";
-    if(tokenStorage){
+    if (tokenStorage) {
         userDecoded = jwt_decode(tokenStorage).userId;
     }
     const history = useHistory();
-    const [user, setUser] = useState(userDecoded || null); 
+    const [user, setUser] = useState(userDecoded || null);
     const [token, setToken] = useState(tokenStorage || null);
     const [refresh, setRefresh] = useState(refreshStorage || null);
 
@@ -38,8 +38,10 @@ function useProvideAuth() {
             console.log("decoded: ", decodedToken);
             let currentDate = new Date();
             // check if refresh is expired as well, if so sign out
-            if (decodedToken.exp * 1000 < currentDate.getTime() &&
-                decodedRefresh.exp * 1000 < currentDate.getTime()) {
+            if (
+                decodedToken.exp * 1000 < currentDate.getTime() &&
+                decodedRefresh.exp * 1000 < currentDate.getTime()
+            ) {
                 console.log("token expired");
                 signout();
                 return true;
@@ -62,7 +64,7 @@ function useProvideAuth() {
                 console.log(result);
                 localStorage.setItem("token", result.data.token);
                 localStorage.setItem("refresh", result.data.refresh);
-                console.log("CREATED REFRESH TOKEN: ",result.data.refresh);
+                console.log("CREATED REFRESH TOKEN: ", result.data.refresh);
                 setRefresh(result.data.refresh);
                 setUser(result.data.userId);
                 setToken(result.data.token);
@@ -82,6 +84,13 @@ function useProvideAuth() {
 
     const signup = (firstName, lastName, email, password, cb) => {
         // set user to server
+
+        setUser(null);
+        setToken(null);
+        setRefresh(null);
+        localStorage.removeItem("token");
+        localStorage.removeItem("refresh");
+
         axiosConfig
             .post("/users/signup", {
                 firstName,
@@ -91,6 +100,7 @@ function useProvideAuth() {
             })
             .then((result) => {
                 console.log(result);
+
                 localStorage.setItem("token", result.data.token);
                 localStorage.setItem("refresh", result.data.refresh);
                 setRefresh(result.data.refresh);
@@ -186,7 +196,3 @@ function useProvideAuth() {
 }
 
 export default useAuth;
-
-
-
-

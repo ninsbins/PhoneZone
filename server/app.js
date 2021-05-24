@@ -4,10 +4,11 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const dotenv = require("dotenv");
+dotenv.config();
 
 // DB SETUP
-const mongoDBUri =
-    "mongodb+srv://matt:testadmin@phonezone.ixyyf.mongodb.net/phonezonetester?retryWrites=true&w=majority";
+const mongoDBUri = process.env.MONGOCONNECT;
 mongoose
     .connect(mongoDBUri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then()

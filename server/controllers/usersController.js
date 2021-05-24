@@ -3,6 +3,7 @@ const User = require("../models/user");
 const Phone = require("../models/phone");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const { Cart } = require("../models/cart");
 
 // Secret token
 const accessTokenSecret =
@@ -62,7 +63,7 @@ const isValidPassword = (string) => {
  *              description: Server error
  *
  */
-exports.create_new_user = (req, res, next) => {
+exports.create_new_user = async (req, res, next) => {
     // functionality for creating a new user.
     let firstName = req.body.firstName;
     let lastName = req.body.lastName;
@@ -84,7 +85,7 @@ exports.create_new_user = (req, res, next) => {
     // encrypt password and
     User.find({ email: email })
         .exec()
-        .then((result) => {
+        .then(async (result) => {
             if (result.length >= 1) {
                 return res.status(409).json({
                     message: "username exists",
@@ -98,6 +99,17 @@ exports.create_new_user = (req, res, next) => {
                     email: email,
                     password: hashedPassword,
                 });
+
+                const cart = new Cart({
+                    _id: new mongoose.Types.ObjectId(),
+                    items: [],
+                    order_total: 0,
+                    completed: false,
+                });
+
+                let c = await cart.save();
+
+                newUser.cart = c;
 
                 newUser
                     .save()
@@ -299,7 +311,7 @@ exports.refreshToken = (req, res, next) => {
         username: payload.username,
     };
     const accessToken = jwt.sign(newPayload, accessTokenSecret, {
-        expiresIn: "15m", 
+        expiresIn: "15m",
     });
 
     console.log("verifying refresh token");
@@ -440,5 +452,3 @@ exports.authenticate = (req, res, next) => {
         return res.status(401).send("No authorization header");
     }
 };
-
-
