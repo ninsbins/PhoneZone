@@ -16,16 +16,42 @@ const SignUpPage = () => {
     const [password, setPassword] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [errors, setErrors] = useState({});
+    const [fail, setFail] = useState(false);
 
     let { from } = location.state || { from: { pathname: "/" } };
+
+    const findErrors = () => {
+        const errors = {};
+        if (firstName === "") errors.firstName = "First name cannot be blank";
+        if (lastName === "") errors.lastName = "Last name cannot be blank";
+        if (email === "") errors.email = "Username cannot be blank";
+        else if (email.length < 3) errors.email = "Enter a valid email";
+        if (password === "") errors.password = "Password cannot be blank";
+        else if (password.length < 4)
+            errors.password = "Password should be a minimum of 4 characters";
+
+        return errors;
+    };
 
     let signup = () => {
         console.log(`email: ${email} password: ${password}`);
         // going back two as we will always route to /login before /signup.
 
-        auth.signup(firstName, lastName, email, password, () => {
-            history.go(-2);
-        });
+        const newErrors = findErrors();
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+        } else {
+            auth.signup(firstName, lastName, email, password, success, failure);
+        }
+    };
+
+    const success = () => {
+        history.go(-2);
+    };
+
+    const failure = () => {
+        setFail(true);
     };
 
     return (
@@ -56,7 +82,11 @@ const SignUpPage = () => {
                                     onChange={(e) =>
                                         setFirstName(e.target.value)
                                     }
+                                    isInvalid={!!errors.firstName}
                                 />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.firstName}
+                                </Form.Control.Feedback>
                             </Col>
                             <Col sm={{ span: 3 }}>
                                 <Form.Label className="signup form__label">
@@ -68,7 +98,11 @@ const SignUpPage = () => {
                                     onChange={(e) =>
                                         setLastName(e.target.value)
                                     }
+                                    isInvalid={!!errors.lastName}
                                 />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.lastName}
+                                </Form.Control.Feedback>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
@@ -80,7 +114,11 @@ const SignUpPage = () => {
                                     type="email"
                                     placeholder="Enter email"
                                     onChange={(e) => setEmail(e.target.value)}
+                                    isInvalid={!!errors.email}
                                 />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.email}
+                                </Form.Control.Feedback>
                                 <Form.Text className="text-muted">
                                     Your username will be this email address.
                                 </Form.Text>
@@ -97,25 +135,22 @@ const SignUpPage = () => {
                                     onChange={(e) =>
                                         setPassword(e.target.value)
                                     }
+                                    isInvalid={!!errors.password}
                                 />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.password}
+                                </Form.Control.Feedback>
                             </Col>
                         </Form.Group>
 
                         <Button onClick={signup}>Submit</Button>
                     </Form>
+                    {fail ? (
+                        <div style={{ color: "red" }}>Failed to sign up</div>
+                    ) : null}
                 </Col>
             </Row>
         </Container>
-
-        // <div>
-        //     <p>Welcome to the Log in page</p>
-        //     <p>
-        //         You need to log in first to view the page at {from.pathname} or
-        //         do whatever you were trying to do.
-        //     </p>
-        //     <button onClick={login}> Log in</button>
-        //     <AuthButton />
-        // </div>
     );
 };
 

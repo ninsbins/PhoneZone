@@ -82,7 +82,7 @@ function useProvideAuth() {
         // return user deatils from server.
     };
 
-    const signup = (firstName, lastName, email, password, cb) => {
+    const signup = (firstName, lastName, email, password, success, failure) => {
         // set user to server
 
         setUser(null);
@@ -100,19 +100,19 @@ function useProvideAuth() {
             })
             .then((result) => {
                 console.log(result);
-
                 localStorage.setItem("token", result.data.token);
                 localStorage.setItem("refresh", result.data.refresh);
                 setRefresh(result.data.refresh);
                 setUser(result.data.userId);
                 setToken(result.data.token);
-                cb();
+                success();
             })
             .catch((err) => {
                 console.log(err);
                 setRefresh(null);
                 setUser(null);
                 setToken(null);
+                failure();
             });
     };
 
